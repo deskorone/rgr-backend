@@ -1,2 +1,7 @@
-package com.rgr.storeApp.models.basket;public class SellHistory {
+package com.rgr.storeApp.models.basket;
+
+
+
+
+public class SellHistory {
 }
