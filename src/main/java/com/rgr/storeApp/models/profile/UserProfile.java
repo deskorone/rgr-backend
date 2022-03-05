@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -34,5 +35,8 @@ public class UserProfile {
     private AwaitingList awaitingList;
 
     private Float balance;
+
+    @OneToMany
+    private List<Sales> sales;
 
 }

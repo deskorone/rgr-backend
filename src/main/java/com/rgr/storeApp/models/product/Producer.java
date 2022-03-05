@@ -15,9 +15,11 @@ public class Producer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String country;
-    String town;
-    String address;
+    private Long id;
+
+    private String country;
+    private String town;
+    private String address;
 
     @OneToMany(mappedBy = "producer")
     List<Product> products;

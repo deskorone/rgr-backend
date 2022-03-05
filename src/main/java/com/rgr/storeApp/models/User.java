@@ -2,10 +2,8 @@ package com.rgr.storeApp.models;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.rgr.storeApp.models.basket.Basket;
 import com.rgr.storeApp.models.product.Producer;
 import com.rgr.storeApp.models.profile.UserProfile;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 
@@ -22,11 +20,10 @@ public class User {
 
     public User() {}
 
-    public User(String email, String username, String password, String country, boolean enabled, boolean locked) {
+    public User(String email, String username, String password, boolean enabled, boolean locked) {
         this.email = email;
         this.username = username;
         this.password = password;
-        this.country = country;
         this.enabled = enabled;
         this.locked = locked;
     }
@@ -38,7 +35,6 @@ public class User {
     private String email;
     private String username;
     private String password;
-    private String country;
     private boolean enabled;
     private boolean locked;
 
@@ -48,11 +44,11 @@ public class User {
                 inverseJoinColumns = @JoinColumn(name = "role_id"))
     Set<Role> roles = new HashSet<>();
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JsonBackReference
     private UserProfile userProfile;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Producer producer;
 
 

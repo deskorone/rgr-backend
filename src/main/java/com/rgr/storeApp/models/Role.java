@@ -11,6 +11,10 @@ import javax.persistence.*;
 @Table(name = "roles")
 public class Role {
 
+    public Role(ERole eRole){
+        this.role = eRole;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

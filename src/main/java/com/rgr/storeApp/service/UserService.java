@@ -81,7 +81,6 @@ public class UserService {
         User user = new User(registrationRequest.getEmail(),
                 registrationRequest.getUsername(),
                 passwordEncoder.encode(registrationRequest.getPassword()),
-                registrationRequest.getCountry(),
                 true,
                 false);
 
@@ -97,10 +96,10 @@ public class UserService {
             rolesReq  // TODO add all roles!
                     .forEach(r ->{
                         switch (r) {
-                            case "admin":
+                            case "moderator":
                                 Role adminRole = rolesRepo
-                                        .findByRole(ERole.ROLE_ADMIN)
-                                        .orElseThrow(() -> new RuntimeException("Role dont existADMIN"));
+                                        .findByRole(ERole.ROLE_MODERATOR)
+                                        .orElseThrow(() -> new RuntimeException("Role dont exist (MODERATOR)"));
                                 roles.add(adminRole);
                                 break;
                             default:

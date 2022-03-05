@@ -40,9 +40,7 @@ public class TokenFilterImpl extends OncePerRequestFilter {
     private String getTokenFromRequest(HttpServletRequest request){
         String header = request.getHeader("Authorization");
 
-        if(header.startsWith("Bearer ")
-                && StringUtils.hasText(header)
-                && jwtBuilder.validateToken(header.substring(7))){
+        if(StringUtils.hasText(header) && header.startsWith("Bearer")){
             return header.substring(7);
         }
         return null;
@@ -51,9 +49,11 @@ public class TokenFilterImpl extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // TODO maybe ignore authURL?
+
         try{
             String token = getTokenFromRequest(request);
-            if(token != null){
+            if(token != null && jwtBuilder.validateToken(token)){
                 String email = jwtBuilder.getEmailFromToken(token);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
