@@ -34,4 +34,7 @@ public class Product {
     inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> categories;
 
+    @ManyToOne
+    private Producer producer;
+
 }
