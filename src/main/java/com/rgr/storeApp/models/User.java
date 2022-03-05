@@ -15,7 +15,7 @@ import java.util.Set;
 @Data
 @Getter
 @Table(name = "users"
-        , uniqueConstraints = {@UniqueConstraint(columnNames = "email")}) // TODO тут ошибка может быть
+        ,uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
 public class User {
 
     public User() {}

@@ -1,5 +1,6 @@
 package com.rgr.storeApp.service;
 
+import com.rgr.storeApp.exceptions.api.UserNotFound;
 import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.repo.UsersRepo;
 import com.rgr.storeApp.secutity.SecurityUser;
@@ -27,8 +28,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        User user = usersRepo.findByEmail(email).orElseThrow(()-> new
-                UsernameNotFoundException("User with this email not found"));
+        User user = usersRepo.findByEmail(email).orElseThrow(()-> new UserNotFound(String
+                .format("User with %s email not found", email)));
 
         return SecurityUser.createSecurityUser(user);
     }
