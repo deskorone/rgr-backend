@@ -5,6 +5,7 @@ import com.rgr.storeApp.models.User;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -17,9 +18,25 @@ public class ProductInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private ProductPhoto mainPhoto;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<ProductPhoto> productPhotos;
+
+    public ProductInfo(ProductPhoto mainPhoto, List<ProductPhoto> productPhotos, String description, String materials) {
+        this.mainPhoto = mainPhoto;
+        this.productPhotos = productPhotos;
+        this.description = description;
+        this.materials = materials;
+    }
+
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "salesman_id")
-    private User salesman;
+    private String materials;
+
+    public ProductInfo(String description, String materials) {
+        this.description = description;
+        this.materials = materials;
+    }
 }

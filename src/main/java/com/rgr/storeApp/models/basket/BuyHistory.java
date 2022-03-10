@@ -1,6 +1,7 @@
 package com.rgr.storeApp.models.basket;
 
 
+import com.rgr.storeApp.models.profile.UserProfile;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -20,6 +21,10 @@ public class BuyHistory {
     @OneToMany
     @JoinColumn(name = "buy_id")
     private List<Buy> buys;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_profile_id", referencedColumnName = "id")
+    UserProfile userProfile;
 
 
 }

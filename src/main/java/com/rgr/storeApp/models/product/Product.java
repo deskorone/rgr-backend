@@ -18,15 +18,22 @@ public class Product {
     private Long id;
     private String id_code;
 
-    @OneToOne
-    private ProductPhoto mainPhoto;
-
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "photo_id")
-    private List<ProductPhoto> list;
-
     @OneToMany(mappedBy = "product")
     private List<Review> reviews;
+
+    private Integer price;
+
+
+    //TODO написать логику скидок
+
+    public Product(String id_code, List<Review> reviews, Integer price, List<Category> categories, ProductInfo productInfo, Producer producer) {
+        this.id_code = id_code;
+        this.reviews = reviews;
+        this.price = price;
+        this.categories = categories;
+        this.productInfo = productInfo;
+        this.producer = producer;
+    }
 
     @ManyToMany()
     @JoinTable(name = "product_categories",
@@ -34,7 +41,11 @@ public class Product {
     inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> categories;
 
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    private ProductInfo productInfo;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "producer_id")
     private Producer producer;
 
 }

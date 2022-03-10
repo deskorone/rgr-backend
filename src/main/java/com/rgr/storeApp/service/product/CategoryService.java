@@ -1,0 +1,34 @@
+package com.rgr.storeApp.service.product;
+
+
+import com.rgr.storeApp.models.product.Category;
+import com.rgr.storeApp.repo.CategoryRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Service
+public class CategoryService {
+
+    private final CategoryRepo categoryRepo;
+
+    @Autowired
+    public CategoryService(CategoryRepo categoryRepo) {
+        this.categoryRepo = categoryRepo;
+    }
+
+    public List<Category> convertCategory(List<String> list){
+        List<Category> categories = (List<Category>) list.stream().map((e)->{
+            Optional<Category> category = categoryRepo.findByName(e);
+            if(category.isPresent()){
+                return category.get();
+            }
+            return categoryRepo.save(new Category(e));
+        });
+        return categories;
+    }
+
+}

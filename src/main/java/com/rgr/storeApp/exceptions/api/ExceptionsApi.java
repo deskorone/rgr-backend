@@ -12,8 +12,8 @@ import java.time.ZonedDateTime;
 @ControllerAdvice
 public class ExceptionsApi {
 
-    @ExceptionHandler(value = {UserNotFound.class})
-    public ResponseEntity<?> userNotFound(UserNotFound error){
+    @ExceptionHandler(value = {NotFound.class})
+    public ResponseEntity<?> userNotFound(NotFound error){
         ExceptionMessage message = new ExceptionMessage(
                 error.getMessage(),
                 HttpStatus.FORBIDDEN,

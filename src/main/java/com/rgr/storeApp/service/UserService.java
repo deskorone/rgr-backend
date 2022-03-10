@@ -7,6 +7,12 @@ import com.rgr.storeApp.dao.RegistrationRequest;
 import com.rgr.storeApp.models.ERole;
 import com.rgr.storeApp.models.Role;
 import com.rgr.storeApp.models.User;
+import com.rgr.storeApp.models.basket.Basket;
+import com.rgr.storeApp.models.basket.BuyHistory;
+import com.rgr.storeApp.models.basket.SellHistory;
+import com.rgr.storeApp.models.delivery.AwaitingList;
+import com.rgr.storeApp.models.product.Producer;
+import com.rgr.storeApp.models.profile.UserProfile;
 import com.rgr.storeApp.repo.RolesRepo;
 import com.rgr.storeApp.repo.UsersRepo;
 import com.rgr.storeApp.secutity.SecurityUser;
@@ -86,7 +92,7 @@ public class UserService {
 
         Set<String> rolesReq = registrationRequest.getRoles();
         Set<Role> roles = new HashSet<>();
-
+        UserProfile userProfile = new UserProfile();
         if(rolesReq == null){
             Role role = rolesRepo
                     .findByRole(ERole.ROLE_USER)
@@ -96,11 +102,17 @@ public class UserService {
             rolesReq  // TODO add all roles!
                     .forEach(r ->{
                         switch (r) {
-                            case "moderator":
+                            case "salesman":
                                 Role adminRole = rolesRepo
-                                        .findByRole(ERole.ROLE_MODERATOR)
-                                        .orElseThrow(() -> new RuntimeException("Role dont exist (MODERATOR)"));
+                                        .findByRole(ERole.ROLE_SALESMAN)
+                                        .orElseThrow(() -> new RuntimeException("Role dont exist (SALESMAN)"));
                                 roles.add(adminRole);
+                                Producer producer = new Producer();
+                                SellHistory sellHistory = new SellHistory();;
+                                sellHistory.setUserProfile(userProfile);
+                                userProfile.setSellHistory(sellHistory);
+                                producer.setUser(user);
+                                user.setProducer(producer);
                                 break;
                             default:
                                 Role userRole = rolesRepo
@@ -110,12 +122,22 @@ public class UserService {
                         }
                     });
         }
+
+        Basket basket = new Basket();
+        basket.setUserProfile(userProfile);
+        BuyHistory buyHistory = new BuyHistory();
+        buyHistory.setUserProfile(userProfile);
+        AwaitingList awaitingList = new AwaitingList();
+        awaitingList.setUserProfile(userProfile);
+        userProfile.setAwaitingList(awaitingList);
+        userProfile.setBasket(basket);
+        userProfile.setBuyHistory(buyHistory);
+        userProfile.setUser(user);
+        user.setUserProfile(userProfile);
         user.setRoles(roles);
         usersRepo.save(user);
 
         //TODO verification token save
-
-
 
         return null;
     }

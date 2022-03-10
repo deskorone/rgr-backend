@@ -1,6 +1,7 @@
 package com.rgr.storeApp.models.product;
 
 
+import com.rgr.storeApp.models.User;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -22,5 +23,16 @@ public class Producer {
     private String address;
 
     @OneToMany(mappedBy = "producer")
-    List<Product> products;
+    private List<Product> products;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+    public Producer(String country, String town, String address, List<Product> products) {
+        this.country = country;
+        this.town = town;
+        this.address = address;
+        this.products = products;
+    }
 }

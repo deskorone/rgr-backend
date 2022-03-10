@@ -13,8 +13,16 @@ public class ProductPhoto {
     public ProductPhoto(){}
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
 
+    @Lob
     private byte[] photo;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
+
+    public ProductPhoto(byte[] photo) {
+        this.photo = photo;
+    }
 }

@@ -2,6 +2,7 @@ package com.rgr.storeApp.models.basket;
 
 
 import com.rgr.storeApp.models.product.Product;
+import com.rgr.storeApp.models.profile.UserProfile;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -23,6 +24,10 @@ public class Basket {
                 joinColumns = @JoinColumn(name = "basket_id"),
                 inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<Product> products;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_profile_id", referencedColumnName = "id")
+    UserProfile userProfile;
 
 
 }
