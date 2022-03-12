@@ -9,9 +9,4 @@ import org.springframework.stereotype.Service;
 public class ProductInfoService {
 
 
-    public ProductInfo buildFromRequest(ProductRequest request){
-
-        return new ProductInfo(request.getDescription(), request.getInfo());
-    }
-
 }

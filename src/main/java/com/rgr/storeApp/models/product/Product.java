@@ -16,20 +16,18 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String id_code;
 
     @OneToMany(mappedBy = "product")
     private List<Review> reviews;
 
-    private Integer price;
-
 
     //TODO написать логику скидок
 
-    public Product(String id_code, List<Review> reviews, Integer price, List<Category> categories, ProductInfo productInfo, Producer producer) {
+    public Product(String id_code, List<Review> reviews, List<Category> categories, ProductInfo productInfo, Producer producer) {
         this.id_code = id_code;
         this.reviews = reviews;
-        this.price = price;
         this.categories = categories;
         this.productInfo = productInfo;
         this.producer = producer;

@@ -1,6 +1,7 @@
 package com.rgr.storeApp.models.product;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -15,14 +16,14 @@ public class ProductPhoto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
-    private byte[] photo;
+    private String path;
+
 
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
-    public ProductPhoto(byte[] photo) {
-        this.photo = photo;
+    public ProductPhoto(String path) {
+        this.path = path;
     }
 }

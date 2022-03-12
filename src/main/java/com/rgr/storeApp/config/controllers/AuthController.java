@@ -1,4 +1,4 @@
-package com.rgr.storeApp.controllers;
+package com.rgr.storeApp.config.controllers;
 
 
 import com.rgr.storeApp.dao.LoginRequest;

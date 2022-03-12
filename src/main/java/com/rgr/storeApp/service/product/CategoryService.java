@@ -21,13 +21,15 @@ public class CategoryService {
     }
 
     public List<Category> convertCategory(List<String> list){
-        List<Category> categories = (List<Category>) list.stream().map((e)->{
-            Optional<Category> category = categoryRepo.findByName(e);
-            if(category.isPresent()){
-                return category.get();
-            }
-            return categoryRepo.save(new Category(e));
-        });
+        List<Category> categories = list.stream()
+                .map((c)->{
+                    Optional<Category> category = categoryRepo.findByName(c);
+                    if(!category.isPresent()){
+                        return categoryRepo.save(new Category(c));
+                    }else {
+                        return category.get();
+                    }
+                }).collect(Collectors.toList());
         return categories;
     }
 

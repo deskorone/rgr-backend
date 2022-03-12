@@ -1,6 +1,7 @@
 package com.rgr.storeApp.models.product;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.rgr.storeApp.models.User;
 import lombok.Data;
 
@@ -18,15 +19,34 @@ public class ProductInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL)
     private ProductPhoto mainPhoto;
+
+    private Integer price;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<ProductPhoto> productPhotos;
 
-    public ProductInfo(ProductPhoto mainPhoto, List<ProductPhoto> productPhotos, String description, String materials) {
+    public ProductInfo(ProductPhoto mainPhoto, Integer price, List<ProductPhoto> productPhotos, Integer number, String description, String materials) {
         this.mainPhoto = mainPhoto;
+        this.price = price;
         this.productPhotos = productPhotos;
+        this.number = number;
+        this.description = description;
+        this.materials = materials;
+    }
+
+    private Integer number;
+
+    private Integer sale;
+
+    public ProductInfo(ProductPhoto mainPhoto, Integer price, List<ProductPhoto> productPhotos, Integer number, Integer sale, String description, String materials) {
+        this.mainPhoto = mainPhoto;
+        this.price = price;
+        this.productPhotos = productPhotos;
+        this.number = number;
+        this.sale = sale;
         this.description = description;
         this.materials = materials;
     }

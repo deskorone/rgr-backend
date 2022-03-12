@@ -1,6 +1,7 @@
 package com.rgr.storeApp.models.product;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -17,8 +18,10 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     String name;
 
+    @JsonBackReference
     @ManyToMany(mappedBy = "categories")
     List<Product> products;
 

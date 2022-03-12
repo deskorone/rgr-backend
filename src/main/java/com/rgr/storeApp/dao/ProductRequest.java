@@ -2,29 +2,36 @@ package com.rgr.storeApp.dao;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
+import lombok.NoArgsConstructor;
 
-import java.awt.*;
 import java.util.List;
 
 
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ProductRequest {
 
-    private MultipartFile maimImage;
-
-    private List<MultipartFile> images;
 
     private Integer price;
 
     private String description;
 
-    private String info;
+    private Integer number;
 
-    private List<String> categoryes;
+    private List<String> categories;
 
+    private String materials;
 
-
+    @Override
+    public String toString() {
+        return "ProductRequest{" +
+                "price=" + price +
+                ", description='" + description + '\'' +
+                ", number=" + number +
+                ", categories=" + categories +
+                ", materials='" + materials + '\'' +
+                '}';
+    }
 }
