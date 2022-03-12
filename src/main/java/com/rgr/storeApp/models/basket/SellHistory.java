@@ -1,6 +1,7 @@
 package com.rgr.storeApp.models.basket;
 
 
+import com.rgr.storeApp.models.product.Producer;
 import com.rgr.storeApp.models.profile.Sales;
 import com.rgr.storeApp.models.profile.UserProfile;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class SellHistory {
     private List<Sales> sales;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_profile_id", referencedColumnName = "id")
-    UserProfile userProfile;
+    @JoinColumn(name = "producer_id", referencedColumnName = "id")
+    Producer producer;
 
 }

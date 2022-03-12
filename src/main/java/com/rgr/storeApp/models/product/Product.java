@@ -1,15 +1,18 @@
 package com.rgr.storeApp.models.product;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.rgr.storeApp.models.basket.Basket;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Data
 @Table(name = "product")
-public class Product {
+public class Product implements Serializable {
 
     public Product(){}
 
@@ -45,5 +48,9 @@ public class Product {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "producer_id")
     private Producer producer;
+
+    @JsonBackReference
+    @ManyToMany(mappedBy = "products")
+    private List<Basket> baskets;
 
 }

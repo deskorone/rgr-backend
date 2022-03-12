@@ -1,5 +1,6 @@
 package com.rgr.storeApp.service.product;
 
+import com.rgr.storeApp.dao.BuyResponse;
 import com.rgr.storeApp.dao.ProductRequest;
 import com.rgr.storeApp.dao.ProductResponse;
 import com.rgr.storeApp.exceptions.api.NotFound;
@@ -9,19 +10,14 @@ import com.rgr.storeApp.repo.ProducerRepo;
 import com.rgr.storeApp.repo.ProductPhotoRepo;
 import com.rgr.storeApp.repo.ProductsRepo;
 import com.rgr.storeApp.repo.UsersRepo;
+import com.rgr.storeApp.service.buy.BuyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.URI;
-import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -36,13 +32,14 @@ public class ProductService {
     private final CategoryService categoryService;
     private final ProductInfoService productInfoService;
     private final ProductPhotoRepo productPhotoRepo;
+    private final BuyService buyService;
 
     @Autowired
     public ProductService(ProductsRepo productsRepo,
                           UsersRepo usersRepo,
                           ProducerRepo producerRepo,
                           CategoryService categoryService,
-                          ProductInfoService productInfoService, ProductPhotoRepo productPhotoRepo) {
+                          ProductInfoService productInfoService, ProductPhotoRepo productPhotoRepo, BuyService buyService) {
 
         this.productsRepo = productsRepo;
         this.usersRepo = usersRepo;
@@ -50,9 +47,20 @@ public class ProductService {
         this.categoryService = categoryService;
         this.productInfoService = productInfoService;
         this.productPhotoRepo = productPhotoRepo;
+        this.buyService = buyService;
     }
+
+
+
+
+
+
+
     @Transactional
-    public ProductResponse addProduct(ProductRequest productRequest, String email, MultipartFile multipartFile){
+    public ProductResponse addProduct(ProductRequest productRequest,
+                                      String email,
+                                      MultipartFile multipartFile,
+                                        MultipartFile [] multipartFiles){
         Producer producer = usersRepo.findByEmail(email).get().getProducer();
         Product product = new Product();
         product.setProducer(producer);
@@ -60,6 +68,11 @@ public class ProductService {
         List<Category> categories = categoryService.convertCategory(productRequest.getCategories());
         product.setCategories(categories);
         ProductInfo productInfo = new ProductInfo();
+        if(multipartFiles!= null){
+            productInfo.setProductPhotos(Arrays.stream(multipartFiles)
+                    .map(e->savePhoto(e, product))
+                    .collect(Collectors.toList()));
+        }
         productInfo.setMainPhoto(savePhoto(multipartFile, product));
         productInfo.setPrice(productRequest.getPrice());
         productInfo.setNumber(productRequest.getNumber());
@@ -111,6 +124,28 @@ public class ProductService {
         }
     }
 
+
+    public List<ProductResponse> getAll(String email){
+
+        User user = usersRepo.findByEmail(email).orElseThrow(()->new NotFound("User not found"));
+        Producer producer = user.getProducer();
+        return productsRepo
+                .findAllByProducer(producer)
+                .stream()
+                .map(ProductResponse::build)
+                .collect(Collectors.toList());
+    }
+
+
+    public Product getProduct(Long id){
+        return productsRepo.findById(id).orElseThrow(()-> new NotFound("Product not found :("));
+    }
+
+    public BuyResponse buy(Long userId){
+        User user = usersRepo.findById(userId).orElseThrow(()-> new NotFound("USER FOR BUY NOT FOUND"));
+        buyService.addBuy(user.getUserProfile());
+        return null;
+    }
 
 
 

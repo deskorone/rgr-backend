@@ -55,7 +55,10 @@ public class ProductResponse {
         return new ProductResponse(
                 product.getId(),
                 String.format(url, product.getProductInfo().getMainPhoto().getPath()),
-                null,
+                product.getProductInfo().getProductPhotos()
+                        .stream()
+                        .map(e-> String.format(url, e.getPath()))
+                        .collect(Collectors.toList()),
                 product.getProductInfo().getPrice(),
                 product.getProductInfo().getDescription(),
                 product.getCategories().stream().map(e->e.getName()).collect(Collectors.toList()),

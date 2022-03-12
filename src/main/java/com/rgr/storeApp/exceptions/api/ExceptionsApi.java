@@ -16,7 +16,7 @@ public class ExceptionsApi {
     public ResponseEntity<?> userNotFound(NotFound error){
         ExceptionMessage message = new ExceptionMessage(
                 error.getMessage(),
-                HttpStatus.FORBIDDEN,
+                HttpStatus.NOT_FOUND,
                 ZonedDateTime.now(ZoneId.of("Z"))
         );
         return new ResponseEntity<>(message, message.getStatus());

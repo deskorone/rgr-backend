@@ -12,6 +12,6 @@ public interface ProducerRepo extends JpaRepository<Producer, Long> {
 
     Optional<Producer> findByUser(User user);
 
-    Optional<List<Product>> findAllById(Long id);
+    List<Product> findAllById(Long id);
 
 }

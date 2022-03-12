@@ -43,8 +43,6 @@ public class UserProfile {
     private Integer balance;
 
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private SellHistory sellHistory;
 
     public UserProfile(Basket basket, BuyHistory buyHistory, AwaitingList awaitingList, Integer balance) {
         this.basket = basket;
@@ -53,11 +51,13 @@ public class UserProfile {
         this.balance = balance;
     }
 
-    public UserProfile(Basket basket, BuyHistory buyHistory, AwaitingList awaitingList, Integer balance, SellHistory sales) {
-        this.basket = basket;
-        this.buyHistory = buyHistory;
-        this.awaitingList = awaitingList;
-        this.balance = balance;
-        this.sellHistory = sales;
+
+    public int addBalance(int a){
+        return this.balance += a;
     }
+
+    public int minusBalance(int a){
+        return this.balance -= a;
+    }
+
 }

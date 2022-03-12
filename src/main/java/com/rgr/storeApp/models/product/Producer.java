@@ -3,6 +3,7 @@ package com.rgr.storeApp.models.product;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.rgr.storeApp.models.User;
+import com.rgr.storeApp.models.basket.SellHistory;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -32,10 +33,8 @@ public class Producer {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    public Producer(String country, String town, String address, List<Product> products) {
-        this.country = country;
-        this.town = town;
-        this.address = address;
-        this.products = products;
-    }
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "history_id")
+    private SellHistory sellHistory;
+
 }

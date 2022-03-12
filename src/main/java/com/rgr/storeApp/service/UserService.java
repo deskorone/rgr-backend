@@ -109,8 +109,7 @@ public class UserService {
                                 roles.add(adminRole);
                                 Producer producer = new Producer();
                                 SellHistory sellHistory = new SellHistory();;
-                                sellHistory.setUserProfile(userProfile);
-                                userProfile.setSellHistory(sellHistory);
+                                sellHistory.setProducer(producer);
                                 producer.setUser(user);
                                 user.setProducer(producer);
                                 break;

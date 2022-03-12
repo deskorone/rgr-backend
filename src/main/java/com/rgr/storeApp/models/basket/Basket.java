@@ -29,5 +29,12 @@ public class Basket {
     @JoinColumn(name = "user_profile_id", referencedColumnName = "id")
     UserProfile userProfile;
 
+    public void removeProduct(Product product){
+        this.products.remove(product);
+        product.getBaskets().remove(this);
+
+    }
+
+
 
 }
