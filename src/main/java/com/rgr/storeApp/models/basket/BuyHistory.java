@@ -29,4 +29,10 @@ public class BuyHistory {
     UserProfile userProfile;
 
 
+    @Override
+    public String toString() {
+        return "BuyHistory{" +
+                "id=" + id +
+                '}';
+    }
 }

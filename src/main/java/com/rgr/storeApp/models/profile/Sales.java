@@ -4,6 +4,7 @@ package com.rgr.storeApp.models.profile;
 import com.rgr.storeApp.models.basket.SellHistory;
 import com.rgr.storeApp.models.product.Product;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -37,4 +38,11 @@ public class Sales {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @Override
+    public String toString() {
+        return "Sales{" +
+                "id=" + id +
+                ", date=" + date +
+                '}';
+    }
 }

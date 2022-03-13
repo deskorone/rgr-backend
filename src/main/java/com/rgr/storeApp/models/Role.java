@@ -2,6 +2,7 @@ package com.rgr.storeApp.models;
 
 
 import lombok.Data;
+import lombok.ToString;
 import org.yaml.snakeyaml.events.Event;
 
 import javax.persistence.*;

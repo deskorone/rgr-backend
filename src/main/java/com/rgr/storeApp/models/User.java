@@ -5,8 +5,11 @@ import com.rgr.storeApp.models.profile.UserProfile;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,7 +19,7 @@ import java.util.Set;
 @Getter
 @Table(name = "users"
         ,uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
-public class User {
+public class User implements Serializable {
 
     public User() {}
 
@@ -45,14 +48,23 @@ public class User {
     Set<Role> roles = new HashSet<>();
 
 
+
     @OneToOne(cascade = CascadeType.ALL)
     @JsonBackReference
     private UserProfile userProfile;
 
 
-
     @OneToOne(cascade = CascadeType.ALL)
     private Producer producer;
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                '}';
+    }
 
     public User(String email, String username, String password, boolean enabled, boolean locked, Set<Role> roles, UserProfile userProfile, Producer producer) {
         this.email = email;

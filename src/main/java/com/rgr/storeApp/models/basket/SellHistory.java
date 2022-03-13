@@ -5,6 +5,7 @@ import com.rgr.storeApp.models.product.Producer;
 import com.rgr.storeApp.models.profile.Sales;
 import com.rgr.storeApp.models.profile.UserProfile;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "sellHistory")
+@ToString
 public class SellHistory {
 
 

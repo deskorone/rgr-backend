@@ -111,6 +111,7 @@ public class UserService {
                                 SellHistory sellHistory = new SellHistory();;
                                 sellHistory.setProducer(producer);
                                 producer.setUser(user);
+                                producer.setSellHistory(sellHistory);
                                 user.setProducer(producer);
                                 break;
                             default:

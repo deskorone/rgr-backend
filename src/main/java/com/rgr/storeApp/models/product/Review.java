@@ -3,6 +3,7 @@ package com.rgr.storeApp.models.product;
 
 import com.rgr.storeApp.models.User;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
@@ -29,4 +30,10 @@ public class Review {
     private String reviewText;
 
 
+    @Override
+    public String toString() {
+        return "Review{" +
+                "id=" + id +
+                '}';
+    }
 }

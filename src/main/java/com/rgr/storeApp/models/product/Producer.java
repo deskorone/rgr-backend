@@ -12,6 +12,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "producer")
+
 public class Producer {
 
     public Producer(){}
@@ -38,4 +39,13 @@ public class Producer {
     @JoinColumn(name = "history_id")
     private SellHistory sellHistory;
 
+    @Override
+    public String toString() {
+        return "Producer{" +
+                "id=" + id +
+                ", country='" + country + '\'' +
+                ", town='" + town + '\'' +
+                ", address='" + address + '\'' +
+                '}';
+    }
 }

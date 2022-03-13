@@ -6,10 +6,8 @@ import com.rgr.storeApp.dao.ProductResponse;
 import com.rgr.storeApp.exceptions.api.NotFound;
 import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.models.product.*;
-import com.rgr.storeApp.repo.ProducerRepo;
-import com.rgr.storeApp.repo.ProductPhotoRepo;
-import com.rgr.storeApp.repo.ProductsRepo;
-import com.rgr.storeApp.repo.UsersRepo;
+import com.rgr.storeApp.models.profile.UserProfile;
+import com.rgr.storeApp.repo.*;
 import com.rgr.storeApp.service.profile.buy.BuyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,13 +31,14 @@ public class ProductService {
     private final ProductInfoService productInfoService;
     private final ProductPhotoRepo productPhotoRepo;
     private final BuyService buyService;
+    private final UserProfileRepo userProfileRepo;
 
     @Autowired
     public ProductService(ProductsRepo productsRepo,
                           UsersRepo usersRepo,
                           ProducerRepo producerRepo,
                           CategoryService categoryService,
-                          ProductInfoService productInfoService, ProductPhotoRepo productPhotoRepo, BuyService buyService) {
+                          ProductInfoService productInfoService, ProductPhotoRepo productPhotoRepo, BuyService buyService, UserProfileRepo userProfileRepo) {
 
         this.productsRepo = productsRepo;
         this.usersRepo = usersRepo;
@@ -48,6 +47,7 @@ public class ProductService {
         this.productInfoService = productInfoService;
         this.productPhotoRepo = productPhotoRepo;
         this.buyService = buyService;
+        this.userProfileRepo = userProfileRepo;
     }
 
 
@@ -141,10 +141,12 @@ public class ProductService {
         return productsRepo.findById(id).orElseThrow(()-> new NotFound("Product not found :("));
     }
 
-    public BuyResponse buy(Long userId){
-        User user = usersRepo.findById(userId).orElseThrow(()-> new NotFound("USER FOR BUY NOT FOUND"));
-        buyService.addBuy(user.getUserProfile());
-        return null;
+    @Transactional
+    public BuyResponse buy(String email){
+        User user = usersRepo.findByEmail(email).orElseThrow(()-> new NotFound("Not found"));
+        UserProfile userProfile = user.getUserProfile();
+        buyService.addBuy(userProfile);
+        return new BuyResponse();
     }
 
 

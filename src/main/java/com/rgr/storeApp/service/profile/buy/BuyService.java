@@ -4,6 +4,7 @@ package com.rgr.storeApp.service.profile.buy;
 import com.rgr.storeApp.models.basket.Basket;
 import com.rgr.storeApp.models.basket.Buy;
 import com.rgr.storeApp.models.basket.BuyHistory;
+import com.rgr.storeApp.models.basket.SellHistory;
 import com.rgr.storeApp.models.product.Producer;
 import com.rgr.storeApp.models.product.Product;
 import com.rgr.storeApp.models.product.ProductInfo;
@@ -28,9 +29,11 @@ public class BuyService {
     private final UserProfileRepo userProfileRepo;
     private final SalesHistoryRepo salesHistoryRepo;
     private final BuyHistoryRepo buyHistoryRepo;
+    private final ProductInfoRepo productInfoRepo;
+    private final SalesRepo salesRepo;
 
     @Autowired
-    public BuyService(BuyRepo buyRepo, BasketRepo basketRepo, ProductsRepo productsRepo, ProducerRepo producerRepo, UserProfileRepo userProfileRepo, SalesHistoryRepo salesHistoryRepo, BuyHistoryRepo buyHistoryRepo) {
+    public BuyService(BuyRepo buyRepo, BasketRepo basketRepo, ProductsRepo productsRepo, ProducerRepo producerRepo, UserProfileRepo userProfileRepo, SalesHistoryRepo salesHistoryRepo, BuyHistoryRepo buyHistoryRepo, ProductInfoRepo productInfoRepo, SalesRepo salesRepo) {
         this.buyRepo = buyRepo;
         this.basketRepo = basketRepo;
         this.productsRepo = productsRepo;
@@ -38,40 +41,42 @@ public class BuyService {
         this.userProfileRepo = userProfileRepo;
         this.salesHistoryRepo = salesHistoryRepo;
         this.buyHistoryRepo = buyHistoryRepo;
+        this.productInfoRepo = productInfoRepo;
+        this.salesRepo = salesRepo;
     }
 
 
     public void addBuy(UserProfile userProfile){
         List<Product> products = userProfile.getBasket().getProducts();
-        Integer balance = userProfile.getBalance();
-        Basket basket = userProfile.getBasket();
-        BuyHistory buyHistory = basket.getUserProfile().getBuyHistory();
-        List<Buy> buys = buyHistory.getBuys();
-        if(products != null){
-            Integer sum = products
-                    .stream()
-                    .map(e-> e.getProductInfo().getPrice()).collect(Collectors.toList())
-                    .stream()
-                    .reduce(0, Integer::sum);
-            if(sum <= balance){
-                List<Product> productList = new ArrayList<>();
-                for (Product i : products){
-                    if(buyProducer(i)){
-                        userProfile.minusBalance(i.getProductInfo().getPrice());
-                        productList.add(i);
-                        basket.removeProduct(i); //save in history; and deliveres ...
+        if (products.size() != 0) {
+            Integer balance = userProfile.getBalance();
+            Basket basket = userProfile.getBasket();
+            BuyHistory buyHistory = basket.getUserProfile().getBuyHistory();
+            if (products != null) {
+                Integer sum = products
+                        .stream()
+                        .map(e -> e.getProductInfo().getPrice()).collect(Collectors.toList())
+                        .stream()
+                        .reduce(0, Integer::sum);
+                if (sum <= balance) {
+
+                    List<Product> productList = new ArrayList<>();
+                    for (Product i : products) {
+                        if (buyProducer(i)) {
+                            System.out.println("work");
+                            userProfile.minusMoney(i.getProductInfo().getPrice());
+                            productList.add(i);
+                        }
                     }
+ //                   productList.stream().forEach(e->basket.removeProduct(e));
+                    Buy buy = new Buy(productList, LocalDateTime.now());
+                    buy.setBuyHistory(buyHistory);
+                    userProfileRepo.save(userProfile);
+                } else {
+
                 }
-                Buy buy = new Buy(productList, LocalDateTime.now());
-                buyHistory.getBuys().add(buy);
-                buyHistoryRepo.save(buyHistory);
-                basketRepo.save(basket);
-                userProfileRepo.save(userProfile);
-            }else {
-                //throw
             }
         }
-
     }
 
     public boolean buyProducer(Product product){
@@ -81,13 +86,12 @@ public class BuyService {
         int avaible = productInfo.getNumber();
 
         if(avaible > 0){
-            profile.addBalance(productInfo.getPrice());
-            productInfo.setNumber(avaible--);
+            productInfo.setNumber(avaible - 1);
+            profile.addMoney(productInfo.getPrice());
             Sales sales = new Sales(LocalDateTime.now(),
                     producer.getSellHistory(),
                     product);
-
-            producerRepo.save(producer);
+            salesRepo.save(sales);
             userProfileRepo.save(profile);
             productsRepo.save(product);
             return true;
@@ -95,9 +99,13 @@ public class BuyService {
         return false;
     }
 
-    public Buy buy(Product product){
-        return null;
+
+    public void acceptBuy(UserProfile userProfile, List<Product> products){
+
+
     }
+
+    //метод поккпки где созлается доаствка и история
 
 
 

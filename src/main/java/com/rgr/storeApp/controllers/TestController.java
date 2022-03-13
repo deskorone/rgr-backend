@@ -34,7 +34,7 @@ public class TestController {
     @PostMapping(value = "/add",  produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> add(@RequestParam("mainimage") MultipartFile file, @RequestParam("req") String json,
                                     @RequestParam("image") MultipartFile [] files) {
-        String email = "e";
+        String email = "e1";
         ObjectMapper mapper = new ObjectMapper();
         ProductRequest productRequest;
         try {
@@ -94,6 +94,12 @@ public class TestController {
         return ResponseEntity.ok(balanceService.addBalance(balanceRequest, email));
     }
 
+    @PostMapping("/product/buy")
+    public ResponseEntity<?> buy(){
+        String email = "eee";
+        productService.buy(email);
+        return ResponseEntity.ok().build();
+    }
 
 
 

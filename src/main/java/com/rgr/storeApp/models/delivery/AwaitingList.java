@@ -11,6 +11,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "awaitings")
+
 public class AwaitingList {
 
     public AwaitingList(){}
@@ -28,4 +29,10 @@ public class AwaitingList {
     @JoinColumn(name = "user_profile_id", referencedColumnName = "id")
     UserProfile userProfile;
 
+    @Override
+    public String toString() {
+        return "AwaitingList{" +
+                "id=" + id +
+                '}';
+    }
 }

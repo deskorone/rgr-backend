@@ -4,6 +4,7 @@ package com.rgr.storeApp.models.product;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.rgr.storeApp.models.User;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
@@ -59,5 +60,12 @@ public class ProductInfo {
     public ProductInfo(String description, String materials) {
         this.description = description;
         this.materials = materials;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductInfo{" +
+                "price=" + price +
+                '}';
     }
 }

@@ -6,6 +6,7 @@ import com.rgr.storeApp.models.product.Product;
 import com.rgr.storeApp.models.profile.UserProfile;
 import lombok.Data;
 
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -37,6 +38,10 @@ public class Basket {
 
     }
 
-
-
+    @Override
+    public String toString() {
+        return "Basket{" +
+                "id=" + id +
+                '}';
+    }
 }

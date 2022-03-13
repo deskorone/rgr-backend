@@ -3,6 +3,7 @@ package com.rgr.storeApp.models.product;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -19,11 +20,20 @@ public class ProductPhoto {
     private String path;
 
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
     public ProductPhoto(String path) {
         this.path = path;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductPhoto{" +
+                "id=" + id +
+                ", path='" + path + '\'' +
+                '}';
     }
 }

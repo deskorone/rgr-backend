@@ -9,15 +9,17 @@ import com.rgr.storeApp.models.basket.SellHistory;
 import com.rgr.storeApp.models.delivery.AwaitingList;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @AllArgsConstructor
 @Data
 @Table(name = "user_profile")
-public class UserProfile {
+public class UserProfile implements Serializable {
 
     public UserProfile(){}
 
@@ -44,22 +46,16 @@ public class UserProfile {
 
     private Integer balance;
 
-
-
-    public UserProfile(Basket basket, BuyHistory buyHistory, AwaitingList awaitingList, Integer balance) {
-        this.basket = basket;
-        this.buyHistory = buyHistory;
-        this.awaitingList = awaitingList;
-        this.balance = balance;
+    @Override
+    public String toString() {
+        return "UserProfile{" +
+                "id=" + id +
+                ", balance=" + balance +
+                '}';
     }
 
 
-    public int addBalance(int a){
-        return this.balance += a;
-    }
+    public void addMoney(int a ){this.balance +=a;}
 
-    public int minusBalance(int a){
-        return this.balance -= a;
-    }
-
+    public void minusMoney(int a){this.balance -= a;}
 }

@@ -1,12 +1,15 @@
 package com.rgr.storeApp.models.delivery;
 
 
+import com.rgr.storeApp.models.basket.Buy;
 import com.rgr.storeApp.models.product.Product;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@ToString
 public class Delivery {
 
     @Id
@@ -17,10 +20,17 @@ public class Delivery {
 
     private LocalDateTime arrival;
 
-    @ManyToOne()
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @OneToOne
+    @JoinColumn(name = "buy_id", nullable = false)
+    private Buy buy;
 
 
-
+    @Override
+    public String toString() {
+        return "Delivery{" +
+                "id=" + id +
+                ", created=" + created +
+                ", arrival=" + arrival +
+                '}';
+    }
 }

@@ -4,6 +4,7 @@ package com.rgr.storeApp.models.product;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.rgr.storeApp.models.basket.Basket;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,6 +13,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "product")
+@ToString
 public class Product implements Serializable {
 
     public Product(){}
@@ -53,4 +55,11 @@ public class Product implements Serializable {
     @ManyToMany(mappedBy = "products")
     private List<Basket> baskets;
 
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", id_code='" + id_code + '\'' +
+                '}';
+    }
 }

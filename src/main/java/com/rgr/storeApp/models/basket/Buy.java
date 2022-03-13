@@ -3,6 +3,7 @@ package com.rgr.storeApp.models.basket;
 
 import com.rgr.storeApp.models.product.Product;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -31,4 +32,16 @@ public class Buy {
         this.products = products;
         this.dateBuy = dateBuy;
     }
+
+    @Override
+    public String toString() {
+        return "Buy{" +
+                "id=" + id +
+                ", dateBuy=" + dateBuy +
+                '}';
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "history_id")
+    private BuyHistory buyHistory;
 }
