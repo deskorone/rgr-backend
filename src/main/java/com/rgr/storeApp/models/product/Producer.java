@@ -33,6 +33,7 @@ public class Producer {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "history_id")
     private SellHistory sellHistory;

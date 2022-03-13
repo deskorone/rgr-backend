@@ -1,6 +1,7 @@
 package com.rgr.storeApp.models.profile;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.models.basket.Basket;
 import com.rgr.storeApp.models.basket.BuyHistory;
@@ -24,6 +25,7 @@ public class UserProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;

@@ -10,7 +10,7 @@ import com.rgr.storeApp.repo.ProducerRepo;
 import com.rgr.storeApp.repo.ProductPhotoRepo;
 import com.rgr.storeApp.repo.ProductsRepo;
 import com.rgr.storeApp.repo.UsersRepo;
-import com.rgr.storeApp.service.buy.BuyService;
+import com.rgr.storeApp.service.profile.buy.BuyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

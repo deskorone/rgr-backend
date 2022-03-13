@@ -27,4 +27,8 @@ public class Buy {
 
     private LocalDateTime dateBuy;
 
+    public Buy(List<Product> products, LocalDateTime dateBuy) {
+        this.products = products;
+        this.dateBuy = dateBuy;
+    }
 }

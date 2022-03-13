@@ -23,6 +23,7 @@ public class ProductInfo {
     @OneToOne(cascade = CascadeType.ALL)
     private ProductPhoto mainPhoto;
 
+    //NOT NULL
     private Integer price;
 
     @OneToMany(cascade = CascadeType.ALL)

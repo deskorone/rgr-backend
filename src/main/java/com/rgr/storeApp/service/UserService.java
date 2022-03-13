@@ -128,6 +128,7 @@ public class UserService {
         buyHistory.setUserProfile(userProfile);
         AwaitingList awaitingList = new AwaitingList();
         awaitingList.setUserProfile(userProfile);
+        userProfile.setBalance(0);
         userProfile.setAwaitingList(awaitingList);
         userProfile.setBasket(basket);
         userProfile.setBuyHistory(buyHistory);

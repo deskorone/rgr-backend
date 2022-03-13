@@ -3,7 +3,11 @@ package com.rgr.storeApp.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rgr.storeApp.dao.BalanceRequest;
 import com.rgr.storeApp.dao.ProductRequest;
+import com.rgr.storeApp.models.basket.Basket;
+import com.rgr.storeApp.service.profile.BalanceService;
+import com.rgr.storeApp.service.profile.BasketService;
 import com.rgr.storeApp.service.product.ProductService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,9 +22,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class TestController {
 
     private final ProductService productService;
+    private final BasketService basketService;
+    private final BalanceService balanceService;
 
-    public TestController(ProductService productService) {
+    public TestController(ProductService productService, BasketService basketService, BalanceService balanceService) {
         this.productService = productService;
+        this.basketService = basketService;
+        this.balanceService = balanceService;
     }
 
     @PostMapping(value = "/add",  produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -63,6 +71,29 @@ public class TestController {
     public ResponseEntity<?> getProduct(@PathVariable("id") Long id){
         return ResponseEntity.ok(productService.getProduct(id));
     }
+
+
+    @PostMapping("/basket/add/{id}")
+    public ResponseEntity<?> addInBasket(@PathVariable("id") Long id){
+        String email = "eee";
+        Basket basket = basketService.addProductInBasket("eee", id);
+        return ResponseEntity.ok(basket);
+    }
+
+
+    @DeleteMapping("/basket/add/{id}")
+    public ResponseEntity<?> deleteInBasket(@PathVariable("id") Long id){
+        String email = "eee";
+        Basket basket = basketService.deleteProduct("eee", id);
+        return ResponseEntity.ok(basket);
+    }
+
+    @PostMapping("/balance/add")
+    public ResponseEntity<?> addBalance(@RequestBody BalanceRequest balanceRequest){
+        String email = "eee";
+        return ResponseEntity.ok(balanceService.addBalance(balanceRequest, email));
+    }
+
 
 
 

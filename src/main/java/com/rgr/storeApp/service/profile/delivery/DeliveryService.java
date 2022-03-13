@@ -1,4 +1,4 @@
-package com.rgr.storeApp.service.delivery;
+package com.rgr.storeApp.service.profile.delivery;
 
 
 import com.rgr.storeApp.models.User;

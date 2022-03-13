@@ -1,6 +1,7 @@
 package com.rgr.storeApp.models.basket;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.rgr.storeApp.models.product.Product;
 import com.rgr.storeApp.models.profile.UserProfile;
 import lombok.Data;
@@ -25,6 +26,7 @@ public class Basket {
                 inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<Product> products;
 
+    @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_profile_id", referencedColumnName = "id")
     UserProfile userProfile;

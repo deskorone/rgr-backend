@@ -1,6 +1,7 @@
 package com.rgr.storeApp.models.basket;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.rgr.storeApp.models.profile.UserProfile;
 import lombok.Data;
 
@@ -22,6 +23,7 @@ public class BuyHistory {
     @JoinColumn(name = "buy_id")
     private List<Buy> buys;
 
+    @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_profile_id", referencedColumnName = "id")
     UserProfile userProfile;
