@@ -1,6 +1,8 @@
 package com.rgr.storeApp.models.basket;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.rgr.storeApp.models.delivery.Delivery;
 import com.rgr.storeApp.models.product.Product;
 import lombok.Data;
 import lombok.ToString;
@@ -20,13 +22,21 @@ public class Buy {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "buy_profuct",
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.REFRESH,
+            CascadeType.PERSIST
+    })
+    @JoinTable(name = "buy_product",
     joinColumns = @JoinColumn(name = "buy_id"),
     inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<Product> products;
 
     private LocalDateTime dateBuy;
+
+    private Integer sum;
+
 
     public Buy(List<Product> products, LocalDateTime dateBuy) {
         this.products = products;
@@ -41,7 +51,12 @@ public class Buy {
                 '}';
     }
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "history_id")
     private BuyHistory buyHistory;
+
+    @OneToOne(mappedBy = "buy", cascade = CascadeType.REMOVE)
+    private Delivery delivery;
+
 }

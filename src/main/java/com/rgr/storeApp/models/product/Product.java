@@ -2,7 +2,10 @@ package com.rgr.storeApp.models.product;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.rgr.storeApp.models.basket.Basket;
+import com.rgr.storeApp.models.basket.Buy;
+import com.rgr.storeApp.models.profile.Sales;
 import lombok.Data;
 import lombok.ToString;
 
@@ -13,7 +16,6 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "product")
-@ToString
 public class Product implements Serializable {
 
     public Product(){}
@@ -27,9 +29,6 @@ public class Product implements Serializable {
     @OneToMany(mappedBy = "product")
     private List<Review> reviews;
 
-
-    //TODO написать логику скидок
-
     public Product(String id_code, List<Review> reviews, List<Category> categories, ProductInfo productInfo, Producer producer) {
         this.id_code = id_code;
         this.reviews = reviews;
@@ -38,7 +37,13 @@ public class Product implements Serializable {
         this.producer = producer;
     }
 
-    @ManyToMany()
+    @ManyToMany(cascade =
+            {
+                    CascadeType.DETACH,
+                    CascadeType.MERGE,
+                    CascadeType.REFRESH,
+                    CascadeType.PERSIST
+            })
     @JoinTable(name = "product_categories",
     joinColumns = @JoinColumn(name = "product_id"),
     inverseJoinColumns = @JoinColumn(name = "category_id"))
@@ -47,13 +52,40 @@ public class Product implements Serializable {
     @OneToOne(cascade = CascadeType.ALL)
     private ProductInfo productInfo;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "producer_id")
     private Producer producer;
 
     @JsonBackReference
-    @ManyToMany(mappedBy = "products")
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.REFRESH,
+            CascadeType.PERSIST
+    })
+    @JoinTable(name = "product_in_busket",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "basket_id"))
     private List<Basket> baskets;
+
+    @JsonBackReference
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.REFRESH,
+            CascadeType.PERSIST
+    })
+    @JoinTable(name = "buy_product",
+            inverseJoinColumns = @JoinColumn(name = "buy_id"),
+            joinColumns = @JoinColumn(name = "product_id"))
+    private List<Buy> buys;
+
+
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+    private List<Sales> sales;
+
 
     @Override
     public String toString() {

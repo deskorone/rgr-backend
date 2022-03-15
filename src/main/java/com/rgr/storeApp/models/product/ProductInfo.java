@@ -39,6 +39,7 @@ public class ProductInfo {
         this.materials = materials;
     }
 
+    @JsonBackReference
     private Integer number;
 
     private Integer sale;

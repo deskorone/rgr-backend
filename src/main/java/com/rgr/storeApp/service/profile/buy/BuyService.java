@@ -4,7 +4,8 @@ package com.rgr.storeApp.service.profile.buy;
 import com.rgr.storeApp.models.basket.Basket;
 import com.rgr.storeApp.models.basket.Buy;
 import com.rgr.storeApp.models.basket.BuyHistory;
-import com.rgr.storeApp.models.basket.SellHistory;
+import com.rgr.storeApp.models.delivery.AwaitingList;
+import com.rgr.storeApp.models.delivery.Delivery;
 import com.rgr.storeApp.models.product.Producer;
 import com.rgr.storeApp.models.product.Product;
 import com.rgr.storeApp.models.product.ProductInfo;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,9 +33,20 @@ public class BuyService {
     private final BuyHistoryRepo buyHistoryRepo;
     private final ProductInfoRepo productInfoRepo;
     private final SalesRepo salesRepo;
+    private final AwaitingListRepo awaitingListRepo;
+    private final DeliveryRepo deliveryRepo;
 
     @Autowired
-    public BuyService(BuyRepo buyRepo, BasketRepo basketRepo, ProductsRepo productsRepo, ProducerRepo producerRepo, UserProfileRepo userProfileRepo, SalesHistoryRepo salesHistoryRepo, BuyHistoryRepo buyHistoryRepo, ProductInfoRepo productInfoRepo, SalesRepo salesRepo) {
+    public BuyService(BuyRepo buyRepo,
+                      BasketRepo basketRepo,
+                      ProductsRepo productsRepo,
+                      ProducerRepo producerRepo,
+                      UserProfileRepo userProfileRepo,
+                      SalesHistoryRepo salesHistoryRepo,
+                      BuyHistoryRepo buyHistoryRepo,
+                      ProductInfoRepo productInfoRepo,
+                      SalesRepo salesRepo,
+                      AwaitingListRepo awaitingListRepo, DeliveryRepo deliveryRepo) {
         this.buyRepo = buyRepo;
         this.basketRepo = basketRepo;
         this.productsRepo = productsRepo;
@@ -43,12 +56,14 @@ public class BuyService {
         this.buyHistoryRepo = buyHistoryRepo;
         this.productInfoRepo = productInfoRepo;
         this.salesRepo = salesRepo;
+        this.awaitingListRepo = awaitingListRepo;
+        this.deliveryRepo = deliveryRepo;
     }
 
 
     public void addBuy(UserProfile userProfile){
         List<Product> products = userProfile.getBasket().getProducts();
-        if (products.size() != 0) {
+        if (products.size() != 0) { // Переделать проверку
             Integer balance = userProfile.getBalance();
             Basket basket = userProfile.getBasket();
             BuyHistory buyHistory = basket.getUserProfile().getBuyHistory();
@@ -69,6 +84,7 @@ public class BuyService {
                         }
                     }
  //                   productList.stream().forEach(e->basket.removeProduct(e));
+                    acceptBuy(userProfile, productList, sum);
                     Buy buy = new Buy(productList, LocalDateTime.now());
                     buy.setBuyHistory(buyHistory);
                     userProfileRepo.save(userProfile);
@@ -79,7 +95,7 @@ public class BuyService {
         }
     }
 
-    public boolean buyProducer(Product product){
+    private boolean buyProducer(Product product){
         Producer producer = product.getProducer();
         UserProfile profile = producer.getUser().getUserProfile();
         ProductInfo productInfo = product.getProductInfo();
@@ -100,9 +116,21 @@ public class BuyService {
     }
 
 
-    public void acceptBuy(UserProfile userProfile, List<Product> products){
-
-
+    private void acceptBuy(UserProfile userProfile, List<Product> products, Integer sum){
+        AwaitingList awaitingList = userProfile.getAwaitingList();
+        Buy buy = new Buy(products, LocalDateTime.now());
+        buy.setSum(sum);
+        Delivery delivery = new Delivery(LocalDateTime.now(), LocalDateTime.now().plus(Period.ofDays(15)));
+        BuyHistory buyHistory = userProfile.getBuyHistory();
+        buy.setBuyHistory(buyHistory);
+        buyHistory.getBuys().add(buy);
+        delivery.setBuy(buy);
+        awaitingList.getDeliveries().add(delivery);
+        delivery.setList(awaitingList);
+        buyRepo.save(buy);
+        deliveryRepo.save(delivery);
+        awaitingListRepo.save(awaitingList);
+        userProfileRepo.save(userProfile);
     }
 
     //метод поккпки где созлается доаствка и история

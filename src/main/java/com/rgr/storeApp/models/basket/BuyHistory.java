@@ -19,8 +19,7 @@ public class BuyHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany
-    @JoinColumn(name = "buy_id")
+    @OneToMany(cascade =  CascadeType.ALL)
     private List<Buy> buys;
 
     @JsonBackReference

@@ -101,6 +101,20 @@ public class TestController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/product/store")
+    public ResponseEntity<?> getSklad(){
+        String email = "e1";
+        return ResponseEntity.ok(productService.getProductsInfo(email));
+    }
+
+    @DeleteMapping("/product/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id){
+        String email = "e1";
+        productService.deleteProduct(email, id);
+        return ResponseEntity.ok().build();
+
+    }
+
 
 
 }

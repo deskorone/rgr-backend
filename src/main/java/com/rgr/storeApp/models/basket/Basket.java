@@ -8,12 +8,13 @@ import lombok.Data;
 
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Data
 @Table(name = "basket")
-public class Basket {
+public class Basket implements Serializable {
 
     public Basket(){}
 
@@ -21,14 +22,19 @@ public class Basket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "favorites",
+    @ManyToMany(fetch = FetchType.LAZY, cascade =  {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.REFRESH,
+            CascadeType.PERSIST
+    }, targetEntity = Product.class)
+    @JoinTable(name = "product_in_busket",
                 joinColumns = @JoinColumn(name = "basket_id"),
                 inverseJoinColumns = @JoinColumn(name = "product_id"))
     private List<Product> products;
 
     @JsonBackReference
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "user_profile_id", referencedColumnName = "id")
     UserProfile userProfile;
 

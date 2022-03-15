@@ -150,5 +150,22 @@ public class ProductService {
     }
 
 
+    public List<ProductResponse> getProductsInfo(String email){
+        Producer producer = usersRepo.findByEmail(email).orElseThrow(()->new NotFound("SalesMan not found")).getProducer();
+        List<Product> products = producer.getProducts();
+
+        return  products.stream()
+                .map(e->ProductResponse.build(e)).collect(Collectors.toList());
+    }
+
+
+    public void deleteProduct(String email, Long id){
+        Product product = productsRepo.findById(id).orElseThrow(()-> new NotFound("Product NOT FOUND :(")); // find by id and producer? // maybe delete photo?
+        productsRepo.delete(product);
+    }
+
+
+
+
 
 }

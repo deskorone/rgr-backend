@@ -22,7 +22,7 @@ public class Category {
     String name;
 
     @JsonBackReference
-    @ManyToMany(mappedBy = "categories")
+    @ManyToMany(mappedBy = "categories", cascade = CascadeType.PERSIST)
     List<Product> products;
 
     public Category(String name) {

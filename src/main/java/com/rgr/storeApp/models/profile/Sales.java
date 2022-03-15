@@ -34,7 +34,7 @@ public class Sales {
     private SellHistory sellHistory;
 
 
-    @ManyToOne(cascade =  CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "product_id")
     private Product product;
 

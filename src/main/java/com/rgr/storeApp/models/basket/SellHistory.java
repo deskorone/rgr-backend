@@ -23,10 +23,10 @@ public class SellHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany
+    @OneToMany(mappedBy = "sellHistory")
     private List<Sales> sales;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "producer_id", referencedColumnName = "id")
     Producer producer;
 

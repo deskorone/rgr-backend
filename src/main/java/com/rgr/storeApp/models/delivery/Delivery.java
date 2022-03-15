@@ -1,16 +1,25 @@
 package com.rgr.storeApp.models.delivery;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.rgr.storeApp.models.basket.Buy;
 import com.rgr.storeApp.models.product.Product;
+import lombok.Data;
 import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@ToString
+@Data
 public class Delivery {
+
+    public Delivery(LocalDateTime created, LocalDateTime arrival) {
+        this.created = created;
+        this.arrival = arrival;
+    }
+
+    public Delivery() {}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,9 +29,16 @@ public class Delivery {
 
     private LocalDateTime arrival;
 
+
+    @JsonBackReference
     @OneToOne
     @JoinColumn(name = "buy_id", nullable = false)
     private Buy buy;
+
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "awaiblelist_id")
+    private AwaitingList list;
 
 
     @Override
