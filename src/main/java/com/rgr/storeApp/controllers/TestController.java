@@ -5,10 +5,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rgr.storeApp.dao.BalanceRequest;
 import com.rgr.storeApp.dao.ProductRequest;
+import com.rgr.storeApp.dao.ProductResponse;
+import com.rgr.storeApp.dao.ReviewRequest;
 import com.rgr.storeApp.models.basket.Basket;
-import com.rgr.storeApp.service.profile.BalanceService;
-import com.rgr.storeApp.service.profile.BasketService;
+import com.rgr.storeApp.service.favorites.FavoritesService;
+import com.rgr.storeApp.service.favorites.profile.BalanceService;
+import com.rgr.storeApp.service.favorites.profile.BasketService;
 import com.rgr.storeApp.service.product.ProductService;
+import com.rgr.storeApp.service.reviews.ReviewsService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +28,15 @@ public class TestController {
     private final ProductService productService;
     private final BasketService basketService;
     private final BalanceService balanceService;
+    private final ReviewsService reviewsService;
+    private final FavoritesService favoritesService;
 
-    public TestController(ProductService productService, BasketService basketService, BalanceService balanceService) {
+    public TestController(ProductService productService, BasketService basketService, BalanceService balanceService, ReviewsService reviewsService, FavoritesService favoritesService) {
         this.productService = productService;
         this.basketService = basketService;
         this.balanceService = balanceService;
+        this.reviewsService = reviewsService;
+        this.favoritesService = favoritesService;
     }
 
     @PostMapping(value = "/add",  produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -116,5 +124,26 @@ public class TestController {
     }
 
 
+    @PostMapping("/product/review/add/{id}")
+    public ResponseEntity<?> addReview(@PathVariable("id") Long id, @RequestBody ReviewRequest reviewRequest){
+        String email = "e1";
+        ProductResponse productResponse = reviewsService.addReview(email, reviewRequest, id);
+        return ResponseEntity.ok(productResponse);
+    }
+
+
+    @PostMapping("/favorites/add/{id}")
+    public ResponseEntity<?> addInFavorites(@PathVariable("id") Long id){
+        String email = "eee";
+        return ResponseEntity.ok(favoritesService.addFavoriteProduct(email, id));
+    }
+
+
+    @DeleteMapping("/favorites/delete/{id}")
+    public ResponseEntity<?> deleteInFavorites(@PathVariable("id") Long id){
+
+        String email = "eee";
+        return ResponseEntity.ok(favoritesService.deleteProduct(email, id));
+    }
 
 }

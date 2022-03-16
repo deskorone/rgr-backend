@@ -1,4 +1,4 @@
-package com.rgr.storeApp.service.profile.delivery;
+package com.rgr.storeApp.service.favorites.profile.delivery;
 
 
 import com.rgr.storeApp.models.User;

@@ -7,6 +7,7 @@ import com.rgr.storeApp.models.basket.Basket;
 import com.rgr.storeApp.models.basket.BuyHistory;
 import com.rgr.storeApp.models.basket.SellHistory;
 import com.rgr.storeApp.models.delivery.AwaitingList;
+import com.rgr.storeApp.models.product.Favorites;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
@@ -43,6 +44,10 @@ public class UserProfile implements Serializable {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "awaitinglist_id")
     private AwaitingList awaitingList;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "favorites_id")
+    private Favorites favorites;
 
     private Integer balance;
 

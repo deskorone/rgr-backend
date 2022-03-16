@@ -11,7 +11,8 @@ import com.rgr.storeApp.models.basket.Basket;
 import com.rgr.storeApp.models.basket.BuyHistory;
 import com.rgr.storeApp.models.basket.SellHistory;
 import com.rgr.storeApp.models.delivery.AwaitingList;
-import com.rgr.storeApp.models.product.Producer;
+import com.rgr.storeApp.models.product.Favorites;
+import com.rgr.storeApp.models.product.Store;
 import com.rgr.storeApp.models.profile.UserProfile;
 import com.rgr.storeApp.repo.RolesRepo;
 import com.rgr.storeApp.repo.UsersRepo;
@@ -107,12 +108,12 @@ public class UserService {
                                         .findByRole(ERole.ROLE_SALESMAN)
                                         .orElseThrow(() -> new RuntimeException("Role dont exist (SALESMAN)"));
                                 roles.add(adminRole);
-                                Producer producer = new Producer();
+                                Store store = new Store();
                                 SellHistory sellHistory = new SellHistory();;
-                                sellHistory.setProducer(producer);
-                                producer.setUser(user);
-                                producer.setSellHistory(sellHistory);
-                                user.setProducer(producer);
+                                sellHistory.setStore(store);
+                                store.setUser(user);
+                                store.setSellHistory(sellHistory);
+                                user.setStore(store);
                                 break;
                             default:
                                 Role userRole = rolesRepo
@@ -123,6 +124,8 @@ public class UserService {
                     });
         }
 
+        Favorites favorites = new Favorites();
+        userProfile.setFavorites(favorites);
         Basket basket = new Basket();
         basket.setUserProfile(userProfile);
         BuyHistory buyHistory = new BuyHistory();

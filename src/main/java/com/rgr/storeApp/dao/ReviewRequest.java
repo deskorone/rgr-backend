@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ReviewRequest {
-
     String reviewText;
+    Integer rating;
 
 }

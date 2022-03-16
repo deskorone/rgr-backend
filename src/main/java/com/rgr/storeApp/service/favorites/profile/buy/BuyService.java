@@ -1,4 +1,4 @@
-package com.rgr.storeApp.service.profile.buy;
+package com.rgr.storeApp.service.favorites.profile.buy;
 
 
 import com.rgr.storeApp.models.basket.Basket;
@@ -6,7 +6,7 @@ import com.rgr.storeApp.models.basket.Buy;
 import com.rgr.storeApp.models.basket.BuyHistory;
 import com.rgr.storeApp.models.delivery.AwaitingList;
 import com.rgr.storeApp.models.delivery.Delivery;
-import com.rgr.storeApp.models.product.Producer;
+import com.rgr.storeApp.models.product.Store;
 import com.rgr.storeApp.models.product.Product;
 import com.rgr.storeApp.models.product.ProductInfo;
 import com.rgr.storeApp.models.profile.Sales;
@@ -27,7 +27,7 @@ public class BuyService {
     private final BuyRepo buyRepo;
     private final BasketRepo basketRepo;
     private final ProductsRepo productsRepo;
-    private final ProducerRepo producerRepo;
+    private final StoreRepo storeRepo;
     private final UserProfileRepo userProfileRepo;
     private final SalesHistoryRepo salesHistoryRepo;
     private final BuyHistoryRepo buyHistoryRepo;
@@ -40,7 +40,7 @@ public class BuyService {
     public BuyService(BuyRepo buyRepo,
                       BasketRepo basketRepo,
                       ProductsRepo productsRepo,
-                      ProducerRepo producerRepo,
+                      StoreRepo storeRepo,
                       UserProfileRepo userProfileRepo,
                       SalesHistoryRepo salesHistoryRepo,
                       BuyHistoryRepo buyHistoryRepo,
@@ -50,7 +50,7 @@ public class BuyService {
         this.buyRepo = buyRepo;
         this.basketRepo = basketRepo;
         this.productsRepo = productsRepo;
-        this.producerRepo = producerRepo;
+        this.storeRepo = storeRepo;
         this.userProfileRepo = userProfileRepo;
         this.salesHistoryRepo = salesHistoryRepo;
         this.buyHistoryRepo = buyHistoryRepo;
@@ -96,8 +96,8 @@ public class BuyService {
     }
 
     private boolean buyProducer(Product product){
-        Producer producer = product.getProducer();
-        UserProfile profile = producer.getUser().getUserProfile();
+        Store store = product.getStore();
+        UserProfile profile = store.getUser().getUserProfile();
         ProductInfo productInfo = product.getProductInfo();
         int avaible = productInfo.getNumber();
 
@@ -105,7 +105,7 @@ public class BuyService {
             productInfo.setNumber(avaible - 1);
             profile.addMoney(productInfo.getPrice());
             Sales sales = new Sales(LocalDateTime.now(),
-                    producer.getSellHistory(),
+                    store.getSellHistory(),
                     product);
             salesRepo.save(sales);
             userProfileRepo.save(profile);

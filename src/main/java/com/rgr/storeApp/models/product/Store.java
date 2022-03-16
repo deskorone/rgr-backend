@@ -13,11 +13,11 @@ import java.util.List;
 
 @Entity
 @Data
-@Table(name = "producer")
+@Table(name = "store")
 @JsonIgnoreProperties(value = {"hibernateLazyInitializer","handler"})
-public class Producer implements Serializable {
+public class Store implements Serializable {
 
-    public Producer(){}
+    public Store(){}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +28,7 @@ public class Producer implements Serializable {
     private String address;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "producer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<Product> products;
 
     @JsonBackReference

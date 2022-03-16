@@ -1,4 +1,4 @@
-package com.rgr.storeApp.service.profile;
+package com.rgr.storeApp.service.favorites.profile;
 
 
 import com.rgr.storeApp.exceptions.api.NotFound;

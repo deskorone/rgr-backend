@@ -8,7 +8,7 @@ import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.models.product.*;
 import com.rgr.storeApp.models.profile.UserProfile;
 import com.rgr.storeApp.repo.*;
-import com.rgr.storeApp.service.profile.buy.BuyService;
+import com.rgr.storeApp.service.favorites.profile.buy.BuyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,28 +26,22 @@ public class ProductService {
 
     private final ProductsRepo productsRepo;
     private final UsersRepo usersRepo;
-    private final ProducerRepo producerRepo;
     private final CategoryService categoryService;
-    private final ProductInfoService productInfoService;
     private final ProductPhotoRepo productPhotoRepo;
     private final BuyService buyService;
-    private final UserProfileRepo userProfileRepo;
 
     @Autowired
     public ProductService(ProductsRepo productsRepo,
                           UsersRepo usersRepo,
-                          ProducerRepo producerRepo,
                           CategoryService categoryService,
-                          ProductInfoService productInfoService, ProductPhotoRepo productPhotoRepo, BuyService buyService, UserProfileRepo userProfileRepo) {
+                          ProductPhotoRepo productPhotoRepo,
+                          BuyService buyService) {
 
         this.productsRepo = productsRepo;
         this.usersRepo = usersRepo;
-        this.producerRepo = producerRepo;
         this.categoryService = categoryService;
-        this.productInfoService = productInfoService;
         this.productPhotoRepo = productPhotoRepo;
         this.buyService = buyService;
-        this.userProfileRepo = userProfileRepo;
     }
 
 
@@ -61,9 +55,9 @@ public class ProductService {
                                       String email,
                                       MultipartFile multipartFile,
                                         MultipartFile [] multipartFiles){
-        Producer producer = usersRepo.findByEmail(email).get().getProducer();
+        Store store = usersRepo.findByEmail(email).get().getStore();
         Product product = new Product();
-        product.setProducer(producer);
+        product.setStore(store);
         product.setId_code(UUID.randomUUID().toString());
         List<Category> categories = categoryService.convertCategory(productRequest.getCategories());
         product.setCategories(categories);
@@ -72,6 +66,8 @@ public class ProductService {
             productInfo.setProductPhotos(Arrays.stream(multipartFiles)
                     .map(e->savePhoto(e, product))
                     .collect(Collectors.toList()));
+        }else {
+            productInfo.setProductPhotos(null);
         }
         productInfo.setMainPhoto(savePhoto(multipartFile, product));
         productInfo.setPrice(productRequest.getPrice());
@@ -118,7 +114,6 @@ public class ProductService {
                 e.printStackTrace();
                 throw new NotFound("Photo not found");
             }
-
         }else {
             throw new NotFound("Photo not found");
         }
@@ -128,9 +123,9 @@ public class ProductService {
     public List<ProductResponse> getAll(String email){
 
         User user = usersRepo.findByEmail(email).orElseThrow(()->new NotFound("User not found"));
-        Producer producer = user.getProducer();
+        Store store = user.getStore();
         return productsRepo
-                .findAllByProducer(producer)
+                .findAllByStore(store)
                 .stream()
                 .map(ProductResponse::build)
                 .collect(Collectors.toList());
@@ -151,8 +146,8 @@ public class ProductService {
 
 
     public List<ProductResponse> getProductsInfo(String email){
-        Producer producer = usersRepo.findByEmail(email).orElseThrow(()->new NotFound("SalesMan not found")).getProducer();
-        List<Product> products = producer.getProducts();
+        Store store = usersRepo.findByEmail(email).orElseThrow(()->new NotFound("SalesMan not found")).getStore();
+        List<Product> products = store.getProducts();
 
         return  products.stream()
                 .map(e->ProductResponse.build(e)).collect(Collectors.toList());
@@ -163,6 +158,7 @@ public class ProductService {
         Product product = productsRepo.findById(id).orElseThrow(()-> new NotFound("Product NOT FOUND :(")); // find by id and producer? // maybe delete photo?
         productsRepo.delete(product);
     }
+
 
 
 

@@ -1,6 +1,7 @@
 package com.rgr.storeApp.models;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.rgr.storeApp.models.product.Producer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rgr.storeApp.models.product.Store;
 import com.rgr.storeApp.models.profile.UserProfile;
 import lombok.Data;
 import lombok.Getter;
@@ -35,8 +36,11 @@ public class User implements Serializable {
 
     private String email;
     private String username;
+
+    @JsonIgnore
     private String password;
-    private boolean enabled;
+
+    private boolean enabled; //ignore
     private boolean locked;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -46,14 +50,13 @@ public class User implements Serializable {
     Set<Role> roles = new HashSet<>();
 
 
-
-    @OneToOne(cascade = CascadeType.ALL)
     @JsonBackReference
+    @OneToOne(cascade = CascadeType.ALL)
     private UserProfile userProfile;
 
 
     @OneToOne(cascade = CascadeType.ALL)
-    private Producer producer;
+    private Store store;
 
     @Override
     public String toString() {
@@ -64,7 +67,7 @@ public class User implements Serializable {
                 '}';
     }
 
-    public User(String email, String username, String password, boolean enabled, boolean locked, Set<Role> roles, UserProfile userProfile, Producer producer) {
+    public User(String email, String username, String password, boolean enabled, boolean locked, Set<Role> roles, UserProfile userProfile, Store store) {
         this.email = email;
         this.username = username;
         this.password = password;
@@ -72,6 +75,6 @@ public class User implements Serializable {
         this.locked = locked;
         this.roles = roles;
         this.userProfile = userProfile;
-        this.producer = producer;
+        this.store = store;
     }
 }

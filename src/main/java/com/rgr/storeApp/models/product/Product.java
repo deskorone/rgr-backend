@@ -2,12 +2,10 @@ package com.rgr.storeApp.models.product;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.rgr.storeApp.models.basket.Basket;
 import com.rgr.storeApp.models.basket.Buy;
 import com.rgr.storeApp.models.profile.Sales;
 import lombok.Data;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -26,15 +24,15 @@ public class Product implements Serializable {
 
     private String id_code;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Review> reviews;
 
-    public Product(String id_code, List<Review> reviews, List<Category> categories, ProductInfo productInfo, Producer producer) {
+    public Product(String id_code, List<Review> reviews, List<Category> categories, ProductInfo productInfo, Store store) {
         this.id_code = id_code;
         this.reviews = reviews;
         this.categories = categories;
         this.productInfo = productInfo;
-        this.producer = producer;
+        this.store = store;
     }
 
     @ManyToMany(cascade =
@@ -53,8 +51,8 @@ public class Product implements Serializable {
     private ProductInfo productInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "producer_id")
-    private Producer producer;
+    @JoinColumn(name = "store_id")
+    private Store store;
 
     @JsonBackReference
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
@@ -79,6 +77,18 @@ public class Product implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "buy_id"),
             joinColumns = @JoinColumn(name = "product_id"))
     private List<Buy> buys;
+
+    @JsonBackReference
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.REFRESH,
+            CascadeType.PERSIST
+    })
+    @JoinTable(name = "favorites_products",
+            inverseJoinColumns = @JoinColumn(name = "favorites_id"),
+            joinColumns = @JoinColumn(name = "product_id"))
+    private List<Favorites> favorites;
 
 
 
