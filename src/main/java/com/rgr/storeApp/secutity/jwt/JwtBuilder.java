@@ -8,7 +8,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 
 @Component
@@ -17,40 +21,24 @@ public class JwtBuilder {
     @Value("{secret.word.jwt}")
     private String secret;
 
-    private int jwtExp= 36000000;
+    @Value("{secret.refresh.word}")
+    private String refreshSecret;
+
+    private int jwtExp= 360000;
 
 
-    public String generateToken(Authentication authentication){
-        SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
-        return Jwts.builder().setSubject((securityUser.getUsername()))
+    public String generateToken(String email){
+        return Jwts.builder().setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExp))
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
 
     }
-    public String generateRefreshToken(Authentication authentication){
-        SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
-        return Jwts.builder().setSubject((securityUser.getUsername()))
-                .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExp * 100))
-                .signWith(SignatureAlgorithm.HS512, secret + "refresh")
-                .compact();
+    public String generateRefreshToken(String email){
+        return UUID.nameUUIDFromBytes((email + LocalDateTime.now()).getBytes()).toString();
     }
 
-
-    public boolean validateRefreshToken(String token){
-        try{
-            Jwts.parser()
-                    .setSigningKey(secret + "refresh")
-                    .parseClaimsJws(token);
-            return true;
-        }  catch (MalformedJwtException e){
-            return false;
-        }  catch (IllegalArgumentException e){
-            return false;
-        }
-    }
 
 
     public boolean validateToken(String token){
@@ -76,7 +64,6 @@ public class JwtBuilder {
                 .getBody()
                 .getSubject();
     }
-
 
 
 

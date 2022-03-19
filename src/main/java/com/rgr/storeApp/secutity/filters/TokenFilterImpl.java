@@ -55,12 +55,9 @@ public class TokenFilterImpl extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
         // TODO maybe ignore authURL?
-
         try {
             try {
-                System.out.println("!");
-                String token = getTokenFromRequest(request);
-                System.out.println(jwtBuilder.validateToken(token));
+                String token = getTokenFromRequest(request);//add in cookie
                 if (token != null && jwtBuilder.validateToken(token)) {
                     String email = jwtBuilder.getEmailFromToken(token);
                     UserDetails userDetails = userDetailsService.loadUserByUsername(email);

@@ -14,8 +14,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
-@RequestMapping("/api/profile/")
+@RequestMapping("/api/profile")
 public class UserProfileController {
 
     private final JwtBuilder jwtBuilder;
@@ -91,6 +93,7 @@ public class UserProfileController {
         String email = authentication.getPrincipal().toString();
         return ResponseEntity.ok(balanceService.addBalance(balanceRequest, email));
     }
+
 
 
 

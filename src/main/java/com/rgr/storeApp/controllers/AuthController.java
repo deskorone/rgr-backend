@@ -4,11 +4,14 @@ package com.rgr.storeApp.controllers;
 import com.rgr.storeApp.dto.LoginRequest;
 import com.rgr.storeApp.dto.LoginResponse;
 import com.rgr.storeApp.dto.RegistrationRequest;
+import com.rgr.storeApp.secutity.jwt.JwtBuilder;
 import com.rgr.storeApp.service.UserService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
@@ -16,19 +19,17 @@ import javax.servlet.http.HttpServletResponse;
 public class AuthController {
 
     private final UserService userService;
+    private final JwtBuilder jwtBuilder;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, JwtBuilder jwtBuilder) {
         this.userService = userService;
+        this.jwtBuilder = jwtBuilder;
     }
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse){
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
         LoginResponse loginResponse = userService.loginUser(loginRequest);
-        Cookie cookie = new Cookie("token", loginResponse.getToken());
-        //Cookie cookie1 = new Cookie("")
-        httpServletResponse.addCookie(cookie);
-        cookie.setSecure(true);
         return ResponseEntity.ok(loginResponse);
     }
 
@@ -40,8 +41,11 @@ public class AuthController {
 
 
     @GetMapping("/refresh")
-    public ResponseEntity<?> refreshToken(){
-        return null;
+    public ResponseEntity<?> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,HttpServletRequest httpServletRequest){
+        LoginResponse loginResponse = userService.refresh(token.substring(7), httpServletRequest);
+        return ResponseEntity.ok(loginResponse);
     }
+
+
 
 }
