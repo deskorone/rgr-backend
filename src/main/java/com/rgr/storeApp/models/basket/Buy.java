@@ -2,6 +2,7 @@ package com.rgr.storeApp.models.basket;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.rgr.storeApp.models.delivery.Delivery;
 import com.rgr.storeApp.models.product.Product;
 import lombok.Data;
@@ -21,6 +22,7 @@ public class Buy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.DETACH,
@@ -56,6 +58,7 @@ public class Buy {
     @JoinColumn(name = "history_id")
     private BuyHistory buyHistory;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "buy", cascade = CascadeType.REMOVE)
     private Delivery delivery;
 

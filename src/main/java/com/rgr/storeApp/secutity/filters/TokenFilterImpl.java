@@ -18,11 +18,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class TokenFilterImpl extends OncePerRequestFilter {
@@ -49,38 +53,43 @@ public class TokenFilterImpl extends OncePerRequestFilter {
 
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
         // TODO maybe ignore authURL?
 
+        try {
+            try {
+                System.out.println("!");
+                String token = getTokenFromRequest(request);
+                System.out.println(jwtBuilder.validateToken(token));
+                if (token != null && jwtBuilder.validateToken(token)) {
+                    String email = jwtBuilder.getEmailFromToken(token);
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                            new UsernamePasswordAuthenticationToken(email, null, userDetails.getAuthorities());
 
-        try{
-            String token = getTokenFromRequest(request);
-            if(token != null && jwtBuilder.validateToken(token)){
-                String email = jwtBuilder.getEmailFromToken(token);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                    usernamePasswordAuthenticationToken
+                            .setDetails(new WebAuthenticationDetailsSource()
+                                    .buildDetails(request));
 
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                        new UsernamePasswordAuthenticationToken(email, null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext()
+                            .setAuthentication(usernamePasswordAuthenticationToken);
+                }
+            } catch (Exception e) {
+                Map<String, String> errors = new HashMap<>();
+                response.setHeader("error", e.getMessage());
+                response.setStatus(HttpStatus.FORBIDDEN.value());
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                errors.put("error", e.getMessage());
+                new ObjectMapper().writeValue(response.getOutputStream(), errors);
 
-                usernamePasswordAuthenticationToken
-                        .setDetails(new WebAuthenticationDetailsSource()
-                                .buildDetails(request));
-
-                SecurityContextHolder.getContext()
-                        .setAuthentication(usernamePasswordAuthenticationToken);
             }
-        }catch (Exception e){
-            Map<String, String> errors = new HashMap<>();
-            response.setHeader("error", e.getMessage());
-            response.setStatus(HttpStatus.FORBIDDEN.value());
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            errors.put("error", e.getMessage());
-            new ObjectMapper().writeValue(response.getOutputStream(), errors);
-
+            filterChain.doFilter(request, response);
+        }catch (IOException e){
+            //log this
+        }catch (ServletException e){
+            //log this
         }
-        filterChain.doFilter(request, response);
-
 
     }
 }

@@ -1,4 +1,4 @@
-package com.rgr.storeApp.dao;
+package com.rgr.storeApp.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,6 +15,8 @@ public class ProductRequest {
 
 
     private Integer price;
+
+    private String name;
 
     private String description;
 

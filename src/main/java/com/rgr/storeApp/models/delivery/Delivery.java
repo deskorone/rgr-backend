@@ -30,7 +30,7 @@ public class Delivery {
     private LocalDateTime arrival;
 
 
-    @JsonBackReference
+
     @OneToOne
     @JoinColumn(name = "buy_id", nullable = false)
     private Buy buy;

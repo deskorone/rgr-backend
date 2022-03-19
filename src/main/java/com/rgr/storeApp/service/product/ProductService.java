@@ -1,14 +1,18 @@
 package com.rgr.storeApp.service.product;
 
-import com.rgr.storeApp.dao.BuyResponse;
-import com.rgr.storeApp.dao.ProductRequest;
-import com.rgr.storeApp.dao.ProductResponse;
+import com.rgr.storeApp.dto.product.BuyResponse;
+import com.rgr.storeApp.dto.ProductRequest;
+import com.rgr.storeApp.dto.ProductResponse;
+import com.rgr.storeApp.dto.product.ProductLiteResponse;
 import com.rgr.storeApp.exceptions.api.NotFound;
+import com.rgr.storeApp.exceptions.api.NotPrivilege;
 import com.rgr.storeApp.models.User;
+import com.rgr.storeApp.models.delivery.Delivery;
 import com.rgr.storeApp.models.product.*;
 import com.rgr.storeApp.models.profile.UserProfile;
 import com.rgr.storeApp.repo.*;
 import com.rgr.storeApp.service.favorites.profile.buy.BuyService;
+import com.rgr.storeApp.service.store.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,23 +33,22 @@ public class ProductService {
     private final CategoryService categoryService;
     private final ProductPhotoRepo productPhotoRepo;
     private final BuyService buyService;
+    private final StoreService storeService;
 
     @Autowired
     public ProductService(ProductsRepo productsRepo,
                           UsersRepo usersRepo,
                           CategoryService categoryService,
                           ProductPhotoRepo productPhotoRepo,
-                          BuyService buyService) {
+                          BuyService buyService, StoreService storeService) {
 
         this.productsRepo = productsRepo;
         this.usersRepo = usersRepo;
         this.categoryService = categoryService;
         this.productPhotoRepo = productPhotoRepo;
         this.buyService = buyService;
+        this.storeService = storeService;
     }
-
-
-
 
 
 
@@ -62,13 +65,14 @@ public class ProductService {
         List<Category> categories = categoryService.convertCategory(productRequest.getCategories());
         product.setCategories(categories);
         ProductInfo productInfo = new ProductInfo();
-        if(multipartFiles!= null){
+        if(multipartFiles != null){
             productInfo.setProductPhotos(Arrays.stream(multipartFiles)
                     .map(e->savePhoto(e, product))
                     .collect(Collectors.toList()));
         }else {
             productInfo.setProductPhotos(null);
         }
+        productInfo.setName(productRequest.getName());
         productInfo.setMainPhoto(savePhoto(multipartFile, product));
         productInfo.setPrice(productRequest.getPrice());
         productInfo.setNumber(productRequest.getNumber());
@@ -140,26 +144,32 @@ public class ProductService {
     public BuyResponse buy(String email){
         User user = usersRepo.findByEmail(email).orElseThrow(()-> new NotFound("Not found"));
         UserProfile userProfile = user.getUserProfile();
-        buyService.addBuy(userProfile);
-        return new BuyResponse();
+        return buyService.addBuy(userProfile);
     }
 
 
-    public List<ProductResponse> getProductsInfo(String email){
-        Store store = usersRepo.findByEmail(email).orElseThrow(()->new NotFound("SalesMan not found")).getStore();
-        List<Product> products = store.getProducts();
 
-        return  products.stream()
-                .map(e->ProductResponse.build(e)).collect(Collectors.toList());
+    public List<ProductLiteResponse> getProductsInfo(String email){
+        Store store = usersRepo.findByEmail(email).orElseThrow(()->new NotFound("SalesMan not found")).getStore();
+        List<ProductLiteResponse> productLiteResponses = store.getProducts()
+                .stream()
+                .map((e)->{
+                    return ProductLiteResponse.build(e);
+                })
+                .collect(Collectors.toList());
+        return productLiteResponses;
     }
 
 
     public void deleteProduct(String email, Long id){
+        User user = usersRepo.findByEmail(email).orElseThrow(()-> new NotFound("user not found"));
         Product product = productsRepo.findById(id).orElseThrow(()-> new NotFound("Product NOT FOUND :(")); // find by id and producer? // maybe delete photo?
-        productsRepo.delete(product);
+        if (storeService.checkProduct(user, product)) {
+            productsRepo.delete(product);
+        }else {
+            throw new NotPrivilege("No privilegies");
+        }
     }
-
-
 
 
 

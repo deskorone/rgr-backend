@@ -1,9 +1,9 @@
 package com.rgr.storeApp.service;
 
 
-import com.rgr.storeApp.dao.LoginRequest;
-import com.rgr.storeApp.dao.LoginResponse;
-import com.rgr.storeApp.dao.RegistrationRequest;
+import com.rgr.storeApp.dto.LoginRequest;
+import com.rgr.storeApp.dto.LoginResponse;
+import com.rgr.storeApp.dto.RegistrationRequest;
 import com.rgr.storeApp.models.ERole;
 import com.rgr.storeApp.models.Role;
 import com.rgr.storeApp.models.User;
@@ -19,6 +19,7 @@ import com.rgr.storeApp.repo.UsersRepo;
 import com.rgr.storeApp.secutity.SecurityUser;
 import com.rgr.storeApp.secutity.jwt.JwtBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.server.Cookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -62,13 +63,10 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String newToken = jwtBuilder.generateToken(authentication);
-
         SecurityUser securityUser = (SecurityUser) authentication.getPrincipal();
-
 
         List<String> roles = securityUser.getAuthorities().stream()
                 .map(i -> i.getAuthority()).collect(Collectors.toList());
-
         return new LoginResponse(newToken,
                 securityUser.getId(),
                 securityUser.getUsername(),
@@ -91,6 +89,7 @@ public class UserService {
                 true,
                 false);
 
+        user.setUsername(registrationRequest.getUsername());
         Set<String> rolesReq = registrationRequest.getRoles();
         Set<Role> roles = new HashSet<>();
         UserProfile userProfile = new UserProfile();

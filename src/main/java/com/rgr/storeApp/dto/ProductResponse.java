@@ -1,4 +1,4 @@
-package com.rgr.storeApp.dao;
+package com.rgr.storeApp.dto;
 
 
 import com.rgr.storeApp.models.product.Product;
@@ -6,7 +6,6 @@ import com.rgr.storeApp.models.product.Review;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +23,8 @@ public class ProductResponse {
 
     private List<String> images;
 
+    private String name;
+
     private Integer price;
 
     private String description;
@@ -33,6 +34,8 @@ public class ProductResponse {
     private Integer available;
 
     private List<Review> reviews;
+
+    private Double rating;
 
     private String materials;
 
@@ -52,18 +55,39 @@ public class ProductResponse {
     }
 
     public static ProductResponse build(Product product){
+        List<String> images;
+        if(product.getProductInfo().getProductPhotos() != null) {
+            images =  product.getProductInfo().getProductPhotos()
+                    .stream()
+                    .map(e -> String.format(url, e.getPath()))
+                    .collect(Collectors.toList());
+        }else {
+            images = null;
+        }
+        Double r;
+        if(product.getReviews() != null) {
+            Double rating = product.getReviews()
+                    .stream()
+                    .mapToDouble(e -> {
+                        Double raiting = Double.parseDouble(Integer.toString(e.getRating()));
+                        return raiting;
+                    }).sum();
+            r = rating/product.getReviews().size();
+        }else {
+            r = 0D;
+        }
+
         return new ProductResponse(
                 product.getId(),
                 String.format(url, product.getProductInfo().getMainPhoto().getPath()),
-                product.getProductInfo().getProductPhotos()
-                        .stream()
-                        .map(e-> String.format(url, e.getPath()))
-                        .collect(Collectors.toList()),
+                images,
+                product.getProductInfo().getName(),
                 product.getProductInfo().getPrice(),
                 product.getProductInfo().getDescription(),
                 product.getCategories().stream().map(e->e.getName()).collect(Collectors.toList()),
                 product.getProductInfo().getNumber(),
                 product.getReviews(),
+                r,
                 product.getProductInfo().getMaterials()
         );
     }

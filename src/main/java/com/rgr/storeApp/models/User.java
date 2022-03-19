@@ -34,15 +34,21 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     private String email;
+
     private String username;
 
     @JsonIgnore
     private String password;
 
+    @JsonIgnore
     private boolean enabled; //ignore
+
+    @JsonIgnore
     private boolean locked;
 
+    @JsonBackReference
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "app_users_roles",
                 joinColumns = @JoinColumn(name = "users_id"),
@@ -50,11 +56,11 @@ public class User implements Serializable {
     Set<Role> roles = new HashSet<>();
 
 
-    @JsonBackReference
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     private UserProfile userProfile;
 
-
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
     private Store store;
 

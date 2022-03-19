@@ -1,4 +1,4 @@
-package com.rgr.storeApp.dao;
+package com.rgr.storeApp.dto;
 
 
 import lombok.AllArgsConstructor;

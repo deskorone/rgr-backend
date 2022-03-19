@@ -1,8 +1,8 @@
 package com.rgr.storeApp.service.reviews;
 
 
-import com.rgr.storeApp.dao.ProductResponse;
-import com.rgr.storeApp.dao.ReviewRequest;
+import com.rgr.storeApp.dto.ProductResponse;
+import com.rgr.storeApp.dto.ReviewRequest;
 import com.rgr.storeApp.exceptions.api.NotFound;
 import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.models.product.Product;

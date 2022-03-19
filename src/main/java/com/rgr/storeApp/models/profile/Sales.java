@@ -1,14 +1,13 @@
 package com.rgr.storeApp.models.profile;
 
 
+import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.models.basket.SellHistory;
 import com.rgr.storeApp.models.product.Product;
 import lombok.Data;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Data
@@ -37,6 +36,11 @@ public class Sales {
     @ManyToOne()
     @JoinColumn(name = "product_id")
     private Product product;
+
+
+    @ManyToOne()
+    @JoinColumn(name = "buyer_id")
+    private User buyer;
 
     @Override
     public String toString() {

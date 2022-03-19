@@ -1,14 +1,15 @@
 package com.rgr.storeApp.controllers;
 
 
-import com.rgr.storeApp.dao.LoginRequest;
-import com.rgr.storeApp.dao.RegistrationRequest;
+import com.rgr.storeApp.dto.LoginRequest;
+import com.rgr.storeApp.dto.LoginResponse;
+import com.rgr.storeApp.dto.RegistrationRequest;
 import com.rgr.storeApp.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -22,16 +23,25 @@ public class AuthController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
-        return ResponseEntity.ok(userService.loginUser(loginRequest));
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse){
+        LoginResponse loginResponse = userService.loginUser(loginRequest);
+        Cookie cookie = new Cookie("token", loginResponse.getToken());
+        //Cookie cookie1 = new Cookie("")
+        httpServletResponse.addCookie(cookie);
+        cookie.setSecure(true);
+        return ResponseEntity.ok(loginResponse);
     }
 
     @PostMapping("/reg")
-    public ResponseEntity<?> login(@RequestBody RegistrationRequest request){
-        System.out.println("WORK");
+    public ResponseEntity<?> registration(@RequestBody RegistrationRequest request){
 
         return ResponseEntity.ok(userService.regUser(request));
     }
 
+
+    @GetMapping("/refresh")
+    public ResponseEntity<?> refreshToken(){
+        return null;
+    }
 
 }

@@ -1,9 +1,12 @@
 package com.rgr.storeApp.config;
 
 import com.rgr.storeApp.exceptions.AutorizeExceptionHandler;
+import com.rgr.storeApp.exceptions.api.NotPrivilege;
 import com.rgr.storeApp.secutity.filters.TokenFilterImpl;
 import com.rgr.storeApp.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -54,9 +57,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(autorizeExceptionHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
-                .antMatchers("/api/**" ).permitAll()
+                .antMatchers("/api/auth/**" ).permitAll()
                 .anyRequest().authenticated();
-
         http.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 

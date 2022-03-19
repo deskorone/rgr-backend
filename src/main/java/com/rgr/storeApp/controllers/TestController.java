@@ -3,14 +3,15 @@ package com.rgr.storeApp.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rgr.storeApp.dao.BalanceRequest;
-import com.rgr.storeApp.dao.ProductRequest;
-import com.rgr.storeApp.dao.ProductResponse;
-import com.rgr.storeApp.dao.ReviewRequest;
+import com.rgr.storeApp.dto.BalanceRequest;
+import com.rgr.storeApp.dto.ProductRequest;
+import com.rgr.storeApp.dto.ProductResponse;
+import com.rgr.storeApp.dto.ReviewRequest;
 import com.rgr.storeApp.models.basket.Basket;
 import com.rgr.storeApp.service.favorites.FavoritesService;
 import com.rgr.storeApp.service.favorites.profile.BalanceService;
 import com.rgr.storeApp.service.favorites.profile.BasketService;
+import com.rgr.storeApp.service.favorites.profile.delivery.DeliveryService;
 import com.rgr.storeApp.service.product.ProductService;
 import com.rgr.storeApp.service.reviews.ReviewsService;
 import org.springframework.http.HttpHeaders;
@@ -30,18 +31,20 @@ public class TestController {
     private final BalanceService balanceService;
     private final ReviewsService reviewsService;
     private final FavoritesService favoritesService;
+    private final DeliveryService deliveryService;
 
-    public TestController(ProductService productService, BasketService basketService, BalanceService balanceService, ReviewsService reviewsService, FavoritesService favoritesService) {
+    public TestController(ProductService productService, BasketService basketService, BalanceService balanceService, ReviewsService reviewsService, FavoritesService favoritesService, DeliveryService deliveryService) {
         this.productService = productService;
         this.basketService = basketService;
         this.balanceService = balanceService;
         this.reviewsService = reviewsService;
         this.favoritesService = favoritesService;
+        this.deliveryService = deliveryService;
     }
 
     @PostMapping(value = "/add",  produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> add(@RequestParam("mainimage") MultipartFile file, @RequestParam("req") String json,
-                                    @RequestParam("image") MultipartFile [] files) {
+    public ResponseEntity<?> add(@RequestParam("mainimage") MultipartFile file, @RequestParam(name = "req") String json,
+                                    @RequestParam(value = "image", required = false) MultipartFile [] files) {
         String email = "e1";
         ObjectMapper mapper = new ObjectMapper();
         ProductRequest productRequest;
@@ -72,7 +75,7 @@ public class TestController {
 
     @GetMapping(value = "/product/all")
     public ResponseEntity<?> getAll(){
-        return ResponseEntity.ok(productService.getAll("e"));
+        return ResponseEntity.ok(productService.getAll("e1"));
     }
 
     @GetMapping("/product/{id}")
@@ -80,25 +83,25 @@ public class TestController {
         return ResponseEntity.ok(productService.getProduct(id));
     }
 
+//
+//    @PostMapping("/basket/add/{id}")
+//    public ResponseEntity<?> addInBasket(@PathVariable("id") Long id){
+//        String email = "eee";
+//        Basket basket = basketService.addProductInBasket("eee", id);
+//        return ResponseEntity.ok(basket);
+//    }
 
-    @PostMapping("/basket/add/{id}")
-    public ResponseEntity<?> addInBasket(@PathVariable("id") Long id){
-        String email = "eee";
-        Basket basket = basketService.addProductInBasket("eee", id);
-        return ResponseEntity.ok(basket);
-    }
-
-
-    @DeleteMapping("/basket/add/{id}")
-    public ResponseEntity<?> deleteInBasket(@PathVariable("id") Long id){
-        String email = "eee";
-        Basket basket = basketService.deleteProduct("eee", id);
-        return ResponseEntity.ok(basket);
-    }
+//
+//    @DeleteMapping("/basket/add/{id}")
+//    public ResponseEntity<?> deleteInBasket(@PathVariable("id") Long id){
+//        String email = "eee";
+//        Basket basket = basketService.deleteProduct("eee", id);
+//        return ResponseEntity.ok(basket);
+//    }
 
     @PostMapping("/balance/add")
     public ResponseEntity<?> addBalance(@RequestBody BalanceRequest balanceRequest){
-        String email = "eee";
+        String email = "NewUser";
         return ResponseEntity.ok(balanceService.addBalance(balanceRequest, email));
     }
 
@@ -144,6 +147,13 @@ public class TestController {
 
         String email = "eee";
         return ResponseEntity.ok(favoritesService.deleteProduct(email, id));
+    }
+
+
+    @GetMapping("/awaitings/deliveries")
+    public ResponseEntity<?> getAwaitingsList(){
+        String email = "eee";
+        return ResponseEntity.ok(deliveryService.getDeliveries(email));
     }
 
 }

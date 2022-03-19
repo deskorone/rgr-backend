@@ -20,6 +20,9 @@ public class ProductInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    private String name;
+
     @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL)
     private ProductPhoto mainPhoto;

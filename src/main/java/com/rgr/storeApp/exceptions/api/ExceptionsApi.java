@@ -22,4 +22,14 @@ public class ExceptionsApi {
         return new ResponseEntity<>(message, message.getStatus());
     }
 
+    @ExceptionHandler(value = {NotPrivilege.class})
+    public ResponseEntity<?> noPrivilege(NotPrivilege error){
+        ExceptionMessage message = new ExceptionMessage(
+                error.getMessage(),
+                HttpStatus.FORBIDDEN,
+                ZonedDateTime.now(ZoneId.of("Z"))
+        );
+        return new ResponseEntity<>(message, message.getStatus());
+    }
+
 }

@@ -1,6 +1,9 @@
 package com.rgr.storeApp.service.favorites.profile.buy;
 
 
+import com.rgr.storeApp.dto.product.BuyResponse;
+import com.rgr.storeApp.exceptions.api.NotFound;
+import com.rgr.storeApp.exceptions.api.NotPrivilege;
 import com.rgr.storeApp.models.basket.Basket;
 import com.rgr.storeApp.models.basket.Buy;
 import com.rgr.storeApp.models.basket.BuyHistory;
@@ -61,7 +64,7 @@ public class BuyService {
     }
 
 
-    public void addBuy(UserProfile userProfile){
+    public BuyResponse addBuy(UserProfile userProfile){
         List<Product> products = userProfile.getBasket().getProducts();
         if (products.size() != 0) { // Переделать проверку
             Integer balance = userProfile.getBalance();
@@ -77,36 +80,40 @@ public class BuyService {
 
                     List<Product> productList = new ArrayList<>();
                     for (Product i : products) {
-                        if (buyProducer(i)) {
+                        if (buyProducer(userProfile, i)) {
                             System.out.println("work");
                             userProfile.minusMoney(i.getProductInfo().getPrice());
                             productList.add(i);
                         }
                     }
- //                   productList.stream().forEach(e->basket.removeProduct(e));
-                    acceptBuy(userProfile, productList, sum);
+                    productList.stream().forEach(e->basket.removeProduct(e));
+                    Delivery delivery = acceptBuy(userProfile, productList, sum);
                     Buy buy = new Buy(productList, LocalDateTime.now());
                     buy.setBuyHistory(buyHistory);
                     userProfileRepo.save(userProfile);
+                    return BuyResponse.build(delivery);
                 } else {
-
+                    throw new NotPrivilege("No balance");
                 }
             }
+        }else {
+            throw new NotFound("Basket is empty");
         }
+        return null;
     }
 
-    private boolean buyProducer(Product product){
+    private boolean buyProducer(UserProfile userProfile, Product product){
         Store store = product.getStore();
         UserProfile profile = store.getUser().getUserProfile();
         ProductInfo productInfo = product.getProductInfo();
         int avaible = productInfo.getNumber();
-
         if(avaible > 0){
-            productInfo.setNumber(avaible - 1);
+            productInfo.setNumber(avaible--);
             profile.addMoney(productInfo.getPrice());
             Sales sales = new Sales(LocalDateTime.now(),
                     store.getSellHistory(),
                     product);
+            sales.setBuyer(userProfile.getUser());
             salesRepo.save(sales);
             userProfileRepo.save(profile);
             productsRepo.save(product);
@@ -116,10 +123,11 @@ public class BuyService {
     }
 
 
-    private void acceptBuy(UserProfile userProfile, List<Product> products, Integer sum){
+    private Delivery acceptBuy(UserProfile userProfile, List<Product> products, Integer sum){
         AwaitingList awaitingList = userProfile.getAwaitingList();
         Buy buy = new Buy(products, LocalDateTime.now());
         buy.setSum(sum);
+        // send check to email
         Delivery delivery = new Delivery(LocalDateTime.now(), LocalDateTime.now().plus(Period.ofDays(15)));
         BuyHistory buyHistory = userProfile.getBuyHistory();
         buy.setBuyHistory(buyHistory);
@@ -128,13 +136,10 @@ public class BuyService {
         awaitingList.getDeliveries().add(delivery);
         delivery.setList(awaitingList);
         buyRepo.save(buy);
-        deliveryRepo.save(delivery);
         awaitingListRepo.save(awaitingList);
         userProfileRepo.save(userProfile);
+        return deliveryRepo.save(delivery);
     }
-
-    //метод поккпки где созлается доаствка и история
-
 
 
 }

@@ -1,9 +1,9 @@
 package com.rgr.storeApp.service.favorites.profile;
 
 
-import com.rgr.storeApp.dao.BalanceRequest;
+import com.rgr.storeApp.dto.BalanceRequest;
+import com.rgr.storeApp.dto.userProfile.UserGeneralProfileResponse;
 import com.rgr.storeApp.exceptions.api.NotFound;
-import com.rgr.storeApp.models.product.Product;
 import com.rgr.storeApp.models.profile.UserProfile;
 import com.rgr.storeApp.repo.ProductsRepo;
 import com.rgr.storeApp.repo.UserProfileRepo;
@@ -23,14 +23,14 @@ public class BalanceService {
         this.productsRepo = productsRepo;
     }
 
-    public UserProfile addBalance(BalanceRequest balanceRequest, String email){
+    public UserGeneralProfileResponse addBalance(BalanceRequest balanceRequest, String email){
         UserProfile userProfile = usersRepo
                 .findByEmail(email)
                 .orElseThrow(()-> new NotFound("NOT FOUND user"))
                 .getUserProfile();
         userProfile.setBalance(userProfile.getBalance() + balanceRequest.getMoney());
         userProfileRepo.save(userProfile);
-        return userProfile;
+        return UserGeneralProfileResponse.build(userProfile.getUser());
     }
 
 

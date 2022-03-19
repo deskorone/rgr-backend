@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class StoreService {
+
     public boolean checkProduct(User user, Product product){
         return user.getEmail() == product.getStore().getUser().getEmail();
     }

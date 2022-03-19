@@ -1,6 +1,7 @@
 package com.rgr.storeApp.service.favorites.profile;
 
 
+import com.rgr.storeApp.dto.userProfile.BasketDto;
 import com.rgr.storeApp.exceptions.api.NotFound;
 import com.rgr.storeApp.models.basket.Basket;
 import com.rgr.storeApp.models.product.Product;
@@ -27,7 +28,7 @@ public class BasketService {
     }
 
 
-    public Basket addProductInBasket(String email, Long id){
+    public BasketDto addProductInBasket(String email, Long id){
         UserProfile userProfile = usersRepo
                 .findByEmail(email)
                 .orElseThrow(()-> new NotFound("NOT FOUND user"))
@@ -37,10 +38,10 @@ public class BasketService {
         Basket basket = userProfile.getBasket();
         basket.getProducts().add(product);
         basketRepo.save(basket);
-        return basket;
+        return BasketDto.build(basket);
     }
 
-    public Basket deleteProduct(String email, Long id){
+    public BasketDto deleteProduct(String email, Long id){
         UserProfile userProfile = usersRepo
                 .findByEmail(email)
                 .orElseThrow(()-> new NotFound("NOT FOUND user"))
@@ -50,8 +51,7 @@ public class BasketService {
         Basket basket = userProfile.getBasket();
         basket.removeProduct(product);
         basketRepo.save(basket);
-        return basket;
-
+        return BasketDto.build(basket);
     }
 
 
