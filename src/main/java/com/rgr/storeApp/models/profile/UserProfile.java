@@ -49,6 +49,10 @@ public class UserProfile implements Serializable {
     @JoinColumn(name = "favorites_id")
     private Favorites favorites;
 
+    private String town;
+
+    private Integer index;
+
     private Integer balance;
 
     @Override

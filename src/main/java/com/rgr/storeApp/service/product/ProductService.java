@@ -7,11 +7,11 @@ import com.rgr.storeApp.dto.product.ProductLiteResponse;
 import com.rgr.storeApp.exceptions.api.NotFound;
 import com.rgr.storeApp.exceptions.api.NotPrivilege;
 import com.rgr.storeApp.models.User;
-import com.rgr.storeApp.models.delivery.Delivery;
 import com.rgr.storeApp.models.product.*;
 import com.rgr.storeApp.models.profile.UserProfile;
 import com.rgr.storeApp.repo.*;
 import com.rgr.storeApp.service.favorites.profile.buy.BuyService;
+import com.rgr.storeApp.service.find.FindService;
 import com.rgr.storeApp.service.store.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,13 +34,14 @@ public class ProductService {
     private final ProductPhotoRepo productPhotoRepo;
     private final BuyService buyService;
     private final StoreService storeService;
+    private final FindService findService;
 
     @Autowired
     public ProductService(ProductsRepo productsRepo,
                           UsersRepo usersRepo,
                           CategoryService categoryService,
                           ProductPhotoRepo productPhotoRepo,
-                          BuyService buyService, StoreService storeService) {
+                          BuyService buyService, StoreService storeService, FindService findService) {
 
         this.productsRepo = productsRepo;
         this.usersRepo = usersRepo;
@@ -48,6 +49,7 @@ public class ProductService {
         this.productPhotoRepo = productPhotoRepo;
         this.buyService = buyService;
         this.storeService = storeService;
+        this.findService = findService;
     }
 
 
@@ -124,9 +126,8 @@ public class ProductService {
     }
 
 
-    public List<ProductResponse> getAll(String email){
-
-        User user = usersRepo.findByEmail(email).orElseThrow(()->new NotFound("User not found"));
+    public List<ProductResponse> getAll(){
+        User user = findService.getUser(findService.getEmailFromAuth());
         Store store = user.getStore();
         return productsRepo
                 .findAllByStore(store)
@@ -141,8 +142,8 @@ public class ProductService {
     }
 
     @Transactional
-    public BuyResponse buy(String email){
-        User user = usersRepo.findByEmail(email).orElseThrow(()-> new NotFound("Not found"));
+    public BuyResponse buy(){
+        User user = findService.getUser(findService.getEmailFromAuth());
         UserProfile userProfile = user.getUserProfile();
         return buyService.addBuy(userProfile);
     }

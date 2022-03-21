@@ -40,65 +40,47 @@ public class UserProfileController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getPrincipal().toString();
         return ResponseEntity.ok(
-                userProfileService.getGeneral(email)
+                userProfileService.getGeneral()
         );
     }
 
     @GetMapping("/get/awaitings")
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
     public ResponseEntity<?> getAwaitings(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getPrincipal().toString();
-        return ResponseEntity.ok(userProfileService.getAwaitings(email));
+        return ResponseEntity.ok(userProfileService.getAwaitings());
     }
 
     @GetMapping("/get/basket")
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
     public ResponseEntity<?> getBasket(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getPrincipal().toString();
-        return ResponseEntity.ok(userProfileService.getBasket(email));
+        return ResponseEntity.ok(userProfileService.getBasket());
     }
 
     @PostMapping("/basket/add/{id}")
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
     public ResponseEntity<?> addInbasket(@PathVariable("id") Long id){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getPrincipal().toString();
-        return ResponseEntity.ok(basketService.addProductInBasket(email, id));
+        return ResponseEntity.ok(basketService.addProductInBasket(id));
     }
 
 
     @DeleteMapping("/basket/add/{id}")
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
     public  ResponseEntity<?> deleteFromBasket(@PathVariable("id") Long id){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getPrincipal().toString();
-        return ResponseEntity.ok(basketService.deleteProduct(email, id));
+        return ResponseEntity.ok(basketService.deleteProduct(id));
 
     }
 
     @PostMapping("/basket/buy")
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
     public ResponseEntity<?> buyProductsFromBasket(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getPrincipal().toString();
-        return ResponseEntity.ok(productService.buy(email));
+        return ResponseEntity.ok(productService.buy());
     }
 
     @PostMapping("/balance/add")
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
     public ResponseEntity<?> addBalance(@RequestBody BalanceRequest balanceRequest){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getPrincipal().toString();
-        return ResponseEntity.ok(balanceService.addBalance(balanceRequest, email));
+        return ResponseEntity.ok(balanceService.addBalance(balanceRequest));
     }
-
-
-
-
-
-
 
 
 

@@ -47,7 +47,6 @@ public class ProductController {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(MediaType.APPLICATION_JSON_VALUE))
                 .body(productService.addProduct(productRequest, email, file, files));
-
     }
 
     @DeleteMapping("/logout")

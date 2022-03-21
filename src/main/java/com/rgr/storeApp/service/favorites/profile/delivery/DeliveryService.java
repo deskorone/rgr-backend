@@ -2,33 +2,34 @@ package com.rgr.storeApp.service.favorites.profile.delivery;
 
 
 import com.rgr.storeApp.exceptions.api.NotFound;
-import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.models.delivery.AwaitingList;
-import com.rgr.storeApp.models.delivery.Delivery;
-import com.rgr.storeApp.repo.DeliveryRepo;
 import com.rgr.storeApp.repo.UsersRepo;
+import com.rgr.storeApp.service.find.FindService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class DeliveryService {
 
     private final UsersRepo usersRepo;
+    private final FindService findService;
 
     @Autowired
-    public DeliveryService(UsersRepo usersRepo) {
+    public DeliveryService(UsersRepo usersRepo, FindService findService) {
         this.usersRepo = usersRepo;
+        this.findService = findService;
     }
 
 
     public AwaitingList getDeliveries(String email){
-        AwaitingList awaitingList = usersRepo.findByEmail(email)
-                .orElseThrow(()->new NotFound("User not found"))
-                .getUserProfile().getAwaitingList();
+        AwaitingList awaitingList = findService.getUser(findService.getEmailFromAuth())
+                .getUserProfile()
+                .getAwaitingList();
         return  awaitingList;
     }
+
+
+    //TODO delivery refresh?
 
 
 }

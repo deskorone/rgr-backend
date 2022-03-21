@@ -75,7 +75,7 @@ public class TestController {
 
     @GetMapping(value = "/product/all")
     public ResponseEntity<?> getAll(){
-        return ResponseEntity.ok(productService.getAll("e1"));
+        return ResponseEntity.ok(productService.getAll());
     }
 
     @GetMapping("/product/{id}")
@@ -99,18 +99,18 @@ public class TestController {
 //        return ResponseEntity.ok(basket);
 //    }
 
-    @PostMapping("/balance/add")
-    public ResponseEntity<?> addBalance(@RequestBody BalanceRequest balanceRequest){
-        String email = "NewUser";
-        return ResponseEntity.ok(balanceService.addBalance(balanceRequest, email));
-    }
+//    @PostMapping("/balance/add")
+//    public ResponseEntity<?> addBalance(@RequestBody BalanceRequest balanceRequest){
+//        String email = "NewUser";
+//        return ResponseEntity.ok(balanceService.addBalance(balanceRequest, email));
+//    }
 
-    @PostMapping("/product/buy")
-    public ResponseEntity<?> buy(){
-        String email = "eee";
-        productService.buy(email);
-        return ResponseEntity.ok().build();
-    }
+//    @PostMapping("/product/buy")
+//    public ResponseEntity<?> buy(){
+//        String email = "eee";
+//        productService.buy(email);
+//        return ResponseEntity.ok().build();
+//    }
 
     @GetMapping("/product/store")
     public ResponseEntity<?> getSklad(){
