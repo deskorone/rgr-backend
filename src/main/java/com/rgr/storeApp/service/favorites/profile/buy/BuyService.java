@@ -28,38 +28,21 @@ import java.util.stream.Collectors;
 public class BuyService {
 
     private final BuyRepo buyRepo;
-    private final BasketRepo basketRepo;
     private final ProductsRepo productsRepo;
-    private final StoreRepo storeRepo;
     private final UserProfileRepo userProfileRepo;
-    private final SalesHistoryRepo salesHistoryRepo;
-    private final BuyHistoryRepo buyHistoryRepo;
-    private final ProductInfoRepo productInfoRepo;
     private final SalesRepo salesRepo;
-    private final AwaitingListRepo awaitingListRepo;
     private final DeliveryRepo deliveryRepo;
 
     @Autowired
     public BuyService(BuyRepo buyRepo,
-                      BasketRepo basketRepo,
                       ProductsRepo productsRepo,
-                      StoreRepo storeRepo,
                       UserProfileRepo userProfileRepo,
-                      SalesHistoryRepo salesHistoryRepo,
-                      BuyHistoryRepo buyHistoryRepo,
-                      ProductInfoRepo productInfoRepo,
                       SalesRepo salesRepo,
-                      AwaitingListRepo awaitingListRepo, DeliveryRepo deliveryRepo) {
+                      DeliveryRepo deliveryRepo) {
         this.buyRepo = buyRepo;
-        this.basketRepo = basketRepo;
         this.productsRepo = productsRepo;
-        this.storeRepo = storeRepo;
         this.userProfileRepo = userProfileRepo;
-        this.salesHistoryRepo = salesHistoryRepo;
-        this.buyHistoryRepo = buyHistoryRepo;
-        this.productInfoRepo = productInfoRepo;
         this.salesRepo = salesRepo;
-        this.awaitingListRepo = awaitingListRepo;
         this.deliveryRepo = deliveryRepo;
     }
 
@@ -87,9 +70,7 @@ public class BuyService {
                         }
                     }
                     productList.stream().forEach(e->basket.removeProduct(e));
-                    Delivery delivery = acceptBuy(userProfile, productList, sum);
-                    Buy buy = new Buy(productList, LocalDateTime.now());
-                    buy.setBuyHistory(buyHistory);
+                    Delivery delivery = acceptBuy(userProfile, productList, sum); // ПЕРЕСЧИТАТЬ СУММУ
                     userProfileRepo.save(userProfile);
                     return BuyResponse.build(delivery);
                 } else {
@@ -131,13 +112,12 @@ public class BuyService {
         Delivery delivery = new Delivery(LocalDateTime.now(), LocalDateTime.now().plus(Period.ofDays(15)));
         BuyHistory buyHistory = userProfile.getBuyHistory();
         buy.setBuyHistory(buyHistory);
+        buy.setDelivery(delivery);
+        buyRepo.save(buy);
         buyHistory.getBuys().add(buy);
-        delivery.setBuy(buy);
         awaitingList.getDeliveries().add(delivery);
         delivery.setList(awaitingList);
-        buyRepo.save(buy);
-        awaitingListRepo.save(awaitingList);
-        userProfileRepo.save(userProfile);
+        delivery.setBuy(buy);
         return deliveryRepo.save(delivery);
     }
 

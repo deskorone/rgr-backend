@@ -30,8 +30,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -82,7 +85,7 @@ public class UserService {
                 refresh_token);
     }
 
-    public LoginResponse refresh(String token, HttpServletRequest request){
+    public LoginResponse refresh(String token, HttpServletRequest request, HttpServletResponse response){
         RefreshToken refreshToken = refreshTokenRepo.findByToken(token).orElseThrow(()-> new NotFound("Token not found"));
         if(refreshToken.getRefreshed() != null){
             throw new NotPrivilege("Token already refreshed");
@@ -91,16 +94,16 @@ public class UserService {
             throw new NotPrivilege("Token expired");
         }
         User user = refreshToken.getUser();
-        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                new UsernamePasswordAuthenticationToken(user.getUsername(), null, userDetails.getAuthorities());
-
-        usernamePasswordAuthenticationToken
-                .setDetails(new WebAuthenticationDetailsSource()
-                        .buildDetails(request));
-
-        SecurityContextHolder.getContext()
-                .setAuthentication(usernamePasswordAuthenticationToken);
+//        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+//        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+//                new UsernamePasswordAuthenticationToken(user.getUsername(), null, userDetails.getAuthorities());
+//
+//        usernamePasswordAuthenticationToken
+//                .setDetails(new WebAuthenticationDetailsSource()
+//                        .buildDetails(request));
+//
+//        SecurityContextHolder.getContext()
+//                .setAuthentication(usernamePasswordAuthenticationToken);
 
         refreshToken.setRefreshed(LocalDateTime.now());
         refreshTokenRepo.save(refreshToken);
@@ -109,8 +112,19 @@ public class UserService {
                 LocalDateTime.now().plusDays(15L));
         newRefreshToken.setUser(user);
         refreshTokenRepo.save(newRefreshToken);
-        //when user log out set refresh in token from cookie
-        return new LoginResponse(jwtBuilder.generateToken(user.getEmail()), newRefreshToken.getToken());
+        String access = jwtBuilder.generateToken(user.getEmail());
+        Cookie access_token = new Cookie("access_token", access);
+        Cookie refresh_token = new Cookie("refresh_token", newRefreshToken.getToken());
+
+        response.addCookie(access_token);
+        response.addCookie(refresh_token);
+        return new LoginResponse(access, newRefreshToken.getToken());
+    }
+
+    @Transactional
+    public void userLogout(String email, HttpServletRequest request){
+        User user = usersRepo.findByEmail(email).orElseThrow(()->new NotFound("User not found"));
+        refreshTokenRepo.deleteAllByUser(user);
     }
 
 
