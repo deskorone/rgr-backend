@@ -1,8 +1,9 @@
-package com.rgr.storeApp.dto;
+package com.rgr.storeApp.dto.product;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.util.List;
 

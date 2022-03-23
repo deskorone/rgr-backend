@@ -9,17 +9,18 @@ import lombok.Data;
 @AllArgsConstructor
 public class ProductLiteResponse {
 
-    private  static String url = "localhost:8080/api/auth/test/product/photo/%s";
+    private  static String url = "localhost:8080/api/products/get/photo/%s";
     private Long id;
     private String photo;
     private String name;
+    private Integer price;
     private Integer available;
     private Double rating;
 
 
     public static ProductLiteResponse build(Product product){
         Double rait;
-        if(product.getReviews() != null) {
+        if(product.getReviews().size() != 0) {
             Double rating = product.getReviews()
                     .stream()
                     .mapToDouble(e -> {
@@ -34,6 +35,7 @@ public class ProductLiteResponse {
                 product.getId(),
                 String.format(url, product.getProductInfo().getMainPhoto().getPath()),
                 product.getProductInfo().getName(),
+                product.getProductInfo().getPrice(),
                 product.getProductInfo().getNumber(),
                 rait
         );

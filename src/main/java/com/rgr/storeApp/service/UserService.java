@@ -21,14 +21,13 @@ import com.rgr.storeApp.repo.RefreshTokenRepo;
 import com.rgr.storeApp.repo.RolesRepo;
 import com.rgr.storeApp.repo.UsersRepo;
 import com.rgr.storeApp.secutity.jwt.JwtBuilder;
+import com.rgr.storeApp.service.find.FindService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +48,7 @@ public class UserService {
     private final JwtBuilder jwtBuilder;
     private final UserDetailsServiceImpl userDetailsService;
     private final RefreshTokenRepo refreshTokenRepo;
+    private final FindService findService;
     @Autowired
     public UserService(UsersRepo usersRepo,
                        RolesRepo rolesRepo,
@@ -56,7 +56,7 @@ public class UserService {
                        AuthenticationManager authenticationManager,
                        JwtBuilder jwtBuilder,
                        UserDetailsServiceImpl userDetailsService,
-                       RefreshTokenRepo refreshTokenRepo) {
+                       RefreshTokenRepo refreshTokenRepo, FindService findService) {
         this.usersRepo = usersRepo;
         this.rolesRepo = rolesRepo;
         this.passwordEncoder = passwordEncoder;
@@ -64,6 +64,7 @@ public class UserService {
         this.jwtBuilder = jwtBuilder;
         this.userDetailsService = userDetailsService;
         this.refreshTokenRepo = refreshTokenRepo;
+        this.findService = findService;
     }
 
     public LoginResponse loginUser(LoginRequest loginRequest){
@@ -94,17 +95,6 @@ public class UserService {
             throw new NotPrivilege("Token expired");
         }
         User user = refreshToken.getUser();
-//        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-//        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-//                new UsernamePasswordAuthenticationToken(user.getUsername(), null, userDetails.getAuthorities());
-//
-//        usernamePasswordAuthenticationToken
-//                .setDetails(new WebAuthenticationDetailsSource()
-//                        .buildDetails(request));
-//
-//        SecurityContextHolder.getContext()
-//                .setAuthentication(usernamePasswordAuthenticationToken);
-
         refreshToken.setRefreshed(LocalDateTime.now());
         refreshTokenRepo.save(refreshToken);
         RefreshToken newRefreshToken = new RefreshToken(jwtBuilder.generateRefreshToken(user.getEmail()),
@@ -121,10 +111,15 @@ public class UserService {
         return new LoginResponse(access, newRefreshToken.getToken());
     }
 
+
     @Transactional
-    public void userLogout(String email, HttpServletRequest request){
-        User user = usersRepo.findByEmail(email).orElseThrow(()->new NotFound("User not found"));
+    public void userLogout(HttpServletResponse httpServletResponse){
+        User user = findService.getUser(findService.getEmailFromAuth());
         refreshTokenRepo.deleteAllByUser(user);
+        Cookie cookie = new Cookie("logout", "");
+        cookie.setMaxAge(0);
+        httpServletResponse.addCookie(cookie);
+
     }
 
 

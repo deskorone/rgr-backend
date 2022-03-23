@@ -19,7 +19,7 @@ public class Category {
     private Long id;
 
     @Column(unique = true)
-    String name;
+    private String name;
 
     @JsonBackReference
     @ManyToMany(mappedBy = "categories", cascade = CascadeType.PERSIST)

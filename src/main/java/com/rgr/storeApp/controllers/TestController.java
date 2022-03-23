@@ -1,24 +1,14 @@
 package com.rgr.storeApp.controllers;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rgr.storeApp.dto.BalanceRequest;
-import com.rgr.storeApp.dto.ProductRequest;
-import com.rgr.storeApp.dto.ProductResponse;
-import com.rgr.storeApp.dto.ReviewRequest;
-import com.rgr.storeApp.models.basket.Basket;
 import com.rgr.storeApp.service.favorites.FavoritesService;
 import com.rgr.storeApp.service.favorites.profile.BalanceService;
 import com.rgr.storeApp.service.favorites.profile.BasketService;
 import com.rgr.storeApp.service.favorites.profile.delivery.DeliveryService;
 import com.rgr.storeApp.service.product.ProductService;
 import com.rgr.storeApp.service.reviews.ReviewsService;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -41,36 +31,29 @@ public class TestController {
         this.favoritesService = favoritesService;
         this.deliveryService = deliveryService;
     }
+//
+//    @PostMapping(value = "/add",  produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
+//    public ResponseEntity<?> add(@RequestParam("mainimage") MultipartFile file, @RequestParam(name = "req") String json,
+//                                    @RequestParam(value = "image", required = false) MultipartFile [] files) {
+//        String email = "e1";
+//        ObjectMapper mapper = new ObjectMapper();
+//        ProductRequest productRequest;
+//        try {
+//            productRequest = mapper.readValue(json, ProductRequest.class);
+//            productRequest.toString();
+//        } catch (JsonProcessingException e) {
+//            System.out.println("BAD JSON");
+//            return ResponseEntity.badRequest().build();
+//        }
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.parseMediaType(MediaType.APPLICATION_JSON_VALUE))
+//                .body(productService.addProduct(productRequest, email, file, files));
+//
+//    }
 
-    @PostMapping(value = "/add",  produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> add(@RequestParam("mainimage") MultipartFile file, @RequestParam(name = "req") String json,
-                                    @RequestParam(value = "image", required = false) MultipartFile [] files) {
-        String email = "e1";
-        ObjectMapper mapper = new ObjectMapper();
-        ProductRequest productRequest;
-        try {
-            productRequest = mapper.readValue(json, ProductRequest.class);
-            productRequest.toString();
-        } catch (JsonProcessingException e) {
-            System.out.println("BAD JSON");
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(MediaType.APPLICATION_JSON_VALUE))
-                .body(productService.addProduct(productRequest, email, file, files));
-
-    }
 
 
 
-    @GetMapping(value = "/product/photo/{path}", produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> getProductPhoto(@PathVariable("path") String path){
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.parseMediaType(MediaType.IMAGE_PNG_VALUE))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\\${System.currentTimeMillis()}\\")
-                .body(productService.getPhoto(path));
-    }
 
 
     @GetMapping(value = "/product/all")
@@ -112,27 +95,22 @@ public class TestController {
 //        return ResponseEntity.ok().build();
 //    }
 
-    @GetMapping("/product/store")
-    public ResponseEntity<?> getSklad(){
-        String email = "e1";
-        return ResponseEntity.ok(productService.getProductsInfo(email));
-    }
+//    @GetMapping("/product/store")
+//    public ResponseEntity<?> getSklad(){
+//        String email = "e1";
+//        return ResponseEntity.ok(productService.getStoreInfo(email));
+//    }
 
-    @DeleteMapping("/product/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id){
-        String email = "e1";
-        productService.deleteProduct(email, id);
-        return ResponseEntity.ok().build();
+//    @DeleteMapping("/product/delete/{id}")
+//    public ResponseEntity<?> delete(@PathVariable("id") Long id){
+//        String email = "e1";
+//        productService.deleteProduct(email, id);
+//        return ResponseEntity.ok().build();
+//
+//    }
 
-    }
 
 
-    @PostMapping("/product/review/add/{id}")
-    public ResponseEntity<?> addReview(@PathVariable("id") Long id, @RequestBody ReviewRequest reviewRequest){
-        String email = "e1";
-        ProductResponse productResponse = reviewsService.addReview(email, reviewRequest, id);
-        return ResponseEntity.ok(productResponse);
-    }
 
 
     @PostMapping("/favorites/add/{id}")

@@ -3,11 +3,11 @@ package com.rgr.storeApp.controllers.profile;
 
 import com.rgr.storeApp.dto.BalanceRequest;
 import com.rgr.storeApp.secutity.jwt.JwtBuilder;
+import com.rgr.storeApp.service.UserService;
 import com.rgr.storeApp.service.favorites.profile.BalanceService;
 import com.rgr.storeApp.service.favorites.profile.BasketService;
 import com.rgr.storeApp.service.favorites.profile.UserProfileService;
 import com.rgr.storeApp.service.product.ProductService;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/profile")
@@ -25,13 +26,15 @@ public class UserProfileController {
     private final BasketService basketService;
     private final ProductService productService;
     private final BalanceService balanceService;
+    private final UserService userService;
 
-    public UserProfileController(JwtBuilder jwtBuilder, UserProfileService userProfileService, BasketService basketService, ProductService productService, BalanceService balanceService) {
+    public UserProfileController(JwtBuilder jwtBuilder, UserProfileService userProfileService, BasketService basketService, ProductService productService, BalanceService balanceService, UserService userService) {
         this.jwtBuilder = jwtBuilder;
         this.userProfileService = userProfileService;
         this.basketService = basketService;
         this.productService = productService;
         this.balanceService = balanceService;
+        this.userService = userService;
     }
 
     @GetMapping("/get")
@@ -69,7 +72,6 @@ public class UserProfileController {
         return ResponseEntity.ok(basketService.deleteProduct(id));
 
     }
-
     @PostMapping("/basket/buy")
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
     public ResponseEntity<?> buyProductsFromBasket(){
@@ -80,6 +82,13 @@ public class UserProfileController {
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
     public ResponseEntity<?> addBalance(@RequestBody BalanceRequest balanceRequest){
         return ResponseEntity.ok(balanceService.addBalance(balanceRequest));
+    }
+
+    @DeleteMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response){
+        userService.userLogout(response);
+        return ResponseEntity.ok().build();
+
     }
 
 

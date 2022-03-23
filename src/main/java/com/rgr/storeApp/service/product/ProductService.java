@@ -1,11 +1,12 @@
 package com.rgr.storeApp.service.product;
 
 import com.rgr.storeApp.dto.product.BuyResponse;
-import com.rgr.storeApp.dto.ProductRequest;
-import com.rgr.storeApp.dto.ProductResponse;
+import com.rgr.storeApp.dto.product.ProductRequest;
+import com.rgr.storeApp.dto.product.ProductResponse;
 import com.rgr.storeApp.dto.product.ProductLiteResponse;
 import com.rgr.storeApp.exceptions.api.NotFound;
 import com.rgr.storeApp.exceptions.api.NotPrivilege;
+import com.rgr.storeApp.models.ERole;
 import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.models.product.*;
 import com.rgr.storeApp.models.profile.UserProfile;
@@ -57,10 +58,9 @@ public class ProductService {
 
     @Transactional
     public ProductResponse addProduct(ProductRequest productRequest,
-                                      String email,
                                       MultipartFile multipartFile,
                                         MultipartFile [] multipartFiles){
-        Store store = usersRepo.findByEmail(email).get().getStore();
+        Store store = findService.getUser(findService.getEmailFromAuth()).getStore();
         Product product = new Product();
         product.setStore(store);
         product.setId_code(UUID.randomUUID().toString());
@@ -137,8 +137,8 @@ public class ProductService {
     }
 
 
-    public Product getProduct(Long id){
-        return productsRepo.findById(id).orElseThrow(()-> new NotFound("Product not found :("));
+    public ProductResponse getProduct(Long id){
+        return ProductResponse.build(findService.findProduct(id));
     }
 
     @Transactional
@@ -150,8 +150,8 @@ public class ProductService {
 
 
 
-    public List<ProductLiteResponse> getProductsInfo(String email){
-        Store store = usersRepo.findByEmail(email).orElseThrow(()->new NotFound("SalesMan not found")).getStore();
+    public List<ProductLiteResponse> getStoreInfo(){
+        Store store = findService.getUser(findService.getEmailFromAuth()).getStore();
         List<ProductLiteResponse> productLiteResponses = store.getProducts()
                 .stream()
                 .map((e)->{
@@ -162,10 +162,10 @@ public class ProductService {
     }
 
 
-    public void deleteProduct(String email, Long id){
-        User user = usersRepo.findByEmail(email).orElseThrow(()-> new NotFound("user not found"));
-        Product product = productsRepo.findById(id).orElseThrow(()-> new NotFound("Product NOT FOUND :(")); // find by id and producer? // maybe delete photo?
-        if (storeService.checkProduct(user, product)) {
+    public void deleteProduct(Long id){
+        User user = findService.getUser(findService.getEmailFromAuth());
+        Product product = findService.findProduct(id);
+        if (storeService.checkProduct(user, product) || user.getRoles().stream().anyMatch(e-> e.getRole().equals(ERole.ROLE_ADMIN))) {
             productsRepo.delete(product);
         }else {
             throw new NotPrivilege("No privilegies");
