@@ -1,12 +1,10 @@
-package com.rgr.storeApp.service.favorites.profile;
+package com.rgr.storeApp.service.profile;
 
 
-import com.rgr.storeApp.dto.userProfile.BasketDto;
-import com.rgr.storeApp.dto.userProfile.UserGeneralProfileResponse;
-import com.rgr.storeApp.dto.userProfile.UserInfoRequest;
-import com.rgr.storeApp.dto.userProfile.UserProfileInfo;
+import com.rgr.storeApp.dto.userProfile.*;
 import com.rgr.storeApp.exceptions.api.NotFound;
 import com.rgr.storeApp.models.User;
+import com.rgr.storeApp.models.basket.BuyHistory;
 import com.rgr.storeApp.models.delivery.AwaitingList;
 import com.rgr.storeApp.repo.AwaitingListRepo;
 import com.rgr.storeApp.repo.UsersRepo;
@@ -33,16 +31,17 @@ public class UserProfileService {
         return UserGeneralProfileResponse.build(user);
     }
 
-    public AwaitingList getAwaitings(){
-        User user = findService.getUser(findService.getEmailFromAuth());
-        return  user.getUserProfile().getAwaitingList();
+    public AwaitingListDto getAwaitings(){
+        return  AwaitingListDto
+                .build(findService.getUser(findService.getEmailFromAuth())
+                        .getUserProfile()
+                        .getAwaitingList());
     }
 
     public BasketDto getBasket(){
         User user = findService.getUser(findService.getEmailFromAuth());
         return BasketDto.build(user.getUserProfile().getBasket());
     }
-
 
     @Transactional
     public UserProfileInfo updateInfo(UserInfoRequest userInfoRequest){
@@ -53,8 +52,14 @@ public class UserProfileService {
         return UserProfileInfo.build(usersRepo.save(user));
     }
 
+    public UserProfileInfo getProfile(Long id){
+        return UserProfileInfo.build(findService.getById(id));
+    }
 
 
-
+    public BuyHistoryDto getBuyHistory(){
+        User user = findService.getUser(findService.getEmailFromAuth());
+        return BuyHistoryDto.build(user.getUserProfile().getBuyHistory());
+    }
 
 }

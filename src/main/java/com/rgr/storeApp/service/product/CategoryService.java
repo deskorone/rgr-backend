@@ -44,17 +44,4 @@ public class CategoryService {
         return categories;
     }
 
-
-    public List<ProductLiteResponse> findName(String name, int count, int size) {
-        try {
-            Pageable pageable = PageRequest.of(count,size);
-            Page<Product> products = productsRepo.finWhereName(name, name, pageable);
-            if(products.getSize() == 0){throw new NotFound(String.format("Product %s not found", name));}
-            return products.stream().map(e->ProductLiteResponse.build(e)).collect(Collectors.toList());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new NotFound("Product found error");
-
-        }
-    }
 }

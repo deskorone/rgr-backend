@@ -1,4 +1,4 @@
-package com.rgr.storeApp.service.favorites.profile.buy;
+package com.rgr.storeApp.service.profile.buy;
 
 
 import com.rgr.storeApp.dto.product.BuyResponse;

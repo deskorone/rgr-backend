@@ -1,6 +1,7 @@
 package com.rgr.storeApp.repo;
 
 import com.rgr.storeApp.models.product.Category;
+import com.rgr.storeApp.models.product.ProductInfo;
 import com.rgr.storeApp.models.product.Store;
 import com.rgr.storeApp.models.product.Product;
 import org.springframework.data.domain.Page;
@@ -21,15 +22,20 @@ public interface ProductsRepo extends JpaRepository<Product, Long> {
 
 
     //select * from product p inner join product_info as pc on p.product_info_id = pc.id inner join product_categories as pcat on pcat.product_id = p.id inner join categories cat on cat.id = pcat.category_id where pc.name like '%test%' or cat.name like '%2%';
-    List<Product> findAllByStore(Store store);
+    @Query(value = "SELECT *  FROM product p inner join product_info as pi on pi.id = p.product_info_id where p.store_id = :#{#store.id}", nativeQuery = true)
+    List<Product> findAllByStore(@Param("store") Store store);
 
-    Optional<Product> findById(Long id);
+    //@Query(value = "SELECT * FROM product p where p.id = :id", nativeQuery = true)
+    Optional<Product> findById(@Param("id") Long id);
 
-    //List<Product> findByCategories_NameLikeOrProductInfo_NameLike(String categoryName, String productName); //WORK
 
-    @Query(value = "select p.* from product p " +
+
+    Page<Product> findDistinctByCategories_NameLikeOrProductInfo_NameLike(String categoryName, String productName, Pageable pageable); //WORK
+
+    @Query(value = "select * from product p " +
             "inner join product_info as pc on p.product_info_id = pc.id " +
-            "inner join product_categories as pcat on pcat.product_id = p.id " +
-            "inner join categories as cat on cat.id = pcat.category_id where pc.name like %:product% or cat.name like %:categoryParam% order by pc.price DESC ", nativeQuery = true)
-    Page<Product> finWhereName(@Param("product") String product, @Param("categoryParam") String categoryParam, Pageable pageable);
+            "where pc.name like %:product% ", nativeQuery = true)
+    Page<Product> finWhereName(@Param("product") String product, Pageable pageable);
+
 }
+

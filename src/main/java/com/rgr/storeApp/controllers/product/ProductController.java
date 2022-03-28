@@ -58,7 +58,7 @@ public class ProductController {
     }
 
 
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
     @PostMapping("/review/add/{id}")
     public ResponseEntity<?> addReview(@PathVariable("id") Long id, @RequestBody ReviewRequest reviewRequest){
         return ResponseEntity.ok(reviewsService.addReview(reviewRequest, id));
@@ -84,7 +84,13 @@ public class ProductController {
     public ResponseEntity<?> find(@RequestParam("count") int count,
                                   @RequestParam("size") int size,
                                   @RequestBody FindRequest findRequest){
-        return ResponseEntity.ok(categoryService.findName(findRequest.getText(), count, size));
+        return ResponseEntity.ok(productService.findByName(findRequest.getText(), count, size));
+    }
+
+    @PreAuthorize("hasRole('SALESMAN') or hasRole('ADMIN')")
+    @GetMapping("/get/store")
+    public ResponseEntity<?> getAll(){
+        return ResponseEntity.ok(productService.getAllByStore());
     }
 
 

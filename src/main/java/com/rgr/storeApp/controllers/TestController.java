@@ -1,10 +1,10 @@
 package com.rgr.storeApp.controllers;
 
 
-import com.rgr.storeApp.service.favorites.FavoritesService;
-import com.rgr.storeApp.service.favorites.profile.BalanceService;
-import com.rgr.storeApp.service.favorites.profile.BasketService;
-import com.rgr.storeApp.service.favorites.profile.delivery.DeliveryService;
+import com.rgr.storeApp.service.profile.favorites.FavoritesService;
+import com.rgr.storeApp.service.profile.BalanceService;
+import com.rgr.storeApp.service.profile.BasketService;
+import com.rgr.storeApp.service.profile.delivery.DeliveryService;
 import com.rgr.storeApp.service.product.ProductService;
 import com.rgr.storeApp.service.reviews.ReviewsService;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +58,7 @@ public class TestController {
 
     @GetMapping(value = "/product/all")
     public ResponseEntity<?> getAll(){
-        return ResponseEntity.ok(productService.getAll());
+        return ResponseEntity.ok(productService.getAllByStore());
     }
 
     @GetMapping("/product/{id}")
@@ -108,30 +108,4 @@ public class TestController {
 //        return ResponseEntity.ok().build();
 //
 //    }
-
-
-
-
-
-    @PostMapping("/favorites/add/{id}")
-    public ResponseEntity<?> addInFavorites(@PathVariable("id") Long id){
-        String email = "eee";
-        return ResponseEntity.ok(favoritesService.addFavoriteProduct(email, id));
-    }
-
-
-    @DeleteMapping("/favorites/delete/{id}")
-    public ResponseEntity<?> deleteInFavorites(@PathVariable("id") Long id){
-
-        String email = "eee";
-        return ResponseEntity.ok(favoritesService.deleteProduct(email, id));
-    }
-
-
-    @GetMapping("/awaitings/deliveries")
-    public ResponseEntity<?> getAwaitingsList(){
-        String email = "eee";
-        return ResponseEntity.ok(deliveryService.getDeliveries(email));
-    }
-
 }

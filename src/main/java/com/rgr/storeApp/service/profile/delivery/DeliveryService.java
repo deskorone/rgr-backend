@@ -1,4 +1,4 @@
-package com.rgr.storeApp.service.favorites.profile.delivery;
+package com.rgr.storeApp.service.profile.delivery;
 
 
 import com.rgr.storeApp.exceptions.api.NotFound;
@@ -21,7 +21,7 @@ public class DeliveryService {
     }
 
 
-    public AwaitingList getDeliveries(String email){
+    public AwaitingList getDeliveries(){
         AwaitingList awaitingList = findService.getUser(findService.getEmailFromAuth())
                 .getUserProfile()
                 .getAwaitingList();

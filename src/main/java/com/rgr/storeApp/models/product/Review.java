@@ -13,6 +13,8 @@ import java.util.List;
 @Data
 @Table(name = "reviews")
 public class Review {
+
+
     public Review(String reviewText, Integer rating) {
         this.reviewText = reviewText;
         this.rating = rating;
@@ -29,7 +31,7 @@ public class Review {
     private User user;
 
     @JsonBackReference
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
@@ -44,4 +46,6 @@ public class Review {
                 "id=" + id +
                 '}';
     }
+
+
 }

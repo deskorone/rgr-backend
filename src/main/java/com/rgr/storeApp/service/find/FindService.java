@@ -24,15 +24,20 @@ public class FindService {
 
 
     public User getUser(String email){
-        return usersRepo.findByEmail(email).orElseThrow(()->new NotFound("Use not found"));
+        return usersRepo.findByEmail(email).orElseThrow(()->new NotFound("User not found"));
     }
 
     public String getEmailFromAuth(){
+        SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     }
 
     public Product findProduct(Long id){
         return productsRepo.findById(id).orElseThrow(()-> new NotFound("Product not found"));
+    }
+
+    public User getById(Long id){
+        return usersRepo.getByUserById(id).orElseThrow(()-> new NotFound("User not found"));
     }
 
 }

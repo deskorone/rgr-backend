@@ -1,4 +1,4 @@
-package com.rgr.storeApp.service.favorites.profile;
+package com.rgr.storeApp.service.profile;
 
 
 import com.rgr.storeApp.dto.userProfile.BasketDto;

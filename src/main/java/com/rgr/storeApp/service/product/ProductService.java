@@ -11,10 +11,14 @@ import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.models.product.*;
 import com.rgr.storeApp.models.profile.UserProfile;
 import com.rgr.storeApp.repo.*;
-import com.rgr.storeApp.service.favorites.profile.buy.BuyService;
+import com.rgr.storeApp.service.profile.buy.BuyService;
 import com.rgr.storeApp.service.find.FindService;
 import com.rgr.storeApp.service.store.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,34 +27,32 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 @Service
 public class ProductService {
 
 
 
     private final ProductsRepo productsRepo;
-    private final UsersRepo usersRepo;
     private final CategoryService categoryService;
     private final ProductPhotoRepo productPhotoRepo;
     private final BuyService buyService;
     private final StoreService storeService;
     private final FindService findService;
+    private final ReviewRepo reviewRepo;
 
     @Autowired
     public ProductService(ProductsRepo productsRepo,
-                          UsersRepo usersRepo,
                           CategoryService categoryService,
                           ProductPhotoRepo productPhotoRepo,
-                          BuyService buyService, StoreService storeService, FindService findService) {
+                          BuyService buyService, StoreService storeService, FindService findService, ReviewRepo reviewRepo) {
 
         this.productsRepo = productsRepo;
-        this.usersRepo = usersRepo;
         this.categoryService = categoryService;
         this.productPhotoRepo = productPhotoRepo;
         this.buyService = buyService;
         this.storeService = storeService;
         this.findService = findService;
+        this.reviewRepo = reviewRepo;
     }
 
 
@@ -108,7 +110,6 @@ public class ProductService {
 
 
     public byte [] getPhoto(String path){
-
         Optional<ProductPhoto> productPhoto = productPhotoRepo.findByPath(path);
         if(productPhoto.isPresent()){
             try{
@@ -126,9 +127,8 @@ public class ProductService {
     }
 
 
-    public List<ProductResponse> getAll(){
-        User user = findService.getUser(findService.getEmailFromAuth());
-        Store store = user.getStore();
+    public List<ProductResponse> getAllByStore(){
+        Store store = findService.getUser(findService.getEmailFromAuth()).getStore();
         return productsRepo
                 .findAllByStore(store)
                 .stream()
@@ -152,13 +152,10 @@ public class ProductService {
 
     public List<ProductLiteResponse> getStoreInfo(){
         Store store = findService.getUser(findService.getEmailFromAuth()).getStore();
-        List<ProductLiteResponse> productLiteResponses = store.getProducts()
+        return store.getProducts()
                 .stream()
-                .map((e)->{
-                    return ProductLiteResponse.build(e);
-                })
+                .map(e-> ProductLiteResponse.build(e, reviewRepo.getRating(e)))
                 .collect(Collectors.toList());
-        return productLiteResponses;
     }
 
 
@@ -171,6 +168,24 @@ public class ProductService {
             throw new NotPrivilege("No privilegies");
         }
     }
+
+    public List<ProductLiteResponse> findByName(String name, int count, int size) {
+        try {
+            Pageable pageable = PageRequest.of(count - 1,size);
+            Page<Product> products = productsRepo.finWhereName(name, pageable);
+            if(products.getSize() == 0){throw new NotFound(String.format("Product %s not found", name));}
+            if(!SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")){
+                User user = findService.getUser(findService.getEmailFromAuth());
+                return products.stream()
+                        .map(e -> ProductLiteResponse.buildForUser(e, user, reviewRepo.getRating(e))).collect(Collectors.toList());
+            }
+            return products.stream().map(e->ProductLiteResponse.build(e, reviewRepo.getRating(e))).collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new NotFound("Pageable error");
+        }
+    }
+
+
 
 
 

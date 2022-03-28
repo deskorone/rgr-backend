@@ -10,7 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginResponse {
-
     private String access_token;
     private String refresh_token;
 }

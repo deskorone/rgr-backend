@@ -24,7 +24,7 @@ public class Product implements Serializable {
 
     private String id_code;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Review> reviews;
 
     public Product(String id_code, List<Review> reviews, List<Category> categories, ProductInfo productInfo, Store store) {
@@ -47,7 +47,7 @@ public class Product implements Serializable {
     inverseJoinColumns = @JoinColumn(name = "category_id"))
     private List<Category> categories;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private ProductInfo productInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)

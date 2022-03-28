@@ -2,56 +2,51 @@ package com.rgr.storeApp.controllers.profile;
 
 
 import com.rgr.storeApp.dto.BalanceRequest;
-import com.rgr.storeApp.secutity.jwt.JwtBuilder;
+import com.rgr.storeApp.dto.userProfile.UserInfoRequest;
 import com.rgr.storeApp.service.UserService;
-import com.rgr.storeApp.service.favorites.profile.BalanceService;
-import com.rgr.storeApp.service.favorites.profile.BasketService;
-import com.rgr.storeApp.service.favorites.profile.UserProfileService;
+import com.rgr.storeApp.service.profile.BalanceService;
+import com.rgr.storeApp.service.profile.BasketService;
+import com.rgr.storeApp.service.profile.UserProfileService;
 import com.rgr.storeApp.service.product.ProductService;
+import com.rgr.storeApp.service.profile.favorites.FavoritesService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api/profile")
 public class UserProfileController {
 
-    private final JwtBuilder jwtBuilder;
     private final UserProfileService userProfileService;
     private final BasketService basketService;
     private final ProductService productService;
     private final BalanceService balanceService;
     private final UserService userService;
+    private final FavoritesService favoritesService;
 
-    public UserProfileController(JwtBuilder jwtBuilder, UserProfileService userProfileService, BasketService basketService, ProductService productService, BalanceService balanceService, UserService userService) {
-        this.jwtBuilder = jwtBuilder;
+    public UserProfileController(UserProfileService userProfileService, BasketService basketService, ProductService productService, BalanceService balanceService, UserService userService, FavoritesService favoritesService) {
         this.userProfileService = userProfileService;
         this.basketService = basketService;
         this.productService = productService;
         this.balanceService = balanceService;
         this.userService = userService;
+        this.favoritesService = favoritesService;
     }
 
     @GetMapping("/get")
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
     public ResponseEntity<?> getGeneralInfo(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getPrincipal().toString();
-        return ResponseEntity.ok(
-                userProfileService.getGeneral()
-        );
+        return ResponseEntity.ok(userProfileService.getGeneral());
     }
 
-    @GetMapping("/get/awaitings")
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
+    @GetMapping("/get/awaitings")
     public ResponseEntity<?> getAwaitings(){
         return ResponseEntity.ok(userProfileService.getAwaitings());
     }
+
 
     @GetMapping("/get/basket")
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
@@ -61,10 +56,9 @@ public class UserProfileController {
 
     @PostMapping("/basket/add/{id}")
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
-    public ResponseEntity<?> addInbasket(@PathVariable("id") Long id){
+    public ResponseEntity<?> addInBasket(@PathVariable("id") Long id) {
         return ResponseEntity.ok(basketService.addProductInBasket(id));
     }
-
 
     @DeleteMapping("/basket/add/{id}")
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
@@ -88,10 +82,32 @@ public class UserProfileController {
     public ResponseEntity<?> logout(HttpServletResponse response){
         userService.userLogout(response);
         return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
+    @PostMapping("/favorites/add/{id}")
+    public ResponseEntity<?> addInFavorites(@PathVariable("id") Long id){
+        return ResponseEntity.ok(favoritesService.addFavoriteProduct(id));
 
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
+    @DeleteMapping("/favorites/add/{id}")
+    public ResponseEntity<?> deleteFromFavorites(@PathVariable("id") Long id){
+        return ResponseEntity.ok(favoritesService.deleteProduct(id));
+    }
 
+    @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
+    @GetMapping("/buyHistory")
+    public ResponseEntity<?> getBuyHistory(){
+        return ResponseEntity.ok(userProfileService.getBuyHistory());
+    }
+
+    @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
+    @PutMapping("/update")
+    public ResponseEntity<?> updateProfile(@RequestBody UserInfoRequest userInfoRequest){
+        return ResponseEntity.ok(userProfileService.updateInfo(userInfoRequest));
+    }
 
 
 }

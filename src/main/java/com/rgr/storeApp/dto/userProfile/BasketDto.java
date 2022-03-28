@@ -21,7 +21,7 @@ public class BasketDto {
         List<ProductLiteResponse>  responses = basket.getProducts()
                 .stream()
                 .map(e ->{
-                    return ProductLiteResponse.build(e);
+                    return ProductLiteResponse.build(e, null);
                 }
                 ).collect(Collectors.toList());
 
