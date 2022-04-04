@@ -1,16 +1,12 @@
 package com.rgr.storeApp.repo;
 
-import com.rgr.storeApp.models.product.Category;
-import com.rgr.storeApp.models.product.ProductInfo;
 import com.rgr.storeApp.models.product.Store;
 import com.rgr.storeApp.models.product.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -28,14 +24,12 @@ public interface ProductsRepo extends JpaRepository<Product, Long> {
     //@Query(value = "SELECT * FROM product p where p.id = :id", nativeQuery = true)
     Optional<Product> findById(@Param("id") Long id);
 
-
-
     Page<Product> findDistinctByCategories_NameLikeOrProductInfo_NameLike(String categoryName, String productName, Pageable pageable); //WORK
 
     @Query(value = "select * from product p " +
             "inner join product_info as pc on p.product_info_id = pc.id " +
             "where pc.name like %:product% ", nativeQuery = true)
-    Page<Product> finWhereName(@Param("product") String product, Pageable pageable);
+    Page<Product> findWhereName(@Param("product") String product, Pageable pageable);
 
 }
 

@@ -49,6 +49,7 @@ public class UserService {
     private final UserDetailsServiceImpl userDetailsService;
     private final RefreshTokenRepo refreshTokenRepo;
     private final FindService findService;
+    private final ConfirmationTokenService confirmationTokenService;
     @Autowired
     public UserService(UsersRepo usersRepo,
                        RolesRepo rolesRepo,
@@ -56,7 +57,7 @@ public class UserService {
                        AuthenticationManager authenticationManager,
                        JwtBuilder jwtBuilder,
                        UserDetailsServiceImpl userDetailsService,
-                       RefreshTokenRepo refreshTokenRepo, FindService findService) {
+                       RefreshTokenRepo refreshTokenRepo, FindService findService, ConfirmationTokenService confirmationTokenService) {
         this.usersRepo = usersRepo;
         this.rolesRepo = rolesRepo;
         this.passwordEncoder = passwordEncoder;
@@ -65,6 +66,7 @@ public class UserService {
         this.userDetailsService = userDetailsService;
         this.refreshTokenRepo = refreshTokenRepo;
         this.findService = findService;
+        this.confirmationTokenService = confirmationTokenService;
     }
 
     public LoginResponse loginUser(LoginRequest loginRequest){
@@ -187,11 +189,10 @@ public class UserService {
         userProfile.setUser(user);
         user.setUserProfile(userProfile);
         user.setRoles(roles);
-        usersRepo.save(user);
 
-        //TODO verification token save
-
-        return null;
+        User userC = usersRepo.save(user);
+        return confirmationTokenService.createToken(user);
     }
+
 
 }

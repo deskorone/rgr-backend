@@ -3,7 +3,9 @@ package com.rgr.storeApp.controllers.profile;
 
 import com.rgr.storeApp.dto.BalanceRequest;
 import com.rgr.storeApp.dto.userProfile.UserInfoRequest;
+import com.rgr.storeApp.service.ConfirmationTokenService;
 import com.rgr.storeApp.service.UserService;
+import com.rgr.storeApp.service.email.EmailService;
 import com.rgr.storeApp.service.profile.BalanceService;
 import com.rgr.storeApp.service.profile.BasketService;
 import com.rgr.storeApp.service.profile.UserProfileService;
@@ -25,14 +27,18 @@ public class UserProfileController {
     private final BalanceService balanceService;
     private final UserService userService;
     private final FavoritesService favoritesService;
+    private final EmailService emailService;
+    private final ConfirmationTokenService confirmationTokenService;
 
-    public UserProfileController(UserProfileService userProfileService, BasketService basketService, ProductService productService, BalanceService balanceService, UserService userService, FavoritesService favoritesService) {
+    public UserProfileController(UserProfileService userProfileService, BasketService basketService, ProductService productService, BalanceService balanceService, UserService userService, FavoritesService favoritesService, EmailService emailService, ConfirmationTokenService confirmationTokenService) {
         this.userProfileService = userProfileService;
         this.basketService = basketService;
         this.productService = productService;
         this.balanceService = balanceService;
         this.userService = userService;
         this.favoritesService = favoritesService;
+        this.emailService = emailService;
+        this.confirmationTokenService = confirmationTokenService;
     }
 
     @GetMapping("/get")
@@ -107,6 +113,12 @@ public class UserProfileController {
     @PutMapping("/update")
     public ResponseEntity<?> updateProfile(@RequestBody UserInfoRequest userInfoRequest){
         return ResponseEntity.ok(userProfileService.updateInfo(userInfoRequest));
+    }
+
+    @GetMapping("/activation/{token}")
+    public ResponseEntity<?> activation(@PathVariable("token") String token){
+        confirmationTokenService.confirmation(token);
+        return ResponseEntity.ok().build();
     }
 
 

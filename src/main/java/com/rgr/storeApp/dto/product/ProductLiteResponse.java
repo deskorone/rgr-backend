@@ -3,9 +3,9 @@ package com.rgr.storeApp.dto.product;
 
 import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.models.product.Product;
+import com.rgr.storeApp.models.product.ProductInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 @Data
 @AllArgsConstructor
@@ -18,18 +18,22 @@ public class ProductLiteResponse {
     private Integer price;
     private Integer available;
     private boolean isFavorite;
+    private boolean inBasket;
     private Double rating;
 
 
     public static ProductLiteResponse build(Product product, Double rating){
+        ProductInfo productInfo = product.getProductInfo();
+
         return new ProductLiteResponse(
                 product.getId(),
                 String.format(url, product.getProductInfo().getMainPhoto().getPath()),
-                product.getProductInfo().getName(),
-                product.getProductInfo().getPrice(),
-                product.getProductInfo().getNumber(),
+                productInfo.getName(),
+                productInfo.getPrice(),
+                productInfo.getNumber(),
                 false,
-                rating
+                false,
+                rating != null ? rating : 0
         );
 
     }
@@ -38,7 +42,13 @@ public class ProductLiteResponse {
         boolean isFav = user.getUserProfile().getFavorites()
                 .getProducts()
                 .stream()
-                .anyMatch(e-> e.getId() == product.getId());
+                .anyMatch(e-> e.getId().equals(product.getId()));
+
+        boolean isBas = user.getUserProfile().getBasket()
+                .getProducts()
+                .stream()
+                .anyMatch(e-> e.getId().equals(product.getId()));
+
         return new ProductLiteResponse(
                 product.getId(),
                 String.format(url, product.getProductInfo().getMainPhoto().getPath()),
@@ -46,6 +56,7 @@ public class ProductLiteResponse {
                 product.getProductInfo().getPrice(),
                 product.getProductInfo().getNumber(),
                 isFav,
+                isBas,
                 rating
         );
 

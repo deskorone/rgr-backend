@@ -14,7 +14,5 @@ import java.util.List;
 public interface UserProfileRepo extends JpaRepository<UserProfile, Long> {
 
 
-    @Query(value = "select p from UserProfile p join fetch p.user where p.id = :id ")
-    UserProfile findByIdFetchUser(@Param("id") Long id);
 
 }

@@ -39,12 +39,13 @@ public class ProductService {
     private final StoreService storeService;
     private final FindService findService;
     private final ReviewRepo reviewRepo;
+    private final ProductInfoRepo productInfoRepo;
 
     @Autowired
     public ProductService(ProductsRepo productsRepo,
                           CategoryService categoryService,
                           ProductPhotoRepo productPhotoRepo,
-                          BuyService buyService, StoreService storeService, FindService findService, ReviewRepo reviewRepo) {
+                          BuyService buyService, StoreService storeService, FindService findService, ReviewRepo reviewRepo, ProductInfoRepo productInfoRepo) {
 
         this.productsRepo = productsRepo;
         this.categoryService = categoryService;
@@ -53,6 +54,7 @@ public class ProductService {
         this.storeService = storeService;
         this.findService = findService;
         this.reviewRepo = reviewRepo;
+        this.productInfoRepo = productInfoRepo;
     }
 
 
@@ -172,7 +174,7 @@ public class ProductService {
     public List<ProductLiteResponse> findByName(String name, int count, int size) {
         try {
             Pageable pageable = PageRequest.of(count - 1,size);
-            Page<Product> products = productsRepo.finWhereName(name, pageable);
+            Page<Product> products = productsRepo.findWhereName(name, pageable);
             if(products.getSize() == 0){throw new NotFound(String.format("Product %s not found", name));}
             if(!SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")){
                 User user = findService.getUser(findService.getEmailFromAuth());

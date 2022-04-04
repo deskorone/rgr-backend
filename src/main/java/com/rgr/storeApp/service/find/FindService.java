@@ -3,7 +3,9 @@ package com.rgr.storeApp.service.find;
 import com.rgr.storeApp.exceptions.api.NotFound;
 import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.models.product.Product;
+import com.rgr.storeApp.models.profile.UserProfile;
 import com.rgr.storeApp.repo.ProductsRepo;
+import com.rgr.storeApp.repo.UserProfileRepo;
 import com.rgr.storeApp.repo.UsersRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,12 +16,14 @@ public class FindService {
 
     private final UsersRepo usersRepo;
     private final ProductsRepo productsRepo;
+    private final UserProfileRepo userProfileRepo;
 
 
     @Autowired
-    public FindService(UsersRepo usersRepo, ProductsRepo productsRepo) {
+    public FindService(UsersRepo usersRepo, ProductsRepo productsRepo, UserProfileRepo userProfileRepo) {
         this.usersRepo = usersRepo;
         this.productsRepo = productsRepo;
+        this.userProfileRepo = userProfileRepo;
     }
 
 
@@ -38,6 +42,10 @@ public class FindService {
 
     public User getById(Long id){
         return usersRepo.getByUserById(id).orElseThrow(()-> new NotFound("User not found"));
+    }
+
+    public UserProfile getProfile(User user){
+        return null;
     }
 
 }

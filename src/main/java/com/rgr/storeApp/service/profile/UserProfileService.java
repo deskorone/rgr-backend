@@ -4,8 +4,6 @@ package com.rgr.storeApp.service.profile;
 import com.rgr.storeApp.dto.userProfile.*;
 import com.rgr.storeApp.exceptions.api.NotFound;
 import com.rgr.storeApp.models.User;
-import com.rgr.storeApp.models.basket.BuyHistory;
-import com.rgr.storeApp.models.delivery.AwaitingList;
 import com.rgr.storeApp.repo.AwaitingListRepo;
 import com.rgr.storeApp.repo.UsersRepo;
 import com.rgr.storeApp.service.find.FindService;
@@ -33,8 +31,7 @@ public class UserProfileService {
 
     public AwaitingListDto getAwaitings(){
         return  AwaitingListDto
-                .build(findService.getUser(findService.getEmailFromAuth())
-                        .getUserProfile()
+                .build(findService.getUser(findService.getEmailFromAuth()).getUserProfile()
                         .getAwaitingList());
     }
 
