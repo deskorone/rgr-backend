@@ -30,8 +30,6 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService {
 
-
-
     private final ProductsRepo productsRepo;
     private final CategoryService categoryService;
     private final ProductPhotoRepo productPhotoRepo;
@@ -117,11 +115,9 @@ public class ProductService {
             try{
                 File file = new File((String.format("src/main/resources/static/images/%s", path)));
                 InputStream stream = new FileInputStream(file);
-                System.out.println("WORK");
                 return stream.readAllBytes();
             }catch (IOException e){
-                e.printStackTrace();
-                throw new NotFound("Photo not found");
+                throw new NotFound("Photo not found or path not found");
             }
         }else {
             throw new NotFound("Photo not found");

@@ -21,6 +21,7 @@ import com.rgr.storeApp.repo.RefreshTokenRepo;
 import com.rgr.storeApp.repo.RolesRepo;
 import com.rgr.storeApp.repo.UsersRepo;
 import com.rgr.storeApp.secutity.jwt.JwtBuilder;
+import com.rgr.storeApp.service.email.EmailService;
 import com.rgr.storeApp.service.find.FindService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -46,27 +47,27 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtBuilder jwtBuilder;
-    private final UserDetailsServiceImpl userDetailsService;
     private final RefreshTokenRepo refreshTokenRepo;
     private final FindService findService;
     private final ConfirmationTokenService confirmationTokenService;
+    private final EmailService emailService;
+
     @Autowired
     public UserService(UsersRepo usersRepo,
                        RolesRepo rolesRepo,
                        PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager,
                        JwtBuilder jwtBuilder,
-                       UserDetailsServiceImpl userDetailsService,
-                       RefreshTokenRepo refreshTokenRepo, FindService findService, ConfirmationTokenService confirmationTokenService) {
+                       RefreshTokenRepo refreshTokenRepo, FindService findService, ConfirmationTokenService confirmationTokenService, EmailService emailService) {
         this.usersRepo = usersRepo;
         this.rolesRepo = rolesRepo;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtBuilder = jwtBuilder;
-        this.userDetailsService = userDetailsService;
         this.refreshTokenRepo = refreshTokenRepo;
         this.findService = findService;
         this.confirmationTokenService = confirmationTokenService;
+        this.emailService = emailService;
     }
 
     public LoginResponse loginUser(LoginRequest loginRequest){
@@ -87,6 +88,9 @@ public class UserService {
         return new LoginResponse(access_token,
                 refresh_token);
     }
+
+
+
 
     public LoginResponse refresh(String token, HttpServletRequest request, HttpServletResponse response){
         RefreshToken refreshToken = refreshTokenRepo.findByToken(token).orElseThrow(()-> new NotFound("Token not found"));
@@ -114,6 +118,9 @@ public class UserService {
     }
 
 
+
+
+
     @Transactional
     public void userLogout(HttpServletResponse httpServletResponse){
         User user = findService.getUser(findService.getEmailFromAuth());
@@ -137,7 +144,7 @@ public class UserService {
         User user = new User(registrationRequest.getEmail(),
                 registrationRequest.getUsername(),
                 passwordEncoder.encode(registrationRequest.getPassword()),
-                true,
+                false,
                 false);
 
         user.setUsername(registrationRequest.getUsername());
@@ -191,7 +198,9 @@ public class UserService {
         user.setRoles(roles);
 
         User userC = usersRepo.save(user);
-        return confirmationTokenService.createToken(user);
+        String token = confirmationTokenService.createToken(userC);
+        emailService.sendVerification(token, user.getEmail(), user.getUsername());
+        return "OK";
     }
 
 

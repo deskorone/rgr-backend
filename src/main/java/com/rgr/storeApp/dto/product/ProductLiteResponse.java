@@ -11,7 +11,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class ProductLiteResponse {
 
-    private  static String url = "localhost:8080/api/products/get/photo/%s";
+    private  static String url = "http://localhost:8080/api/products/get/photo/%s";
     private Long id;
     private String photo;
     private String name;

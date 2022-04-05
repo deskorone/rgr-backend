@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class ProductResponse {
 
-    private  static String url = "localhost:8080/api/products/get/photo/%s";
+    private  static String url = "http://localhost:8080/api/products/get/photo/%s";
 
     private Long id;
 

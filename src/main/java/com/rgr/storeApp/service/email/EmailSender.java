@@ -2,5 +2,5 @@ package com.rgr.storeApp.service.email;
 
 
 public interface EmailSender {
-    void send(String to, String email);
+    void sendVerification(String to, String email, String username);
 }
