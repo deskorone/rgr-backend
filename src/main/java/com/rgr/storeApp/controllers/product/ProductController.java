@@ -24,13 +24,11 @@ public class ProductController {
     private final JwtBuilder jwtBuilder;
     private final ProductService productService;
     private final ReviewsService reviewsService;
-    private final CategoryService categoryService;
 
-    public ProductController(JwtBuilder jwtBuilder, ProductService productService, ReviewsService reviewsService, CategoryService categoryService) {
+    public ProductController(JwtBuilder jwtBuilder, ProductService productService, ReviewsService reviewsService) {
         this.jwtBuilder = jwtBuilder;
         this.productService = productService;
         this.reviewsService = reviewsService;
-        this.categoryService = categoryService;
     }
 
     @PreAuthorize("hasRole('SALESMAN')")
@@ -41,7 +39,6 @@ public class ProductController {
         ProductRequest productRequest;
         try {
             productRequest = mapper.readValue(json, ProductRequest.class);
-            productRequest.toString();
         } catch (JsonProcessingException e) {
             return ResponseEntity.badRequest().build();
         }
@@ -68,7 +65,6 @@ public class ProductController {
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getProductInfo(@PathVariable("id") Long id){
         return ResponseEntity.ok(productService.getProduct(id));
-
     }
 
     @GetMapping(value = "/get/photo/{path}", produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -76,7 +72,6 @@ public class ProductController {
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType(MediaType.IMAGE_PNG_VALUE))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\\${System.currentTimeMillis()}\\")
                 .body(productService.getPhoto(path));
     }
 

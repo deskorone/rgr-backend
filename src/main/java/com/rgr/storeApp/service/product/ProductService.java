@@ -1,9 +1,10 @@
 package com.rgr.storeApp.service.product;
 
-import com.rgr.storeApp.dto.product.BuyResponse;
+import com.rgr.storeApp.dto.userProfile.BuyResponse;
 import com.rgr.storeApp.dto.product.ProductRequest;
 import com.rgr.storeApp.dto.product.ProductResponse;
 import com.rgr.storeApp.dto.product.ProductLiteResponse;
+import com.rgr.storeApp.dto.userProfile.DeliveryDto;
 import com.rgr.storeApp.exceptions.api.NotFound;
 import com.rgr.storeApp.exceptions.api.NotPrivilege;
 import com.rgr.storeApp.models.ERole;
@@ -37,14 +38,14 @@ public class ProductService {
     private final StoreService storeService;
     private final FindService findService;
     private final ReviewRepo reviewRepo;
-    private final ProductInfoRepo productInfoRepo;
 
     @Autowired
     public ProductService(ProductsRepo productsRepo,
                           CategoryService categoryService,
                           ProductPhotoRepo productPhotoRepo,
-                          BuyService buyService, StoreService storeService, FindService findService, ReviewRepo reviewRepo, ProductInfoRepo productInfoRepo) {
-
+                          BuyService buyService, StoreService storeService,
+                          FindService findService,
+                          ReviewRepo reviewRepo) {
         this.productsRepo = productsRepo;
         this.categoryService = categoryService;
         this.productPhotoRepo = productPhotoRepo;
@@ -52,7 +53,6 @@ public class ProductService {
         this.storeService = storeService;
         this.findService = findService;
         this.reviewRepo = reviewRepo;
-        this.productInfoRepo = productInfoRepo;
     }
 
 
@@ -140,21 +140,12 @@ public class ProductService {
     }
 
     @Transactional
-    public BuyResponse buy(){
+    public DeliveryDto buy(){
         User user = findService.getUser(findService.getEmailFromAuth());
         UserProfile userProfile = user.getUserProfile();
         return buyService.addBuy(userProfile);
     }
 
-
-
-    public List<ProductLiteResponse> getStoreInfo(){
-        Store store = findService.getUser(findService.getEmailFromAuth()).getStore();
-        return store.getProducts()
-                .stream()
-                .map(e-> ProductLiteResponse.build(e, reviewRepo.getRating(e)))
-                .collect(Collectors.toList());
-    }
 
 
     public void deleteProduct(Long id){

@@ -115,11 +115,4 @@ public class UserProfileController {
         return ResponseEntity.ok(userProfileService.updateInfo(userInfoRequest));
     }
 
-    @GetMapping("/activation/{token}")
-    public ResponseEntity<?> activation(@PathVariable("token") String token){
-        confirmationTokenService.confirmation(token);
-        return ResponseEntity.ok().build();
-    }
-
-
 }

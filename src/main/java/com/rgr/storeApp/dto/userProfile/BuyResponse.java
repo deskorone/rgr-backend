@@ -1,4 +1,4 @@
-package com.rgr.storeApp.dto.product;
+package com.rgr.storeApp.dto.userProfile;
 
 
 import com.rgr.storeApp.models.delivery.Delivery;
@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 @AllArgsConstructor

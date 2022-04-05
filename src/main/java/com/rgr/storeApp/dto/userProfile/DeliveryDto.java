@@ -1,18 +1,12 @@
 package com.rgr.storeApp.dto.userProfile;
 
 
-import com.rgr.storeApp.dto.product.BuyDto;
-import com.rgr.storeApp.dto.product.ProductLiteResponse;
-import com.rgr.storeApp.models.basket.Buy;
-import com.rgr.storeApp.models.delivery.AwaitingList;
 import com.rgr.storeApp.models.delivery.Delivery;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor

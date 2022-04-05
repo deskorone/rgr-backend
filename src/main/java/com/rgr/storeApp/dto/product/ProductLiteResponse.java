@@ -18,7 +18,6 @@ public class ProductLiteResponse {
     private Integer price;
     private Integer available;
     private boolean isFavorite;
-    private boolean inBasket;
     private Double rating;
 
 
@@ -32,7 +31,6 @@ public class ProductLiteResponse {
                 productInfo.getPrice(),
                 productInfo.getNumber(),
                 false,
-                false,
                 rating != null ? rating : 0
         );
 
@@ -44,11 +42,6 @@ public class ProductLiteResponse {
                 .stream()
                 .anyMatch(e-> e.getId().equals(product.getId()));
 
-        boolean isBas = user.getUserProfile().getBasket()
-                .getProducts()
-                .stream()
-                .anyMatch(e-> e.getId().equals(product.getId()));
-
         return new ProductLiteResponse(
                 product.getId(),
                 String.format(url, product.getProductInfo().getMainPhoto().getPath()),
@@ -56,7 +49,6 @@ public class ProductLiteResponse {
                 product.getProductInfo().getPrice(),
                 product.getProductInfo().getNumber(),
                 isFav,
-                isBas,
                 rating
         );
 

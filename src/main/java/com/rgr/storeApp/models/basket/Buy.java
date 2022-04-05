@@ -53,6 +53,13 @@ public class Buy {
                 '}';
     }
 
+    public Buy(List<Product> products, LocalDateTime dateBuy, Integer sum, BuyHistory buyHistory) {
+        this.products = products;
+        this.dateBuy = dateBuy;
+        this.sum = sum;
+        this.buyHistory = buyHistory;
+    }
+
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "history_id")

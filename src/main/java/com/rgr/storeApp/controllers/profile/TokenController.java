@@ -26,11 +26,5 @@ public class TokenController {
         return "emailAccept";
     }
 
-//    @RequestMapping(value = "/api/accept/refresh", method = RequestMethod.POST)
-//    public String hello(String email, Model model){
-//        model.addAttribute("conf", confirmationTokenService.sendNewConfirmation(email));
-//        return "emailRefresh";
-//    }
-
 
 }

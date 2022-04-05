@@ -30,7 +30,6 @@ public class Delivery {
     private LocalDateTime arrival;
 
 
-
     @OneToOne
     @JoinColumn(name = "buy_id", nullable = false)
     private Buy buy;

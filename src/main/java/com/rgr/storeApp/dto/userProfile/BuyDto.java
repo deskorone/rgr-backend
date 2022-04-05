@@ -1,8 +1,8 @@
-package com.rgr.storeApp.dto.product;
+package com.rgr.storeApp.dto.userProfile;
 
 
+import com.rgr.storeApp.dto.product.ProductLiteResponse;
 import com.rgr.storeApp.models.basket.Buy;
-import com.rgr.storeApp.models.product.Product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

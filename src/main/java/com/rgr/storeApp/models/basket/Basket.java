@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.rgr.storeApp.models.product.Product;
 import com.rgr.storeApp.models.profile.UserProfile;
 import lombok.Data;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import javax.persistence.*;
@@ -14,7 +15,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "basket")
-public class Basket implements Serializable {
+public class Basket  {
 
     public Basket(){}
 
@@ -38,9 +39,10 @@ public class Basket implements Serializable {
     @JoinColumn(name = "user_profile_id", referencedColumnName = "id")
     UserProfile userProfile;
 
+
+
     public void removeProduct(Product product){
-        this.products.remove(product);
-        product.getBaskets().remove(this);
+        products.remove(product);
 
     }
 

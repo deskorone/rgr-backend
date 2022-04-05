@@ -1,7 +1,6 @@
 package com.rgr.storeApp.dto.userProfile;
 
 
-import com.rgr.storeApp.dto.product.BuyDto;
 import com.rgr.storeApp.models.basket.BuyHistory;
 import lombok.AllArgsConstructor;
 import lombok.Data;

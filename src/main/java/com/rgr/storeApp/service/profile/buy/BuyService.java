@@ -1,7 +1,8 @@
 package com.rgr.storeApp.service.profile.buy;
 
 
-import com.rgr.storeApp.dto.product.BuyResponse;
+import com.rgr.storeApp.dto.userProfile.BuyResponse;
+import com.rgr.storeApp.dto.userProfile.DeliveryDto;
 import com.rgr.storeApp.exceptions.api.NotFound;
 import com.rgr.storeApp.exceptions.api.NotPrivilege;
 import com.rgr.storeApp.models.basket.Basket;
@@ -32,28 +33,28 @@ public class BuyService {
     private final UserProfileRepo userProfileRepo;
     private final SalesRepo salesRepo;
     private final DeliveryRepo deliveryRepo;
+    private final BuyHistoryRepo buyHistoryRepo;
 
     @Autowired
     public BuyService(BuyRepo buyRepo,
                       ProductsRepo productsRepo,
                       UserProfileRepo userProfileRepo,
                       SalesRepo salesRepo,
-                      DeliveryRepo deliveryRepo) {
+                      DeliveryRepo deliveryRepo, BuyHistoryRepo buyHistoryRepo) {
         this.buyRepo = buyRepo;
         this.productsRepo = productsRepo;
         this.userProfileRepo = userProfileRepo;
         this.salesRepo = salesRepo;
         this.deliveryRepo = deliveryRepo;
+        this.buyHistoryRepo = buyHistoryRepo;
     }
 
 
-    public BuyResponse addBuy(UserProfile userProfile){
+    public DeliveryDto addBuy(UserProfile userProfile){
         List<Product> products = userProfile.getBasket().getProducts();
         if (products.size() != 0) { // Переделать проверку
             Integer balance = userProfile.getBalance();
             Basket basket = userProfile.getBasket();
-            BuyHistory buyHistory = basket.getUserProfile().getBuyHistory();
-            if (products != null) {
                 Integer sum = products
                         .stream()
                         .map(e -> e.getProductInfo().getPrice()).collect(Collectors.toList())
@@ -64,32 +65,30 @@ public class BuyService {
                     List<Product> productList = new ArrayList<>();
                     for (Product i : products) {
                         if (buyProducer(userProfile, i)) {
-                            System.out.println("work");
                             userProfile.minusMoney(i.getProductInfo().getPrice());
                             productList.add(i);
                         }
                     }
-                    productList.stream().forEach(e->basket.removeProduct(e));
+                    productList.forEach(basket::removeProduct);
                     Delivery delivery = acceptBuy(userProfile, productList, sum); // ПЕРЕСЧИТАТЬ СУММУ
+                    System.out.println("GOOD");
+                    userProfile.getAwaitingList().getDeliveries().add(delivery);
                     userProfileRepo.save(userProfile);
-                    return BuyResponse.build(delivery);
+                    return DeliveryDto.build(delivery);
                 } else {
                     throw new NotPrivilege("No balance");
                 }
-            }
         }else {
             throw new NotFound("Basket is empty");
         }
-        return null;
     }
 
     private boolean buyProducer(UserProfile userProfile, Product product){
         Store store = product.getStore();
         UserProfile profile = store.getUser().getUserProfile();
         ProductInfo productInfo = product.getProductInfo();
-        int avaible = productInfo.getNumber();
-        if(avaible > 0){
-            productInfo.setNumber(avaible--);
+        if(productInfo.getNumber() > 0){
+            productInfo.setNumber(productInfo.getNumber() - 1);
             profile.addMoney(productInfo.getPrice());
             Sales sales = new Sales(LocalDateTime.now(),
                     store.getSellHistory(),
@@ -105,20 +104,14 @@ public class BuyService {
 
 
     private Delivery acceptBuy(UserProfile userProfile, List<Product> products, Integer sum){
-        AwaitingList awaitingList = userProfile.getAwaitingList();
-        Buy buy = new Buy(products, LocalDateTime.now());
-        buy.setSum(sum);
-        // send check to email
-        Delivery delivery = new Delivery(LocalDateTime.now(), LocalDateTime.now().plus(Period.ofDays(15)));
         BuyHistory buyHistory = userProfile.getBuyHistory();
-        buy.setBuyHistory(buyHistory);
+        Buy buy = new Buy(products, LocalDateTime.now(), sum , buyHistory);
+        Delivery delivery = new Delivery(LocalDateTime.now(), LocalDateTime.now().plusDays(10L));
+        delivery.setBuy(buy);
         buy.setDelivery(delivery);
         buyRepo.save(buy);
-        buyHistory.getBuys().add(buy);
-        awaitingList.getDeliveries().add(delivery);
-        delivery.setList(awaitingList);
-        delivery.setBuy(buy);
         return deliveryRepo.save(delivery);
+
     }
 
 

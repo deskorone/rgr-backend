@@ -35,7 +35,7 @@ public class EmailService implements EmailSender{
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
             Map model = new HashMap();
-            model.put("username", "");
+            model.put("username", username);
             model.put("url", url);
             helper.setText(emailBuilderService.getVerificationEmail(model), true);
             helper.setSubject("Подтвердение");
