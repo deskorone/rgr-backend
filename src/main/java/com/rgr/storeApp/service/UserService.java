@@ -109,8 +109,9 @@ public class UserService {
         refreshTokenRepo.deleteAllByUser(user);
         Cookie c = new Cookie("access_token", "-");
         Cookie cookie = new Cookie("refresh_token", "-");
+        SecurityContextHolder.clearContext();
         c.setPath("/");
-        c.setPath("/");
+        cookie.setPath("/");
         httpServletResponse.addCookie(cookie);
         httpServletResponse.addCookie(c);
 

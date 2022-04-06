@@ -70,20 +70,21 @@ public class TokenFilterImpl extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
-        // TODO maybe ignore authURL?
         try {
             try {
-                String token = getTokenFromRequest(request, response);//add in cookie
-                if (token != null) {
-                    String email = jwtBuilder.getEmailFromToken(token);
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                            new UsernamePasswordAuthenticationToken(email, null, userDetails.getAuthorities());
-                    usernamePasswordAuthenticationToken
-                            .setDetails(new WebAuthenticationDetailsSource()
-                                    .buildDetails(request));
-                    SecurityContextHolder.getContext()
-                            .setAuthentication(usernamePasswordAuthenticationToken);
+                if (!request.getServletPath().startsWith("/api/auth/")){
+                    String token = getTokenFromRequest(request, response);//add in cookie
+                    if (token != null) {
+                        String email = jwtBuilder.getEmailFromToken(token);
+                        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                                new UsernamePasswordAuthenticationToken(email, null, userDetails.getAuthorities());
+                        usernamePasswordAuthenticationToken
+                                .setDetails(new WebAuthenticationDetailsSource()
+                                        .buildDetails(request));
+                        SecurityContextHolder.getContext()
+                                .setAuthentication(usernamePasswordAuthenticationToken);
+                    }
                 }
             } catch (Exception e) {
                 Map<String, String> errors = new HashMap<>();
@@ -96,6 +97,7 @@ public class TokenFilterImpl extends OncePerRequestFilter {
 
             }
             filterChain.doFilter(request, response);
+
         } catch (IOException e) {
             //log this
         } catch (ServletException e) {

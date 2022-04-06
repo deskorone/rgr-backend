@@ -29,7 +29,7 @@ public class RefreshService {
 
 
     public LoginResponse refresh(String token, HttpServletResponse response){
-        RefreshToken refreshToken = refreshTokenRepo.findByToken(token).orElseThrow(()-> new NotFound("Token not found"));
+        RefreshToken refreshToken = refreshTokenRepo.findByToken(token).orElseThrow(()-> new NotFound("Please authorize!"));
         if(refreshToken.getRefreshed() != null){
             throw new NotPrivilege("Token already refreshed");
         }
