@@ -58,7 +58,10 @@ public class UserService {
                        PasswordEncoder passwordEncoder,
                        AuthenticationManager authenticationManager,
                        JwtBuilder jwtBuilder,
-                       RefreshTokenRepo refreshTokenRepo, FindService findService, ConfirmationTokenService confirmationTokenService, EmailService emailService) {
+                       RefreshTokenRepo refreshTokenRepo,
+                       FindService findService,
+                       ConfirmationTokenService confirmationTokenService,
+                       EmailService emailService) {
         this.usersRepo = usersRepo;
         this.rolesRepo = rolesRepo;
         this.passwordEncoder = passwordEncoder;
@@ -70,13 +73,13 @@ public class UserService {
         this.emailService = emailService;
     }
 
-    public LoginResponse loginUser(LoginRequest loginRequest){
+    public LoginResponse loginUser(LoginRequest loginRequest, HttpServletResponse response){
 
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(
                    loginRequest.getEmail(), loginRequest.getPassword()
                 ));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        //SecurityContextHolder.getContext().setAuthentication(authentication); // TODO check usability
         String access_token = jwtBuilder.generateToken(loginRequest.getEmail());
         String refresh_token = jwtBuilder.generateRefreshToken(loginRequest.getEmail());
         User user = usersRepo.findByEmail(loginRequest.getEmail()).orElseThrow(()->new NotFound("User not found"));
@@ -85,36 +88,15 @@ public class UserService {
                 LocalDateTime.now().plusDays(15L));
         refreshToken.setUser(user);
         refreshTokenRepo.save(refreshToken);
+
+        Cookie access_cookie = new Cookie("access_token", access_token);
+        Cookie refresh_cookie = new Cookie("refresh_token", refresh_token);
+        access_cookie.setPath("/");
+        refresh_cookie.setPath("/");
+        response.addCookie(access_cookie);
+        response.addCookie(refresh_cookie);
         return new LoginResponse(access_token,
                 refresh_token);
-    }
-
-
-
-
-    public LoginResponse refresh(String token, HttpServletRequest request, HttpServletResponse response){
-        RefreshToken refreshToken = refreshTokenRepo.findByToken(token).orElseThrow(()-> new NotFound("Token not found"));
-        if(refreshToken.getRefreshed() != null){
-            throw new NotPrivilege("Token already refreshed");
-        }
-        if(refreshToken.getExpired().isBefore(LocalDateTime.now())){
-            throw new NotPrivilege("Token expired");
-        }
-        User user = refreshToken.getUser();
-        refreshToken.setRefreshed(LocalDateTime.now());
-        refreshTokenRepo.save(refreshToken);
-        RefreshToken newRefreshToken = new RefreshToken(jwtBuilder.generateRefreshToken(user.getEmail()),
-                LocalDateTime.now(),
-                LocalDateTime.now().plusDays(15L));
-        newRefreshToken.setUser(user);
-        refreshTokenRepo.save(newRefreshToken);
-        String access = jwtBuilder.generateToken(user.getEmail());
-        Cookie access_token = new Cookie("access_token", access);
-        Cookie refresh_token = new Cookie("refresh_token", newRefreshToken.getToken());
-
-        response.addCookie(access_token);
-        response.addCookie(refresh_token);
-        return new LoginResponse(access, newRefreshToken.getToken());
     }
 
 

@@ -32,11 +32,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse){
-        LoginResponse loginResponse = userService.loginUser(loginRequest);
-        Cookie access_token = new Cookie("access_token", loginResponse.getAccess_token());
-        Cookie refresh_token = new Cookie("refresh_token", loginResponse.getRefresh_token());
-        httpServletResponse.addCookie(access_token);
-        httpServletResponse.addCookie(refresh_token);
+        LoginResponse loginResponse = userService.loginUser(loginRequest, httpServletResponse);
         return ResponseEntity.ok(loginResponse);
     }
 
@@ -46,13 +42,13 @@ public class AuthController {
     }
 
 
-    @GetMapping("/refresh")
-    public ResponseEntity<?> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-                                          HttpServletRequest httpServletRequest,
-                                          HttpServletResponse httpServletResponse){
-        LoginResponse loginResponse = userService.refresh(token.substring(7), httpServletRequest, httpServletResponse);
-        return ResponseEntity.ok(loginResponse);
-    }
+//    @GetMapping("/refresh")
+//    public ResponseEntity<?> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+//                                          HttpServletRequest httpServletRequest,
+//                                          HttpServletResponse httpServletResponse){
+//        LoginResponse loginResponse = userService.refresh(token.substring(7), httpServletRequest, httpServletResponse);
+//        return ResponseEntity.ok(loginResponse);
+//    }
 
 
 

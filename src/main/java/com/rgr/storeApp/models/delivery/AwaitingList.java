@@ -32,4 +32,9 @@ public class AwaitingList {
                 "id=" + id +
                 '}';
     }
+
+    public void deleteDelivery(Delivery delivery){
+        deliveries.remove(delivery);
+    }
+
 }

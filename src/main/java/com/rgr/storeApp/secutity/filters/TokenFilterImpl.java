@@ -4,6 +4,7 @@ package com.rgr.storeApp.secutity.filters;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rgr.storeApp.secutity.jwt.JwtBuilder;
 import com.rgr.storeApp.service.UserDetailsServiceImpl;
+import com.rgr.storeApp.service.profile.RefreshService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,19 +29,37 @@ public class TokenFilterImpl extends OncePerRequestFilter {
 
     private final JwtBuilder jwtBuilder;
     private final UserDetailsServiceImpl userDetailsService;
+    private final RefreshService refreshService;
 
 
     @Autowired
-    public TokenFilterImpl(JwtBuilder jwtBuilder, UserDetailsServiceImpl userDetailsService) {
+    public TokenFilterImpl(JwtBuilder jwtBuilder, UserDetailsServiceImpl userDetailsService, RefreshService refreshService) {
         this.jwtBuilder = jwtBuilder;
         this.userDetailsService = userDetailsService;
+        this.refreshService = refreshService;
     }
 
-    private String getTokenFromRequest(HttpServletRequest request){
-        String header = request.getHeader("Authorization");
-
-        if(StringUtils.hasText(header) && header.startsWith("Bearer")){
-            return header.substring(7);
+    private String getTokenFromRequest(HttpServletRequest request, HttpServletResponse response){
+        Cookie [] cookies = request.getCookies();
+        String accessToken = null;
+        String refreshToken = null;
+        if(cookies == null){
+            return null;
+        }
+        for (Cookie c : cookies){
+            if(c.getName().equals("access_token")){
+                accessToken = c.getValue();
+            }
+            if(c.getName().equals("refresh_token")){
+                refreshToken = c.getValue();
+            }
+        }
+        if(accessToken == null){return null;}
+        if(jwtBuilder.validateToken(accessToken)){
+            return accessToken;
+        }
+        if(refreshToken != null){
+            refreshService.refresh(refreshToken, response);
         }
         return null;
     }
@@ -51,8 +70,8 @@ public class TokenFilterImpl extends OncePerRequestFilter {
         // TODO maybe ignore authURL?
         try {
             try {
-                String token = getTokenFromRequest(request);//add in cookie
-                if (token != null && jwtBuilder.validateToken(token)) {
+                String token = getTokenFromRequest(request, response);//add in cookie
+                if (token != null) {
                     String email = jwtBuilder.getEmailFromToken(token);
                     UserDetails userDetails = userDetailsService.loadUserByUsername(email);
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =

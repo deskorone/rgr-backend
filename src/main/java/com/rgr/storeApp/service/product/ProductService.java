@@ -1,6 +1,5 @@
 package com.rgr.storeApp.service.product;
 
-import com.rgr.storeApp.dto.userProfile.BuyResponse;
 import com.rgr.storeApp.dto.product.ProductRequest;
 import com.rgr.storeApp.dto.product.ProductResponse;
 import com.rgr.storeApp.dto.product.ProductLiteResponse;

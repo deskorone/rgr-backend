@@ -18,15 +18,11 @@ import org.springframework.stereotype.Service;
 public class ReviewsService {
 
     private final ProductsRepo productsRepo;
-    private final ReviewRepo reviewRepo;
-    private final UsersRepo usersRepo;
     private final FindService findService;
 
     @Autowired
     public ReviewsService(ProductsRepo productsRepo, ReviewRepo reviewRepo, UsersRepo usersRepo, FindService findService) {
         this.productsRepo = productsRepo;
-        this.reviewRepo = reviewRepo;
-        this.usersRepo = usersRepo;
         this.findService = findService;
     }
 
