@@ -27,13 +27,11 @@ import java.util.UUID;
 @Component
 public class JwtBuilder {
 
-    private UsersRepo usersRepo;
-    private RefreshTokenRepo refreshTokenRepo;
 
     @Value("{secret.word.jwt}")
     private String secret;
 
-    private int jwtExp= 3600000;
+    private int jwtExp= 36000;
 
 
     public String generateToken(String email){
@@ -53,13 +51,8 @@ public class JwtBuilder {
             Jwts.parser()
                     .setSigningKey(secret)
                     .parseClaimsJws(token);
-            System.out.println("LWasdasd:");
             return true;
-        }  catch (MalformedJwtException e){
-            return false;
-        }  catch (IllegalArgumentException e){
-            return false;
-        }catch (Exception e){
+        }  catch (Exception e){
             return false;
         }
     }

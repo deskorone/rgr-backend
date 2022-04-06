@@ -22,11 +22,9 @@ import java.util.Arrays;
 public class AuthController {
 
     private final UserService userService;
-    private final JwtBuilder jwtBuilder;
 
-    public AuthController(UserService userService, JwtBuilder jwtBuilder) {
+    public AuthController(UserService userService) {
         this.userService = userService;
-        this.jwtBuilder = jwtBuilder;
     }
 
 
@@ -40,16 +38,5 @@ public class AuthController {
     public ResponseEntity<?> registration(@RequestBody RegistrationRequest request){
         return ResponseEntity.ok(userService.regUser(request));
     }
-
-
-//    @GetMapping("/refresh")
-//    public ResponseEntity<?> refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-//                                          HttpServletRequest httpServletRequest,
-//                                          HttpServletResponse httpServletResponse){
-//        LoginResponse loginResponse = userService.refresh(token.substring(7), httpServletRequest, httpServletResponse);
-//        return ResponseEntity.ok(loginResponse);
-//    }
-
-
 
 }

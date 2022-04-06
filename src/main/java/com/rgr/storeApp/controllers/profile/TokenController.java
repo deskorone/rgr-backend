@@ -21,7 +21,6 @@ public class TokenController {
 
     @RequestMapping(value = "/api/accept/{token}", method = RequestMethod.GET)
     public String accept(@PathVariable("token") String token, ModelMap model){
-        System.out.println(token);
         model.addAttribute("conf", confirmationTokenService.acceptToken(token));
         return "emailAccept";
     }

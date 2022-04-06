@@ -2,6 +2,7 @@ package com.rgr.storeApp.secutity.filters;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rgr.storeApp.dto.LoginResponse;
 import com.rgr.storeApp.secutity.jwt.JwtBuilder;
 import com.rgr.storeApp.service.UserDetailsServiceImpl;
 import com.rgr.storeApp.service.profile.RefreshService;
@@ -58,8 +59,10 @@ public class TokenFilterImpl extends OncePerRequestFilter {
         if(jwtBuilder.validateToken(accessToken)){
             return accessToken;
         }
+        System.out.println("HELLO");
         if(refreshToken != null){
-            refreshService.refresh(refreshToken, response);
+            LoginResponse loginResponse = refreshService.refresh(refreshToken, response);
+            return loginResponse.getAccess_token();
         }
         return null;
     }

@@ -107,9 +107,12 @@ public class UserService {
     public void userLogout(HttpServletResponse httpServletResponse){
         User user = findService.getUser(findService.getEmailFromAuth());
         refreshTokenRepo.deleteAllByUser(user);
-        Cookie cookie = new Cookie("logout", "");
-        cookie.setMaxAge(0);
+        Cookie c = new Cookie("access_token", "-");
+        Cookie cookie = new Cookie("refresh_token", "-");
+        c.setPath("/");
+        c.setPath("/");
         httpServletResponse.addCookie(cookie);
+        httpServletResponse.addCookie(c);
 
     }
 

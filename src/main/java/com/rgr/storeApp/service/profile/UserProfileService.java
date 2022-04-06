@@ -72,7 +72,6 @@ public class UserProfileService {
             }
         });
         return AwaitingListDto.build(awaitingListRepo.save(awaitingList));
-
     }
 
 }
