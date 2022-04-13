@@ -6,11 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rgr.storeApp.dto.product.FindRequest;
 import com.rgr.storeApp.dto.product.ProductRequest;
 import com.rgr.storeApp.dto.ReviewRequest;
-import com.rgr.storeApp.secutity.jwt.JwtBuilder;
 import com.rgr.storeApp.service.product.CategoryService;
+import com.rgr.storeApp.service.product.MainPageInfoService;
 import com.rgr.storeApp.service.product.ProductService;
 import com.rgr.storeApp.service.reviews.ReviewsService;
-import org.springframework.http.HttpHeaders;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,15 +21,20 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/products")
 public class ProductController {
 
-    private final JwtBuilder jwtBuilder;
+    private final CategoryService categoryService;
     private final ProductService productService;
     private final ReviewsService reviewsService;
+    private final MainPageInfoService mainPageInfoService;
 
-    public ProductController(JwtBuilder jwtBuilder, ProductService productService, ReviewsService reviewsService) {
-        this.jwtBuilder = jwtBuilder;
+
+    @Autowired
+    public ProductController(CategoryService categoryService, ProductService productService, ReviewsService reviewsService, MainPageInfoService mainPageInfoService) {
+        this.categoryService = categoryService;
         this.productService = productService;
         this.reviewsService = reviewsService;
+        this.mainPageInfoService = mainPageInfoService;
     }
+
 
     @PreAuthorize("hasRole('SALESMAN')")
     @PostMapping(value = "/add",  produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -82,10 +87,36 @@ public class ProductController {
         return ResponseEntity.ok(productService.findByName(findRequest.getText(), count, size));
     }
 
+
+    @GetMapping(value = "/category")
+    public ResponseEntity<?> findByCategory(@RequestParam("count") int count,
+                                  @RequestParam("size") int size,
+                                  @RequestBody FindRequest findRequest){
+        return ResponseEntity.ok(productService.findByCategory(findRequest.getText(), count, size));
+    }
+
+    @GetMapping(value = "/description")
+    public ResponseEntity<?> findByDescription(@RequestParam("count") int count,
+                                            @RequestParam("size") int size,
+                                            @RequestBody FindRequest findRequest){
+        return ResponseEntity.ok(productService.findByDescription(findRequest.getText(), count, size));
+    }
+
+
     @PreAuthorize("hasRole('SALESMAN') or hasRole('ADMIN')")
     @GetMapping("/get/store")
     public ResponseEntity<?> getAll(){
         return ResponseEntity.ok(productService.getAllByStore());
+    }
+
+
+    @GetMapping("/get/categories")
+    public ResponseEntity<?> getAllCategories() { return  ResponseEntity.ok(categoryService.getAllCategoriesSorted());}
+
+
+    @GetMapping("/get/main")
+    public ResponseEntity<?> getMainPage(){
+        return ResponseEntity.ok(mainPageInfoService.getActualProducts());
     }
 
 

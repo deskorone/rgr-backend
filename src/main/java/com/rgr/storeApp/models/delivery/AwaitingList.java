@@ -19,6 +19,7 @@ public class AwaitingList {
     private Long id;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "awaitings_id")
     private List<Delivery> deliveries;
 
     @JsonBackReference

@@ -23,25 +23,22 @@ import java.util.stream.Collectors;
 public class CategoryService {
 
     private final CategoryRepo categoryRepo;
-    private final ProductsRepo productsRepo;
 
     @Autowired
-    public CategoryService(CategoryRepo categoryRepo, ProductsRepo productsRepo) {
+    public CategoryService(CategoryRepo categoryRepo) {
         this.categoryRepo = categoryRepo;
-        this.productsRepo = productsRepo;
     }
 
     public List<Category> convertCategory(List<String> list) {
-        List<Category> categories = list.stream()
+        return list.stream()
                 .map((c) -> {
                     Optional<Category> category = categoryRepo.findByName(c);
-                    if (!category.isPresent()) {
-                        return categoryRepo.save(new Category(c));
-                    } else {
-                        return category.get();
-                    }
+                    return category.orElseGet(() -> categoryRepo.save(new Category(c)));
                 }).collect(Collectors.toList());
-        return categories;
+    }
+
+    public List<Category> getAllCategoriesSorted(){
+        return categoryRepo.getAllCat().orElseThrow(()-> new NotFound("Categories not found"));
     }
 
 }

@@ -16,15 +16,19 @@ import com.rgr.storeApp.models.product.ProductInfo;
 import com.rgr.storeApp.models.profile.Sales;
 import com.rgr.storeApp.models.profile.UserProfile;
 import com.rgr.storeApp.repo.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 public class BuyService {
 
@@ -52,7 +56,7 @@ public class BuyService {
 
     public DeliveryDto addBuy(UserProfile userProfile){
         List<Product> products = userProfile.getBasket().getProducts();
-        if (products.size() != 0) { // Переделать проверку
+        if (products.size() != 0) {
             Integer balance = userProfile.getBalance();
             Basket basket = userProfile.getBasket();
                 Integer sum = products
@@ -69,9 +73,15 @@ public class BuyService {
                             productList.add(i);
                         }
                     }
+                    if(productList.size()==0){throw new NotFound("You basket empty");}
                     productList.forEach(basket::removeProduct);
-                    Delivery delivery = acceptBuy(userProfile, productList, sum); // ПЕРЕСЧИТАТЬ СУММУ
-                    System.out.println("GOOD");
+                    Delivery delivery = acceptBuy(userProfile, productList,
+                            productList
+                            .stream()
+                            .map(e -> e.getProductInfo().getPrice()).collect(Collectors.toList())
+                            .stream()
+                            .reduce(0, Integer::sum));
+                    log.info(String.format("Succesfull buy user: %s", userProfile.getUser().getUsername()));
                     userProfile.getAwaitingList().getDeliveries().add(delivery);
                     userProfileRepo.save(userProfile);
                     return DeliveryDto.build(delivery);
@@ -84,20 +94,23 @@ public class BuyService {
     }
 
     private boolean buyProducer(UserProfile userProfile, Product product){
-        Store store = product.getStore();
-        UserProfile profile = store.getUser().getUserProfile();
-        ProductInfo productInfo = product.getProductInfo();
-        if(productInfo.getNumber() > 0){
-            productInfo.setNumber(productInfo.getNumber() - 1);
-            profile.addMoney(productInfo.getPrice());
-            Sales sales = new Sales(LocalDateTime.now(),
-                    store.getSellHistory(),
-                    product);
-            sales.setBuyer(userProfile.getUser());
-            salesRepo.save(sales);
-            userProfileRepo.save(profile);
-            productsRepo.save(product);
-            return true;
+
+        if(userProfile.getUser().getStore().getId() != product.getStore().getId()) {
+            Store store = product.getStore();
+            UserProfile profile = store.getUser().getUserProfile();
+            ProductInfo productInfo = product.getProductInfo();
+            if (productInfo.getNumber() > 0) {
+                productInfo.setNumber(productInfo.getNumber() - 1);
+                profile.addMoney(productInfo.getPrice());
+                Sales sales = new Sales(LocalDateTime.now(),
+                        store.getSellHistory(),
+                        product);
+                sales.setBuyer(userProfile.getUser());
+                salesRepo.save(sales);
+                userProfileRepo.save(profile);
+                productsRepo.save(product);
+                return true;
+            }
         }
         return false;
     }
@@ -113,6 +126,7 @@ public class BuyService {
         return deliveryRepo.save(delivery);
 
     }
+
 
 
 }

@@ -10,6 +10,7 @@ import com.rgr.storeApp.repo.UsersRepo;
 import com.rgr.storeApp.service.find.FindService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,16 +21,16 @@ public class AdminService {
     private final FindService findService;
     private final UsersRepo usersRepo;
     private final ReviewRepo reviewRepo;
-    private final ProductInfoRepo productInfoRepo;
 
     @Autowired
-    public AdminService(FindService findService, UsersRepo usersRepo, ReviewRepo reviewRepo, ProductInfoRepo productInfoRepo) {
+    public AdminService(FindService findService, UsersRepo usersRepo, ReviewRepo reviewRepo) {
         this.findService = findService;
         this.usersRepo = usersRepo;
         this.reviewRepo = reviewRepo;
-        this.productInfoRepo = productInfoRepo;
     }
 
+
+    @Transactional
     public List<ProductLiteResponse> getStore(String email){
         User findUser = findService.getUser(email);
         return findUser.getStore()
@@ -39,21 +40,31 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
+
     public UserProfileInfo getProfile(String email){
         return UserProfileInfo.build(findService.getUser(email));
     }
 
+
+
     public void addBan(Long id){
         User user = findService.getById(id);
-        user.setLocked(true);
-        usersRepo.save(user);
+        if(!user.isLocked()) {
+            user.setLocked(true);
+            usersRepo.save(user);
+        }
     }
 
-    public void deleteBan(Long id){
+
+
+    public void removeBan(Long id){
         User user = findService.getById(id);
-        user.setLocked(false);
-        usersRepo.save(user);
+        if(user.isLocked()) {
+            user.setLocked(false);
+            usersRepo.save(user);
+        }
     }
+    //deleteProduct - in product controller
 
 
 

@@ -48,4 +48,11 @@ public class FindService {
         return null;
     }
 
+    public boolean checkAuth(){
+        if(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString().equals("anonymousUser")){
+           return false;
+        }
+        return true;
+    }
+
 }

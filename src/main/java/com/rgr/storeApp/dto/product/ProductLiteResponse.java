@@ -49,7 +49,7 @@ public class ProductLiteResponse {
                 product.getProductInfo().getPrice(),
                 product.getProductInfo().getNumber(),
                 isFav,
-                rating
+                rating != null ? rating : 0
         );
 
 

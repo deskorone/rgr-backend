@@ -1,6 +1,7 @@
 package com.rgr.storeApp.models.profile;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.models.basket.SellHistory;
 import com.rgr.storeApp.models.product.Product;
@@ -28,6 +29,7 @@ public class Sales {
 
     private LocalDateTime date;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "history_id")
     private SellHistory sellHistory;

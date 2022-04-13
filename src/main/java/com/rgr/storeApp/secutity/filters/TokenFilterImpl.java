@@ -6,6 +6,7 @@ import com.rgr.storeApp.dto.LoginResponse;
 import com.rgr.storeApp.secutity.jwt.JwtBuilder;
 import com.rgr.storeApp.service.UserDetailsServiceImpl;
 import com.rgr.storeApp.service.profile.RefreshService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@Slf4j
 public class TokenFilterImpl extends OncePerRequestFilter {
 
     private final JwtBuilder jwtBuilder;
@@ -59,9 +61,10 @@ public class TokenFilterImpl extends OncePerRequestFilter {
         if(jwtBuilder.validateToken(accessToken)){
             return accessToken;
         }
-        System.out.println("HELLO");
+
         if(refreshToken != null){
             LoginResponse loginResponse = refreshService.refresh(refreshToken, response);
+            log.debug("Refresh token");
             return loginResponse.getAccess_token();
         }
         return null;

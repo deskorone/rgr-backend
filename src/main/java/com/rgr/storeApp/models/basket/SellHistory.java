@@ -15,14 +15,14 @@ import java.util.List;
 @ToString
 public class SellHistory {
 
-
     public SellHistory(){}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "sellHistory")
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "history_id")
     private List<Sales> sales;
 
     @OneToOne

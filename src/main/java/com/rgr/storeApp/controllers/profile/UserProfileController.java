@@ -2,7 +2,9 @@ package com.rgr.storeApp.controllers.profile;
 
 
 import com.rgr.storeApp.dto.BalanceRequest;
+import com.rgr.storeApp.dto.product.FindRequest;
 import com.rgr.storeApp.dto.userProfile.UserInfoRequest;
+import com.rgr.storeApp.exceptions.api.NotPrivilege;
 import com.rgr.storeApp.service.ConfirmationTokenService;
 import com.rgr.storeApp.service.UserService;
 import com.rgr.storeApp.service.email.EmailService;
@@ -50,7 +52,7 @@ public class UserProfileController {
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
     @GetMapping("/get/awaitings")
     public ResponseEntity<?> getAwaitings(){
-        return ResponseEntity.ok(userProfileService.getAwaitings());
+        return ResponseEntity.ok(userProfileService.refreshDeliveries());
     }
 
 
@@ -113,6 +115,13 @@ public class UserProfileController {
     @PutMapping("/update")
     public ResponseEntity<?> updateProfile(@RequestBody UserInfoRequest userInfoRequest){
         return ResponseEntity.ok(userProfileService.updateInfo(userInfoRequest));
+    }
+
+    @PreAuthorize("hasRole('SALESMAN') or hasRole('ADMIN')")
+    @GetMapping("/sellhistory")
+    public ResponseEntity<?> getSellHistory(@RequestParam("count") int count,
+                                               @RequestParam("size") int size){
+        return ResponseEntity.ok(userProfileService.getSellHistory(count, size));
     }
 
 }

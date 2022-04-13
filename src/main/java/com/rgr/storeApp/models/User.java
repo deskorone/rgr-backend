@@ -6,8 +6,11 @@ import com.rgr.storeApp.models.profile.UserProfile;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.validation.annotation.Validated;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,6 +19,7 @@ import java.util.Set;
 @Data
 @Setter
 @Getter
+@Validated
 @Table(name = "users"
         ,uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
 public class User implements Serializable {
@@ -34,18 +38,23 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonIgnore
+
+
+    @Email(message = "Email not valide")
+    @NotEmpty(message = "Email is empty")
     private String email;
 
+    @NotEmpty(message = "Username empty")
     private String username;
 
     private String lastname;
 
     @JsonIgnore
+    @NotEmpty(message = "Password is empty")
     private String password;
 
     @JsonIgnore
-    private boolean enabled; //ignore
+    private boolean enabled;
 
     @JsonIgnore
     private boolean locked;

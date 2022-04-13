@@ -1,0 +1,25 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect:  org.hibernate.dialect.PostgreSQLDialect
+
+    show-sql: true
+
+    hibernate:
+      ddl-auto: update
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/rgrback
+    username: qwest1
+    password: 1
+
+  mail:
+    host: smtp.yandex.ru
+    username: the.secretshop@yandex.ru
+    password: ibs2022rgr
+    port: 465
+    protocol: stmps
+
+mail:
+  debug: true

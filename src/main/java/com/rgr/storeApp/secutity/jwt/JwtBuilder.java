@@ -31,7 +31,7 @@ public class JwtBuilder {
     @Value("{secret.word.jwt}")
     private String secret;
 
-    private int jwtExp= 36000;
+    private int jwtExp= 360000;
 
 
     public String generateToken(String email){

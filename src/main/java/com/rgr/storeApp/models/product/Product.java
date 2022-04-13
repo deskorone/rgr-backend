@@ -25,6 +25,7 @@ public class Product implements Serializable {
     private String id_code;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
     private List<Review> reviews;
 
     public Product(String id_code, List<Review> reviews, List<Category> categories, ProductInfo productInfo, Store store) {
@@ -93,7 +94,8 @@ public class Product implements Serializable {
 
 
     @JsonBackReference
-    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
+    @OneToMany(orphanRemoval = true)
+    @JoinColumn(name = "product_id")
     private List<Sales> sales;
 
 

@@ -4,39 +4,43 @@ package com.rgr.storeApp.service.profile;
 import com.rgr.storeApp.dto.userProfile.*;
 import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.models.delivery.AwaitingList;
+import com.rgr.storeApp.models.profile.Sales;
 import com.rgr.storeApp.repo.AwaitingListRepo;
+import com.rgr.storeApp.repo.SalesRepo;
 import com.rgr.storeApp.repo.UsersRepo;
 import com.rgr.storeApp.service.find.FindService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserProfileService {
 
-    private final UsersRepo usersRepo;;
+    private final UsersRepo usersRepo;
     private final AwaitingListRepo awaitingListRepo;
     private final FindService findService;
+    private final SalesRepo salesRepo;
+
 
     @Autowired
-    public UserProfileService(UsersRepo usersRepo, AwaitingListRepo awaitingListRepo, AwaitingListRepo awaitingListRepo1, FindService findService) {
+    public UserProfileService(UsersRepo usersRepo, AwaitingListRepo awaitingListRepo1, FindService findService, SalesRepo salesRepo) {
         this.usersRepo = usersRepo;
         this.awaitingListRepo = awaitingListRepo1;
         this.findService = findService;
+        this.salesRepo = salesRepo;
     }
 
 
     public UserGeneralProfileResponse getGeneral(){
         User user = findService.getUser(findService.getEmailFromAuth());
         return UserGeneralProfileResponse.build(user);
-    }
-
-    public AwaitingListDto getAwaitings(){
-        return  AwaitingListDto
-                .build(findService.getUser(findService.getEmailFromAuth()).getUserProfile()
-                        .getAwaitingList());
     }
 
     public BasketDto getBasket(){
@@ -47,6 +51,7 @@ public class UserProfileService {
     @Transactional
     public UserProfileInfo updateInfo(UserInfoRequest userInfoRequest){
         User user = findService.getUser(findService.getEmailFromAuth());
+        user.setUsername(userInfoRequest.getUsername());
         user.setLastname(userInfoRequest.getLastname());
         user.getUserProfile().setIndex(userInfoRequest.getIndex());
         user.getUserProfile().setTown(userInfoRequest.getTown());
@@ -63,6 +68,7 @@ public class UserProfileService {
         return BuyHistoryDto.build(user.getUserProfile().getBuyHistory());
     }
 
+    @Transactional
     public AwaitingListDto refreshDeliveries(){
         User user = findService.getUser(findService.getEmailFromAuth());
         AwaitingList awaitingList = user.getUserProfile().getAwaitingList();
@@ -72,6 +78,14 @@ public class UserProfileService {
             }
         });
         return AwaitingListDto.build(awaitingListRepo.save(awaitingList));
+    }
+
+    public List<SalesDto> getSellHistory(int count, int size){
+        Pageable pageable = PageRequest.of(count - 1, size);
+        Page<Sales> sales = salesRepo.findAllByProduct_Store_User_Email(findService.getEmailFromAuth(), pageable);
+        return sales.stream()
+                .map(SalesDto::build)
+                .collect(Collectors.toList());
     }
 
 }

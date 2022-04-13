@@ -20,6 +20,7 @@ public class BuyHistory {
     private Long id;
 
     @OneToMany(cascade =  CascadeType.ALL)
+    @JoinColumn(name = "buy_history_id")
     private List<Buy> buys;
 
     @JsonBackReference

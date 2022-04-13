@@ -23,15 +23,18 @@ public class ProductInfo {
 
     private String name;
 
-    @JsonBackReference
-    @OneToOne(cascade = CascadeType.ALL)
-    private ProductPhoto mainPhoto;
+
 
     //NOT NULL
     private Integer price;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
     private List<ProductPhoto> productPhotos;
+
+    @JsonBackReference
+    @OneToOne(cascade = CascadeType.ALL)
+    private ProductPhoto mainPhoto;
 
     public ProductInfo(ProductPhoto mainPhoto, Integer price, List<ProductPhoto> productPhotos, Integer number, String description, String materials) {
         this.mainPhoto = mainPhoto;

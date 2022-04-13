@@ -2,10 +2,14 @@ package com.rgr.storeApp.config;
 
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.support.ExecutorServiceAdapter;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -13,6 +17,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 
 @Service
@@ -38,6 +43,16 @@ public class ConfigBeans {
     @Value("${mail.debug}")
     private String debug;
 
+//    @Bean
+//    public Executor taskExecutor() {
+//        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+//        executor.setCorePoolSize(2);
+//        executor.setMaxPoolSize(2);
+//        executor.setQueueCapacity(500);
+//        executor.setThreadNamePrefix("GithubLookup-");
+//        executor.initialize();
+//        return executor;
+//    }
 
     @Bean
     public JavaMailSender javaMailSender(){

@@ -4,8 +4,8 @@ package com.rgr.storeApp.service;
 import com.rgr.storeApp.dto.LoginRequest;
 import com.rgr.storeApp.dto.LoginResponse;
 import com.rgr.storeApp.dto.RegistrationRequest;
+import com.rgr.storeApp.dto.userProfile.UserResp;
 import com.rgr.storeApp.exceptions.api.NotFound;
-import com.rgr.storeApp.exceptions.api.NotPrivilege;
 import com.rgr.storeApp.models.ERole;
 import com.rgr.storeApp.models.RefreshToken;
 import com.rgr.storeApp.models.Role;
@@ -24,16 +24,17 @@ import com.rgr.storeApp.secutity.jwt.JwtBuilder;
 import com.rgr.storeApp.service.email.EmailService;
 import com.rgr.storeApp.service.find.FindService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -73,13 +74,12 @@ public class UserService {
         this.emailService = emailService;
     }
 
-    public LoginResponse loginUser(LoginRequest loginRequest, HttpServletResponse response){
+    public UserResp loginUser(LoginRequest loginRequest, HttpServletResponse response){
 
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(
                    loginRequest.getEmail(), loginRequest.getPassword()
                 ));
-        //SecurityContextHolder.getContext().setAuthentication(authentication); // TODO check usability
         String access_token = jwtBuilder.generateToken(loginRequest.getEmail());
         String refresh_token = jwtBuilder.generateRefreshToken(loginRequest.getEmail());
         User user = usersRepo.findByEmail(loginRequest.getEmail()).orElseThrow(()->new NotFound("User not found"));
@@ -95,8 +95,7 @@ public class UserService {
         refresh_cookie.setPath("/");
         response.addCookie(access_cookie);
         response.addCookie(refresh_cookie);
-        return new LoginResponse(access_token,
-                refresh_token);
+        return UserResp.build(user);
     }
 
 
@@ -114,7 +113,6 @@ public class UserService {
         cookie.setPath("/");
         httpServletResponse.addCookie(cookie);
         httpServletResponse.addCookie(c);
-
     }
 
 
@@ -123,16 +121,15 @@ public class UserService {
 
 
 
-    public String regUser(RegistrationRequest registrationRequest){
+    public UserResp regUser(RegistrationRequest registrationRequest){
         if (usersRepo.existsByEmail(registrationRequest.getEmail())){
-            return "ERROR EMAIL EXIST";
+            throw new UsernameNotFoundException("Email already registration");
         }
         User user = new User(registrationRequest.getEmail(),
                 registrationRequest.getUsername(),
                 passwordEncoder.encode(registrationRequest.getPassword()),
-                false,
+                true,
                 false);
-
         user.setUsername(registrationRequest.getUsername());
         Set<String> rolesReq = registrationRequest.getRoles();
         Set<Role> roles = new HashSet<>();
@@ -143,14 +140,14 @@ public class UserService {
                     .orElseThrow(()-> new IllegalStateException("Role not found"));
             roles.add(role);
         }else {
-            rolesReq  // TODO add all roles!
+            rolesReq
                     .forEach(r ->{
                         switch (r) {
                             case "salesman":
-                                Role adminRole = rolesRepo
+                                Role role = rolesRepo
                                         .findByRole(ERole.ROLE_SALESMAN)
-                                        .orElseThrow(() -> new RuntimeException("Role dont exist (SALESMAN)"));
-                                roles.add(adminRole);
+                                        .orElseThrow(() -> new NotFound("Role dont exist (SALESMAN)"));
+                                roles.add(role);
                                 Store store = new Store();
                                 SellHistory sellHistory = new SellHistory();;
                                 sellHistory.setStore(store);
@@ -158,10 +155,15 @@ public class UserService {
                                 store.setSellHistory(sellHistory);
                                 user.setStore(store);
                                 break;
+                            case "admin":
+                                Role adminRole = rolesRepo.findByRole(ERole.ROLE_ADMIN)
+                                        .orElseThrow(() -> new NotFound("Role dot exist"));
+                                user.setEnabled(true);
+                                roles.add(adminRole);
                             default:
                                 Role userRole = rolesRepo
                                         .findByRole(ERole.ROLE_USER)
-                                        .orElseThrow(() -> new RuntimeException("Role dont exist"));
+                                        .orElseThrow(() -> new NotFound("Role dont exist"));
                                 roles.add(userRole);
                         }
                     });
@@ -183,10 +185,13 @@ public class UserService {
         user.setUserProfile(userProfile);
         user.setRoles(roles);
 
-        User userC = usersRepo.save(user);
-        String token = confirmationTokenService.createToken(userC);
-        emailService.sendVerification(token, user.getEmail(), user.getUsername());
-        return "OK";
+
+        User u = usersRepo.save(user);
+
+        String token = confirmationTokenService.createToken(u);
+        emailService.sendVerification(token, u.getEmail(), u.getUsername());
+
+        return UserResp.build(u);
     }
 
 
