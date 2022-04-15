@@ -43,16 +43,6 @@ public class ConfigBeans {
     @Value("${mail.debug}")
     private String debug;
 
-//    @Bean
-//    public Executor taskExecutor() {
-//        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-//        executor.setCorePoolSize(2);
-//        executor.setMaxPoolSize(2);
-//        executor.setQueueCapacity(500);
-//        executor.setThreadNamePrefix("GithubLookup-");
-//        executor.initialize();
-//        return executor;
-//    }
 
     @Bean
     public JavaMailSender javaMailSender(){
@@ -72,6 +62,7 @@ public class ConfigBeans {
     @Bean
     public FreeMarkerViewResolver freemarkerViewResolver() {
         FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
+        resolver.setContentType("text/html;charset=UTF-8");
         resolver.setCache(true);
         resolver.setPrefix("");
         resolver.setSuffix(".ftl");

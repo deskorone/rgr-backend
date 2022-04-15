@@ -1,5 +1,6 @@
 package com.rgr.storeApp.service.email;
 
+import com.rgr.storeApp.dto.product.ProductLiteResponse;
 import com.rgr.storeApp.exceptions.api.NotFound;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -27,6 +29,7 @@ public class EmailService implements EmailSender{
     }
 
 
+
     @Override
     @Async
     public void sendVerification(String token, String to, String username) {
@@ -37,7 +40,7 @@ public class EmailService implements EmailSender{
             Map model = new HashMap();
             model.put("username", username);
             model.put("url", url);
-            helper.setText(emailBuilderService.getVerificationEmail(model), true);
+            helper.setText(emailBuilderService.getEmail(model, "email"), true);
             helper.setSubject("Подтвердение");
             helper.setTo("maksim.shmakoff.03@yandex.ru");
             mimeMessage.setFrom("the.secretshop@yandex.ru");
@@ -45,7 +48,24 @@ public class EmailService implements EmailSender{
         }catch (Exception e){
             throw new NotFound("ERROR EMAIL");
         }
+    }
 
+
+    public void sendCheck(String to, String email, String username, List<ProductLiteResponse> products) {
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+            Map model = new HashMap();
+            model.put("products", products);
+            model.put("sum", 1000);
+            helper.setText(emailBuilderService.getEmail(model, "check"), true);
+            helper.setSubject("Чек");
+            helper.setTo("maksim.shmakoff.03@yandex.ru");
+            mimeMessage.setFrom("the.secretshop@yandex.ru");
+            javaMailSender.send(helper.getMimeMessage());
+        }catch (Exception e){
+            throw new NotFound("ERROR EMAIL");
+        }
     }
 
 

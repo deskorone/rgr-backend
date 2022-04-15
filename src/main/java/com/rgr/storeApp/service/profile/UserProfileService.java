@@ -82,7 +82,7 @@ public class UserProfileService {
 
     public List<SalesDto> getSellHistory(int count, int size){
         Pageable pageable = PageRequest.of(count - 1, size);
-        Page<Sales> sales = salesRepo.findAllByProduct_Store_User_Email(findService.getEmailFromAuth(), pageable);
+        Page<Sales> sales = salesRepo.getSalesOnEmail(findService.getEmailFromAuth(), pageable);
         return sales.stream()
                 .map(SalesDto::build)
                 .collect(Collectors.toList());

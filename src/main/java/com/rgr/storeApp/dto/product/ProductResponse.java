@@ -1,8 +1,10 @@
 package com.rgr.storeApp.dto.product;
 
 
+import com.rgr.storeApp.dto.userProfile.UserProfileInfo;
 import com.rgr.storeApp.models.product.Product;
 import com.rgr.storeApp.models.product.Review;
+import com.rgr.storeApp.models.product.Store;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,6 +40,8 @@ public class ProductResponse {
     private Double rating;
 
     private String materials;
+
+    private Store store;
 
     @Override
     public String toString() {
@@ -88,7 +92,8 @@ public class ProductResponse {
                 product.getProductInfo().getNumber(),
                 product.getReviews(),
                 r,
-                product.getProductInfo().getMaterials()
+                product.getProductInfo().getMaterials(),
+                product.getStore()
         );
     }
 

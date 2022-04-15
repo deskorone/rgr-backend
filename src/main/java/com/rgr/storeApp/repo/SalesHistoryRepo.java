@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface SalesHistoryRepo extends JpaRepository<SellHistory, Long> {
 
 
+
+
 }
