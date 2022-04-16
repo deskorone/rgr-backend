@@ -2,11 +2,15 @@ package com.rgr.storeApp.service.profile;
 
 
 import com.rgr.storeApp.dto.userProfile.*;
+import com.rgr.storeApp.exceptions.api.NotFound;
 import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.models.delivery.AwaitingList;
+import com.rgr.storeApp.models.product.Store;
 import com.rgr.storeApp.models.profile.Sales;
+import com.rgr.storeApp.models.profile.StoreUpdateRequest;
 import com.rgr.storeApp.repo.AwaitingListRepo;
 import com.rgr.storeApp.repo.SalesRepo;
+import com.rgr.storeApp.repo.StoreRepo;
 import com.rgr.storeApp.repo.UsersRepo;
 import com.rgr.storeApp.service.find.FindService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +31,16 @@ public class UserProfileService {
     private final AwaitingListRepo awaitingListRepo;
     private final FindService findService;
     private final SalesRepo salesRepo;
+    private final StoreRepo storeRepo;
 
 
     @Autowired
-    public UserProfileService(UsersRepo usersRepo, AwaitingListRepo awaitingListRepo1, FindService findService, SalesRepo salesRepo) {
+    public UserProfileService(UsersRepo usersRepo, AwaitingListRepo awaitingListRepo1, FindService findService, SalesRepo salesRepo, StoreRepo storeRepo) {
         this.usersRepo = usersRepo;
         this.awaitingListRepo = awaitingListRepo1;
         this.findService = findService;
         this.salesRepo = salesRepo;
+        this.storeRepo = storeRepo;
     }
 
 
@@ -86,6 +92,16 @@ public class UserProfileService {
         return sales.stream()
                 .map(SalesDto::build)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Store updateStore(StoreUpdateRequest storeUpdateRequest){
+        Store store = storeRepo.getByEmail(findService.getEmailFromAuth())
+                .orElseThrow(()->new NotFound("Store not fown"));
+        store.setAddress(storeUpdateRequest.getAddress());
+        store.setCountry(storeUpdateRequest.getCountry());
+        store.setTown(storeUpdateRequest.getTown());
+        return storeRepo.save(store);
     }
 
 }

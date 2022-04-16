@@ -40,17 +40,13 @@ public class User implements Serializable {
 
 
 
-    @Email(message = "Email not valide")
-    @NotEmpty(message = "Email is empty")
     private String email;
 
-    @NotEmpty(message = "Username empty")
     private String username;
 
     private String lastname;
 
     @JsonIgnore
-    @NotEmpty(message = "Password is empty")
     private String password;
 
     @JsonIgnore

@@ -5,6 +5,8 @@ import com.rgr.storeApp.dto.BalanceRequest;
 import com.rgr.storeApp.dto.product.FindRequest;
 import com.rgr.storeApp.dto.userProfile.UserInfoRequest;
 import com.rgr.storeApp.exceptions.api.NotPrivilege;
+import com.rgr.storeApp.exceptions.api.NotValide;
+import com.rgr.storeApp.models.profile.StoreUpdateRequest;
 import com.rgr.storeApp.service.ConfirmationTokenService;
 import com.rgr.storeApp.service.UserService;
 import com.rgr.storeApp.service.email.EmailService;
@@ -13,14 +15,19 @@ import com.rgr.storeApp.service.profile.BasketService;
 import com.rgr.storeApp.service.profile.UserProfileService;
 import com.rgr.storeApp.service.product.ProductService;
 import com.rgr.storeApp.service.profile.favorites.FavoritesService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.validation.executable.ValidateOnExecution;
 
 @RestController
 @RequestMapping("/api/profile")
+@ValidateOnExecution
 public class UserProfileController {
 
     private final UserProfileService userProfileService;
@@ -50,13 +57,13 @@ public class UserProfileController {
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
-    @GetMapping("/get/awaitings")
+    @GetMapping("/awaitings")
     public ResponseEntity<?> getAwaitings(){
         return ResponseEntity.ok(userProfileService.refreshDeliveries());
     }
 
 
-    @GetMapping("/get/basket")
+    @GetMapping("/basket")
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
     public ResponseEntity<?> getBasket(){
         return ResponseEntity.ok(userProfileService.getBasket());
@@ -127,6 +134,13 @@ public class UserProfileController {
     @GetMapping("/info")
     public ResponseEntity<?> getProfile(@RequestParam("id") Long id){
         return ResponseEntity.ok(userProfileService.getProfile(id));
+    }
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SALESMAN')")
+    @PutMapping("/update/store")
+    public ResponseEntity<?> updateStore(@Valid @RequestBody StoreUpdateRequest storeUpdateRequest, BindingResult result){
+        if(result.hasErrors()){throw new NotValide(result.getFieldError().getDefaultMessage());}
+        return ResponseEntity.ok(userProfileService.updateStore(storeUpdateRequest));
     }
 
 }

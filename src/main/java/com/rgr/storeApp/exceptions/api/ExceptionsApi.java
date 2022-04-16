@@ -32,4 +32,14 @@ public class ExceptionsApi {
         return new ResponseEntity<>(message, message.getStatus());
     }
 
+    @ExceptionHandler(value = {NotValide.class})
+    public ResponseEntity<?> notValide(NotValide notValide){
+        ExceptionMessage message = new ExceptionMessage(
+                notValide.getMessage(),
+                HttpStatus.BAD_REQUEST,
+                ZonedDateTime.now(ZoneId.of("Z"))
+        );
+        return new ResponseEntity<>(message, message.getStatus());
+    }
+
 }

@@ -6,10 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;;
 
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.util.Set;
 
 
@@ -19,15 +16,22 @@ import java.util.Set;
 @NoArgsConstructor
 public class RegistrationRequest {
 
-    @Min(3)
-    @Email(message = "err")
-    @NotEmpty
+
+
+    @Email(message = "Email not valide")
+    @NotNull
     private String email;
 
-    @NotNull
+    @NotEmpty(message = "Username is empty")
+    @NotNull(message = "Username not null")
     private String username;
 
+    @NotEmpty
+    @NotNull
+    @Size(min = 6, message = "Min password lenght 6")
     private String password;
+
+    @NotEmpty
     private Set<String> roles;
 
 }

@@ -99,9 +99,6 @@ public class UserService {
     }
 
 
-
-
-
     @Transactional
     public void userLogout(HttpServletResponse httpServletResponse){
         User user = findService.getUser(findService.getEmailFromAuth());
@@ -114,9 +111,6 @@ public class UserService {
         httpServletResponse.addCookie(cookie);
         httpServletResponse.addCookie(c);
     }
-
-
-
 
 
 
@@ -185,12 +179,13 @@ public class UserService {
         user.setUserProfile(userProfile);
         user.setRoles(roles);
 
-
         User u = usersRepo.save(user);
-
-        String token = confirmationTokenService.createToken(u);
-        emailService.sendVerification(token, u.getEmail(), u.getUsername());
-
+        try {
+            String token = confirmationTokenService.createToken(u);
+            emailService.sendVerification(token, u.getEmail(), u.getUsername());
+        }catch (Exception e){
+            usersRepo.delete(u);
+        }
         return UserResp.build(u);
     }
 

@@ -4,6 +4,7 @@ package com.rgr.storeApp.controllers;
 import com.rgr.storeApp.dto.LoginRequest;
 import com.rgr.storeApp.dto.LoginResponse;
 import com.rgr.storeApp.dto.RegistrationRequest;
+import com.rgr.storeApp.exceptions.api.NotValide;
 import com.rgr.storeApp.secutity.jwt.JwtBuilder;
 import com.rgr.storeApp.service.UserService;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +22,6 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 
 @RestController
-@Validated
 @RequestMapping("/api/auth")
 public class AuthController {
 
@@ -37,11 +37,8 @@ public class AuthController {
     }
 
     @PostMapping("/reg")
-    public ResponseEntity<?> registration(@Valid @RequestBody RegistrationRequest request, BindingResult bindingResult){
-        if(bindingResult.hasErrors()){
-            System.out.println("Hello world");
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<?> registration(@Valid @RequestBody RegistrationRequest request, BindingResult result){
+        if(result.hasErrors()){throw new NotValide(result.getFieldError().getCode() + "  " + result.getFieldError().getField());}
         return ResponseEntity.ok(userService.regUser(request));
     }
 
