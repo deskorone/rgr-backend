@@ -9,6 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserProfileInfo {
 
+    private Long id;
     private String username;
     private String lastname;
     private String town;
@@ -17,7 +18,9 @@ public class UserProfileInfo {
 
 
     public static UserProfileInfo build(User user){
-        return new UserProfileInfo(user.getUsername(),
+        return new UserProfileInfo(
+                user.getId(),
+                user.getUsername(),
                 user.getLastname(),
                 user.getUserProfile().getTown(),
                 user.getUserProfile().getIndex(),

@@ -30,13 +30,13 @@ public class Delivery {
     private LocalDateTime arrival;
 
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "buy_id", nullable = false)
     private Buy buy;
 
     @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "awaiblelist_id")
+    @JoinColumn(name = "awaitings_id")
     private AwaitingList list;
 
 

@@ -28,7 +28,7 @@ public class ChecktestController {
     }
 
     @GetMapping("/check")
-    public String get(Model model){
+    public String get(Model model){//todo remove this and do normal logic in buy
 
         List<Product> products = productsRepo.getProductsByCategory("cat");
         List<ProductLiteResponse> n = new ArrayList<>();

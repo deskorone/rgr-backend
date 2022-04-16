@@ -124,4 +124,9 @@ public class UserProfileController {
         return ResponseEntity.ok(userProfileService.getSellHistory(count, size));
     }
 
+    @GetMapping("/info")
+    public ResponseEntity<?> getProfile(@RequestParam("id") Long id){
+        return ResponseEntity.ok(userProfileService.getProfile(id));
+    }
+
 }

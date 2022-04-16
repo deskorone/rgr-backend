@@ -41,7 +41,7 @@ public class EmailService implements EmailSender{
             model.put("username", username);
             model.put("url", url);
             helper.setText(emailBuilderService.getEmail(model, "email"), true);
-            helper.setSubject("Подтвердение");
+            helper.setSubject("Подтверждение электронной почты ");
             helper.setTo("maksim.shmakoff.03@yandex.ru");
             mimeMessage.setFrom("the.secretshop@yandex.ru");
             javaMailSender.send(helper.getMimeMessage());

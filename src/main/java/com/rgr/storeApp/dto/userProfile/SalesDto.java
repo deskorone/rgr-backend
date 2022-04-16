@@ -17,7 +17,7 @@ public class SalesDto {
 
     private LocalDateTime dateTime;
     private ProductLiteResponse product;
-    private UserProfileInfo userProfileInfo;
+    private UserProfileInfo buyerInfo;
 
     public static SalesDto build(Sales sales){
         return new SalesDto(

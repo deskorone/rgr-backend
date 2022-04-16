@@ -70,8 +70,7 @@ public class UserProfileService {
 
     @Transactional
     public AwaitingListDto refreshDeliveries(){
-        User user = findService.getUser(findService.getEmailFromAuth());
-        AwaitingList awaitingList = user.getUserProfile().getAwaitingList();
+        AwaitingList awaitingList = awaitingListRepo.findAllByUserProfile_User_Email(findService.getEmailFromAuth());
         awaitingList.getDeliveries().forEach(e->{
             if(e.getArrival().isBefore(LocalDateTime.now())){
                 awaitingList.deleteDelivery(e);
@@ -83,6 +82,7 @@ public class UserProfileService {
     public List<SalesDto> getSellHistory(int count, int size){
         Pageable pageable = PageRequest.of(count - 1, size);
         Page<Sales> sales = salesRepo.getSalesOnEmail(findService.getEmailFromAuth(), pageable);
+        System.out.println("Hello");
         return sales.stream()
                 .map(SalesDto::build)
                 .collect(Collectors.toList());

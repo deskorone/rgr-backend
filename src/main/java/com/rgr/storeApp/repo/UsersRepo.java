@@ -15,7 +15,7 @@ public interface UsersRepo extends JpaRepository<User, Long> {
     @Query(value = "SELECT * FROM users u inner join user_profile as up on u.user_profile_id = up.id WHERE email=:email ",nativeQuery = true)
     Optional<User> findByEmail(@Param("email") String email);
 
-    @Query(value = "SELECT * FROM user u where u.id = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM users u where u.id = :id", nativeQuery = true)
     Optional<User> getByUserById(@Param("id") Long id);
 
     boolean existsByEmail(String email);
