@@ -29,6 +29,8 @@ public interface ProductsRepo extends JpaRepository<Product, Long> {
     Page<Product> getByCategory(@Param("category") String category, Pageable pageable);
 
 
+
+
     Optional<Product> findById(@Param("id") Long id);
 
     @Query(value = "select * from product p " +

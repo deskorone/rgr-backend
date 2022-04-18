@@ -28,6 +28,9 @@ public class Product implements Serializable {
     @JoinColumn(name = "product_id")
     private List<Review> reviews;
 
+
+
+
     public Product(String id_code, List<Review> reviews, List<Category> categories, ProductInfo productInfo, Store store) {
         this.id_code = id_code;
         this.reviews = reviews;

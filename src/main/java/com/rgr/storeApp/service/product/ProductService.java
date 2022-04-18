@@ -35,7 +35,7 @@ public class ProductService {
     private final BuyService buyService;
     private final StoreService storeService;
     private final FindService findService;
-    private final ReviewRepo reviewRepo;
+    private final ProductInfoRepo productInfoRepo;
 
     @Autowired
     public ProductService(ProductsRepo productsRepo,
@@ -43,14 +43,14 @@ public class ProductService {
                           ProductPhotoRepo productPhotoRepo,
                           BuyService buyService, StoreService storeService,
                           FindService findService,
-                          ReviewRepo reviewRepo) {
+                          ProductInfoRepo productInfoRepo) {
         this.productsRepo = productsRepo;
         this.categoryService = categoryService;
         this.productPhotoRepo = productPhotoRepo;
         this.buyService = buyService;
         this.storeService = storeService;
         this.findService = findService;
-        this.reviewRepo = reviewRepo;
+        this.productInfoRepo = productInfoRepo;
     }
 
 
@@ -178,11 +178,13 @@ public class ProductService {
     }
 
 
-    public List<ProductLiteResponse> findByDescription(String desc, int count, int size){
+    public List<ProductLiteResponse> findByDescription(String desc, int count, int size) {
         try {
             Pageable pageable = PageRequest.of(count - 1, size);
             Page<Product> products = productsRepo.getByDescription(desc, pageable);
-            if (products.isEmpty()) {throw new NotFound(String.format("Product description %s not found", desc));}
+            if (products.isEmpty()) {
+                throw new NotFound(String.format("Product description %s not found", desc));
+            }
             return buildProductResponse(products);
         } catch (Exception e) {
             throw new NotFound("Product not found");
@@ -194,11 +196,22 @@ public class ProductService {
         if (findService.checkAuth()) {
             User user = findService.getUser(findService.getEmailFromAuth());
             return products.stream()
-                    .map(e -> ProductLiteResponse.buildForUser(e, user, reviewRepo.getRating(e))).collect(Collectors.toList());
+                    .map(e -> ProductLiteResponse.buildForUser(e, user)).collect(Collectors.toList());
         }
-        return products.stream().map(e -> ProductLiteResponse.build(e, reviewRepo.getRating(e))).collect(Collectors.toList());
+        return products.stream().map(ProductLiteResponse::build).collect(Collectors.toList());
     }
 
+    public ProductResponse addAwaible(Long id, int num) {
+        Product product = productsRepo.getById(id);
+        ProductInfo productInfo = product.getProductInfo();
+        User user = findService.getUser(findService.getEmailFromAuth());
+        if (storeService.checkProduct(user, product) || user.getRoles().stream().anyMatch(e -> e.getRole().equals(ERole.ROLE_ADMIN))) {
+            productInfo.setNumber(num + productInfo.getNumber());
+            return ProductResponse.build(productsRepo.save(product));
+        } else {
+            throw new NotPrivilege("No privilegies");
+        }
+    }
 }
 
 

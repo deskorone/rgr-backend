@@ -19,27 +19,26 @@ public class ReviewsService {
 
     private final ProductsRepo productsRepo;
     private final FindService findService;
+    private final ReviewRepo reviewRepo;
 
     @Autowired
-    public ReviewsService(ProductsRepo productsRepo, ReviewRepo reviewRepo, UsersRepo usersRepo, FindService findService) {
+    public ReviewsService(ProductsRepo productsRepo, ReviewRepo reviewRepo, UsersRepo usersRepo, FindService findService, ReviewRepo reviewRepo1) {
         this.productsRepo = productsRepo;
         this.findService = findService;
+        this.reviewRepo = reviewRepo1;
     }
 
 
     public ProductResponse addReview( ReviewRequest reviewRequest, Long productId){
-        if(reviewRequest.getRating() > 5 || reviewRequest.getRating() < 0){
-            throw new RuntimeException("Error raiting value");
-        }else {
             User user = findService.getUser(findService.getEmailFromAuth());
             Product product = productsRepo.findById(productId).orElseThrow(() -> new NotFound("Product NOT FOUND"));
             Review review = new Review(reviewRequest.getReviewText(), reviewRequest.getRating());
             review.setUser(user);
             review.setProduct(product);
             product.getReviews().add(review);
-            productsRepo.save(product);
-            return ProductResponse.build(product);
-        }
+            Product p = productsRepo.save(product);
+            p.getProductInfo().setRating(reviewRepo.getRating(p));
+            return ProductResponse.build(productsRepo.save(p));
     }
 
 

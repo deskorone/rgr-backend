@@ -3,9 +3,10 @@ package com.rgr.storeApp.service.admin;
 
 import com.rgr.storeApp.dto.product.ProductLiteResponse;
 import com.rgr.storeApp.dto.userProfile.UserProfileInfo;
+import com.rgr.storeApp.exceptions.api.NotFound;
 import com.rgr.storeApp.models.User;
-import com.rgr.storeApp.repo.ProductInfoRepo;
-import com.rgr.storeApp.repo.ReviewRepo;
+import com.rgr.storeApp.models.product.Store;
+import com.rgr.storeApp.repo.StoreRepo;
 import com.rgr.storeApp.repo.UsersRepo;
 import com.rgr.storeApp.service.find.FindService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,23 +21,24 @@ public class AdminService {
 
     private final FindService findService;
     private final UsersRepo usersRepo;
-    private final ReviewRepo reviewRepo;
+    private final StoreRepo storeRepo;
+
 
     @Autowired
-    public AdminService(FindService findService, UsersRepo usersRepo, ReviewRepo reviewRepo) {
+    public AdminService(FindService findService, UsersRepo usersRepo, StoreRepo storeRepo) {
         this.findService = findService;
         this.usersRepo = usersRepo;
-        this.reviewRepo = reviewRepo;
+        this.storeRepo = storeRepo;
     }
 
 
     @Transactional
     public List<ProductLiteResponse> getStore(String email){
-        User findUser = findService.getUser(email);
-        return findUser.getStore()
+        Store store = storeRepo.getByEmail(email).orElseThrow(()->new NotFound("Store not found"));
+        return  store
                 .getProducts()
                 .stream()
-                .map(e-> ProductLiteResponse.build(e, reviewRepo.getRating(e)))
+                .map(ProductLiteResponse::build)
                 .collect(Collectors.toList());
     }
 
@@ -44,7 +46,6 @@ public class AdminService {
     public UserProfileInfo getProfile(String email){
         return UserProfileInfo.build(findService.getUser(email));
     }
-
 
 
     public void addBan(Long id){
@@ -55,8 +56,6 @@ public class AdminService {
         }
     }
 
-
-
     public void removeBan(Long id){
         User user = findService.getById(id);
         if(user.isLocked()) {
@@ -64,7 +63,6 @@ public class AdminService {
             usersRepo.save(user);
         }
     }
-    //deleteProduct - in product controller
 
 
 

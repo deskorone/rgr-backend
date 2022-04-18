@@ -20,12 +20,10 @@ public class ProductInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     private String name;
 
+    private Double rating;
 
-
-    //NOT NULL
     private Integer price;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -36,14 +34,6 @@ public class ProductInfo {
     @OneToOne(cascade = CascadeType.ALL)
     private ProductPhoto mainPhoto;
 
-    public ProductInfo(ProductPhoto mainPhoto, Integer price, List<ProductPhoto> productPhotos, Integer number, String description, String materials) {
-        this.mainPhoto = mainPhoto;
-        this.price = price;
-        this.productPhotos = productPhotos;
-        this.number = number;
-        this.description = description;
-        this.materials = materials;
-    }
 
     @JsonBackReference
     private Integer number;

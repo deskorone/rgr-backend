@@ -33,7 +33,7 @@ public class ChecktestController {
         List<Product> products = productsRepo.getProductsByCategory("cat");
         List<ProductLiteResponse> n = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            n.add(ProductLiteResponse.build(products.get(i), null));
+            n.add(ProductLiteResponse.build(products.get(i)));
         }
         model.addAttribute("sum", 1000);
         model.addAttribute("products", n);

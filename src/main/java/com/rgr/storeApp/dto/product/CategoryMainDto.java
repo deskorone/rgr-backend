@@ -22,8 +22,8 @@ public class CategoryMainDto {
 
     public static CategoryMainDto build(Category category, List<Product> products){
         return new CategoryMainDto(category.getName(),
-                products.stream().map((e)->
-                        ProductLiteResponse.build(e, null))
+                products.stream().map(
+                        ProductLiteResponse::build)
                         .collect(Collectors.toList()));
     }
 

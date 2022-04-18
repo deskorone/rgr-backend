@@ -22,7 +22,7 @@ public class SalesDto {
     public static SalesDto build(Sales sales){
         return new SalesDto(
                 sales.getDate(),
-                ProductLiteResponse.build(sales.getProduct(), null),
+                ProductLiteResponse.build(sales.getProduct()),
                 UserProfileInfo.build(sales.getBuyer())
         );
     }

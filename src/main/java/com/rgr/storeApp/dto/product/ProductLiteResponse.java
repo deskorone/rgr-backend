@@ -21,9 +21,9 @@ public class ProductLiteResponse {
     private Double rating;
 
 
-    public static ProductLiteResponse build(Product product, Double rating){
+    public static ProductLiteResponse build(Product product){
         ProductInfo productInfo = product.getProductInfo();
-
+        Double rating = productInfo.getRating();
         return new ProductLiteResponse(
                 product.getId(),
                 String.format(url, product.getProductInfo().getMainPhoto().getPath()),
@@ -36,7 +36,7 @@ public class ProductLiteResponse {
 
     }
 
-    public static ProductLiteResponse buildForUser(Product product, User user, Double rating){
+    public static ProductLiteResponse buildForUser(Product product, User user){
         boolean isFav = user.getUserProfile().getFavorites()
                 .getProducts()
                 .stream()
@@ -49,7 +49,7 @@ public class ProductLiteResponse {
                 product.getProductInfo().getPrice(),
                 product.getProductInfo().getNumber(),
                 isFav,
-                rating != null ? rating : 0
+                product.getProductInfo().getRating()
         );
 
 

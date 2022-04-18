@@ -1,7 +1,7 @@
 package com.rgr.storeApp.controllers.admin;
 
 
-import com.rgr.storeApp.dto.admin.StoreReq;
+
 import com.rgr.storeApp.service.admin.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +22,8 @@ public class AdminController {
 
     @GetMapping("/get/store")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> getStore(@RequestBody StoreReq storeReq){
-        System.out.println(storeReq);
-        return ResponseEntity.ok(adminService.getStore(storeReq.getEmail()));
+    public ResponseEntity<?> getStore(@RequestParam String email){
+        return ResponseEntity.ok(adminService.getStore(email));
     }
 
     @GetMapping("/check")
@@ -32,6 +31,19 @@ public class AdminController {
     public ResponseEntity<?> get(){
         adminService.getStore("e1");
         return ResponseEntity.ok("Heloooo");
+    }
+
+
+    @PostMapping("/ban")
+    public ResponseEntity<?> addBan(@RequestParam Long id) {
+        adminService.addBan(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/ban")
+    public ResponseEntity<?> removeBan(@RequestParam Long id) {
+        adminService.removeBan(id);
+        return ResponseEntity.ok().build();
     }
 
 }

@@ -23,7 +23,7 @@ public class BuyDto {
         List<ProductLiteResponse> productLiteResponses =
                 buy.getProducts()
                         .stream()
-                        .map(e-> ProductLiteResponse.build(e, null))
+                        .map(ProductLiteResponse::build)
                         .collect(Collectors.toList());
         return new BuyDto(buy.getId(), productLiteResponses, buy.getSum());
     }

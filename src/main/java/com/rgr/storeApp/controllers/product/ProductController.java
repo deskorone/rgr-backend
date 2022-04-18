@@ -3,6 +3,7 @@ package com.rgr.storeApp.controllers.product;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rgr.storeApp.dto.product.AwaibleDto;
 import com.rgr.storeApp.dto.product.FindRequest;
 import com.rgr.storeApp.dto.product.ProductRequest;
 import com.rgr.storeApp.dto.ReviewRequest;
@@ -121,5 +122,11 @@ public class ProductController {
         return ResponseEntity.ok(mainPageInfoService.getActualProducts());
     }
 
+
+    @PreAuthorize("hasRole('SALESMAN') or hasRole('ADMIN')")
+    @PutMapping("/add/num/{id}")
+    public ResponseEntity<?> addAwaible(@PathVariable("id") Long id, @RequestBody AwaibleDto awaibleDto){
+        return ResponseEntity.ok(productService.addAwaible(id ,awaibleDto.getNumber()));
+    }
 
 }
