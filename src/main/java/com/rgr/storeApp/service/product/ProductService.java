@@ -1,5 +1,6 @@
 package com.rgr.storeApp.service.product;
 
+import com.rgr.storeApp.dto.product.PaginationProductResponse;
 import com.rgr.storeApp.dto.product.ProductRequest;
 import com.rgr.storeApp.dto.product.ProductResponse;
 import com.rgr.storeApp.dto.product.ProductLiteResponse;
@@ -35,22 +36,21 @@ public class ProductService {
     private final BuyService buyService;
     private final StoreService storeService;
     private final FindService findService;
-    private final ProductInfoRepo productInfoRepo;
+    private final ReviewRepo reviewRepo;
 
     @Autowired
     public ProductService(ProductsRepo productsRepo,
                           CategoryService categoryService,
                           ProductPhotoRepo productPhotoRepo,
                           BuyService buyService, StoreService storeService,
-                          FindService findService,
-                          ProductInfoRepo productInfoRepo) {
+                          FindService findService, ReviewRepo reviewRepo) {
         this.productsRepo = productsRepo;
         this.categoryService = categoryService;
         this.productPhotoRepo = productPhotoRepo;
         this.buyService = buyService;
         this.storeService = storeService;
         this.findService = findService;
-        this.productInfoRepo = productInfoRepo;
+        this.reviewRepo = reviewRepo;
     }
 
 
@@ -151,7 +151,7 @@ public class ProductService {
         }
     }
 
-    public List<ProductLiteResponse> findByName(String name, int count, int size) {
+    public PaginationProductResponse findByName(String name, int count, int size) {
         try {
             Pageable pageable = PageRequest.of(count - 1, size);
             Page<Product> products = productsRepo.findWhereName(name, pageable);
@@ -164,7 +164,7 @@ public class ProductService {
         }
     }
 
-    public List<ProductLiteResponse> findByCategory(String cat, int count, int size) {
+    public PaginationProductResponse findByCategory(String cat, int count, int size) {
         try {
             Pageable pageable = PageRequest.of(count - 1, size);
             Page<Product> products = productsRepo.getByCategory(cat, pageable);
@@ -178,7 +178,7 @@ public class ProductService {
     }
 
 
-    public List<ProductLiteResponse> findByDescription(String desc, int count, int size) {
+    public PaginationProductResponse findByDescription(String desc, int count, int size) {
         try {
             Pageable pageable = PageRequest.of(count - 1, size);
             Page<Product> products = productsRepo.getByDescription(desc, pageable);
@@ -192,13 +192,12 @@ public class ProductService {
     }
 
 
-    public List<ProductLiteResponse> buildProductResponse(Page<Product> products) {
+    public PaginationProductResponse buildProductResponse(Page<Product> products) {
         if (findService.checkAuth()) {
             User user = findService.getUser(findService.getEmailFromAuth());
-            return products.stream()
-                    .map(e -> ProductLiteResponse.buildForUser(e, user)).collect(Collectors.toList());
+            return PaginationProductResponse.buildForUser(products, user);
         }
-        return products.stream().map(ProductLiteResponse::build).collect(Collectors.toList());
+        return PaginationProductResponse.build(products);
     }
 
     public ProductResponse addAwaible(Long id, int num) {
@@ -212,6 +211,20 @@ public class ProductService {
             throw new NotPrivilege("No privilegies");
         }
     }
+
+
+    public String deleteReview(Long id) {
+        User user = findService.getUser(findService.getEmailFromAuth());
+        Review review = reviewRepo.findById(id).orElseThrow(()-> new NotFound("Review not found"));
+        if (review.getUser().getId().equals(user.getId()) || user.getRoles().stream().anyMatch(e -> e.getRole().equals(ERole.ROLE_ADMIN))) {
+            reviewRepo.deleteById(id);
+            return "Good";
+        }
+        throw new NotPrivilege("No permission");
+    }
+
+
+
 }
 
 

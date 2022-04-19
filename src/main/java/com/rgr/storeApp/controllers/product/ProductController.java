@@ -39,6 +39,7 @@ public class ProductController {
     }
 
 
+    //refactor
     @PreAuthorize("hasRole('SALESMAN')")
     @PostMapping(value = "/add",  produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> add(@RequestParam("mainimage") MultipartFile file, @RequestParam("req") String json,
@@ -56,7 +57,7 @@ public class ProductController {
     }
 
     @PreAuthorize("hasRole('SALESMAN') or hasRole('ADMIN')")
-    @DeleteMapping(value = "/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id){
         productService.deleteProduct(id);
         return ResponseEntity.ok().build();
@@ -83,7 +84,7 @@ public class ProductController {
                 .body(productService.getPhoto(path));
     }
 
-    @GetMapping(value = "/find")
+    @GetMapping(value = "/find/name")
     public ResponseEntity<?> find(@RequestParam("count") int count,
                                   @RequestParam("size") int size,
                                   @RequestBody FindRequest findRequest){
@@ -91,14 +92,15 @@ public class ProductController {
     }
 
 
-    @GetMapping(value = "/category")
+
+    @GetMapping(value = "/find/category")
     public ResponseEntity<?> findByCategory(@RequestParam("count") int count,
                                   @RequestParam("size") int size,
                                   @RequestBody FindRequest findRequest){
         return ResponseEntity.ok(productService.findByCategory(findRequest.getText(), count, size));
     }
 
-    @GetMapping(value = "/description")
+    @GetMapping(value = "/find/description")
     public ResponseEntity<?> findByDescription(@RequestParam("count") int count,
                                             @RequestParam("size") int size,
                                             @RequestBody FindRequest findRequest){
@@ -117,7 +119,7 @@ public class ProductController {
     public ResponseEntity<?> getAllCategories() { return  ResponseEntity.ok(categoryService.getAllCategoriesSorted());}
 
 
-    @GetMapping("/get/main")
+    @GetMapping("/main")
     public ResponseEntity<?> getMainPage(){
         return ResponseEntity.ok(mainPageInfoService.getActualProducts());
     }
@@ -128,5 +130,13 @@ public class ProductController {
     public ResponseEntity<?> addAwaible(@PathVariable("id") Long id, @RequestBody AwaibleDto awaibleDto){
         return ResponseEntity.ok(productService.addAwaible(id ,awaibleDto.getNumber()));
     }
+
+
+    @PreAuthorize("hasRole('USER') or hasRole('SALESMAN') or hasRole('ADMIN')")
+    @DeleteMapping("/review/delete")
+    public ResponseEntity<?> deleteRev(@RequestParam Long id){
+        return ResponseEntity.ok(productService.deleteReview(id));
+    }
+
 
 }

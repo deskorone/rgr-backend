@@ -31,7 +31,7 @@ public class ProductInfo {
     private List<ProductPhoto> productPhotos;
 
     @JsonBackReference
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private ProductPhoto mainPhoto;
 
 

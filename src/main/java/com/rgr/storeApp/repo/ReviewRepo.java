@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReviewRepo extends JpaRepository<Review, Long> {
 
@@ -17,5 +18,11 @@ public interface ReviewRepo extends JpaRepository<Review, Long> {
 
     @Query(value = "select avg (r.rating) from  Review r where r.product.id = :#{#product.id}")
     Double getRating(@Param("product") Product product);
+
+
+
+    Optional<Review> findById(Long id);
+
+    void deleteById(Long id);
 
 }
