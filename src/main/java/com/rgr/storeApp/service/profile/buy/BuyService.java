@@ -83,7 +83,7 @@ public class BuyService {
                     log.info(String.format("Succesfull buy user: %s", userProfile.getUser().getUsername()));
                     userProfile.getAwaitingList().getDeliveries().add(delivery);
                     try {
-                        emailService.sendCheck(userProfile.getUser().getEmail(), products.stream().map(ProductLiteResponse::build).collect(Collectors.toList()));
+                        emailService.sendCheck(userProfile.getUser().getEmail(), productList.stream().map(ProductLiteResponse::build).collect(Collectors.toList()));
                     }catch (Exception e){
                         throw new NotPrivilege(e.getMessage());
                     }

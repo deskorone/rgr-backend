@@ -57,6 +57,7 @@ public class EmailService implements EmailSender{
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
             Map model = new HashMap();
+            System.out.println(products);
             model.put("products", products);
             model.put("sum", 1000);
             helper.setText(emailBuilderService.getEmail(model, "check"), true);
