@@ -6,11 +6,14 @@ import com.rgr.storeApp.models.product.Product;
 import com.rgr.storeApp.models.product.ProductInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 
 @Data
 @AllArgsConstructor
 public class ProductLiteResponse {
 
+    @Value("${app.url}")
+    private static String ngrokUrl;
     private  static String url = "http://localhost:8080/api/products/get/photo/%s";
     private Long id;
     private String photo;

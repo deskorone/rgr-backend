@@ -12,10 +12,12 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
+import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
+import javax.servlet.MultipartConfigElement;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
@@ -42,6 +44,7 @@ public class ConfigBeans {
 
     @Value("${mail.debug}")
     private String debug;
+
 
 
     @Bean

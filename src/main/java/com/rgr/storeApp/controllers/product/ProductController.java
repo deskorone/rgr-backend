@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 
 
 @RestController
@@ -30,7 +31,6 @@ public class ProductController {
     private final ReviewsService reviewsService;
     private final MainPageInfoService mainPageInfoService;
 
-
     @Autowired
     public ProductController(CategoryService categoryService, ProductService productService, ReviewsService reviewsService, MainPageInfoService mainPageInfoService) {
         this.categoryService = categoryService;
@@ -40,11 +40,13 @@ public class ProductController {
     }
 
 
-    //refactor
+
+    //make base 64
     @PreAuthorize("hasRole('SALESMAN')")
     @PostMapping(value = "/add",  produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> add(@RequestParam("mainimage") MultipartFile file, @RequestParam("req") String json,
+    public ResponseEntity<?> addProduct(@RequestParam(name = "mainimage") MultipartFile file, @RequestParam("req") String json,
                                  @RequestParam(value = "image", required = false) MultipartFile [] files) {
+        System.out.print("LOG");
         ObjectMapper mapper = new ObjectMapper();
         ProductRequest productRequest;
         try {

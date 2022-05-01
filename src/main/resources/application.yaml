@@ -10,8 +10,8 @@ spring:
       ddl-auto: update
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/rgrback
-    username: qwest1
+    url: jdbc:postgresql://localhost:5432/rgr_back
+    username: postgres
     password: 1
 
   mail:
@@ -20,6 +20,11 @@ spring:
     password: ibs2022rgr
     port: 465
     protocol: stmps
+
+  servlet:
+    multipart:
+      max-file-size: 128MB
+      max-request-size: 128MB
 
 mail:
   debug: true
@@ -30,3 +35,4 @@ photo:
 
 app:
   url: ngrokurl
+
