@@ -28,6 +28,7 @@ import javax.validation.executable.ValidateOnExecution;
 @RestController
 @RequestMapping("/api/profile")
 @ValidateOnExecution
+@CrossOrigin("*")
 public class UserProfileController {
 
     private final UserProfileService userProfileService;

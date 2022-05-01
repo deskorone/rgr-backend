@@ -88,7 +88,6 @@ public class UserProfileService {
     public List<SalesDto> getSellHistory(int count, int size){
         Pageable pageable = PageRequest.of(count - 1, size);
         Page<Sales> sales = salesRepo.getSalesOnEmail(findService.getEmailFromAuth(), pageable);
-        System.out.println("Hello");
         return sales.stream()
                 .map(SalesDto::build)
                 .collect(Collectors.toList());
@@ -97,7 +96,7 @@ public class UserProfileService {
     @Transactional
     public Store updateStore(StoreUpdateRequest storeUpdateRequest){
         Store store = storeRepo.getByEmail(findService.getEmailFromAuth())
-                .orElseThrow(()->new NotFound("Store not fown"));
+                .orElseThrow(()->new NotFound("Store not found"));
         store.setAddress(storeUpdateRequest.getAddress());
         store.setCountry(storeUpdateRequest.getCountry());
         store.setTown(storeUpdateRequest.getTown());

@@ -48,8 +48,8 @@ public class ConfigBeans {
     public JavaMailSender javaMailSender(){
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         Properties properties = javaMailSender.getJavaMailProperties();
-        properties.setProperty("mail.transport,protocol", "smtps");
-        properties.setProperty("mail.debug", debug);//off
+        properties.setProperty("mail.transport,protocol", protocol);
+        properties.setProperty("mail.debug", debug);
         properties.setProperty("mail.smtp.auth", "true");
         properties.setProperty("mail.smtp.ssl.enable", "true");
         javaMailSender.setPort(port);

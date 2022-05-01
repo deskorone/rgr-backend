@@ -18,13 +18,11 @@ public class MainPageInfoService {
 
     private final CategoryRepo categoryRepo;
     private final ProductsRepo productsRepo;
-    private final FindService findService;
 
     @Autowired
-    public MainPageInfoService(CategoryRepo categoryRepo, ProductsRepo productsRepo, FindService findService) {
+    public MainPageInfoService(CategoryRepo categoryRepo, ProductsRepo productsRepo) {
         this.categoryRepo = categoryRepo;
         this.productsRepo = productsRepo;
-        this.findService = findService;
     }
 
 

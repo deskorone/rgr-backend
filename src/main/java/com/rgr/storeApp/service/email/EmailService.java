@@ -51,7 +51,8 @@ public class EmailService implements EmailSender{
     }
 
 
-    public void sendCheck(String to, String email, String username, List<ProductLiteResponse> products) {
+    @Async
+    public void sendCheck(String to, List<ProductLiteResponse> products) {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
@@ -67,6 +68,4 @@ public class EmailService implements EmailSender{
             throw new NotFound("ERROR EMAIL");
         }
     }
-
-
 }

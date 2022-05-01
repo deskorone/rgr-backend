@@ -1,14 +1,13 @@
 package com.rgr.storeApp.service.profile.buy;
 
 
-import com.rgr.storeApp.dto.userProfile.BuyResponse;
+import com.rgr.storeApp.dto.product.ProductLiteResponse;
 import com.rgr.storeApp.dto.userProfile.DeliveryDto;
 import com.rgr.storeApp.exceptions.api.NotFound;
 import com.rgr.storeApp.exceptions.api.NotPrivilege;
 import com.rgr.storeApp.models.basket.Basket;
 import com.rgr.storeApp.models.basket.Buy;
 import com.rgr.storeApp.models.basket.BuyHistory;
-import com.rgr.storeApp.models.delivery.AwaitingList;
 import com.rgr.storeApp.models.delivery.Delivery;
 import com.rgr.storeApp.models.product.Store;
 import com.rgr.storeApp.models.product.Product;
@@ -16,17 +15,15 @@ import com.rgr.storeApp.models.product.ProductInfo;
 import com.rgr.storeApp.models.profile.Sales;
 import com.rgr.storeApp.models.profile.UserProfile;
 import com.rgr.storeApp.repo.*;
+import com.rgr.storeApp.service.email.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 @Slf4j
 @Service
@@ -37,20 +34,22 @@ public class BuyService {
     private final UserProfileRepo userProfileRepo;
     private final SalesRepo salesRepo;
     private final DeliveryRepo deliveryRepo;
-    private final BuyHistoryRepo buyHistoryRepo;
+    private final EmailService emailService;
+
 
     @Autowired
     public BuyService(BuyRepo buyRepo,
                       ProductsRepo productsRepo,
                       UserProfileRepo userProfileRepo,
                       SalesRepo salesRepo,
-                      DeliveryRepo deliveryRepo, BuyHistoryRepo buyHistoryRepo) {
+                      DeliveryRepo deliveryRepo,
+                      EmailService emailService) {
         this.buyRepo = buyRepo;
         this.productsRepo = productsRepo;
         this.userProfileRepo = userProfileRepo;
         this.salesRepo = salesRepo;
         this.deliveryRepo = deliveryRepo;
-        this.buyHistoryRepo = buyHistoryRepo;
+        this.emailService = emailService;
     }
 
 
@@ -83,6 +82,11 @@ public class BuyService {
                             .reduce(0, Integer::sum));
                     log.info(String.format("Succesfull buy user: %s", userProfile.getUser().getUsername()));
                     userProfile.getAwaitingList().getDeliveries().add(delivery);
+                    try {
+                        emailService.sendCheck(userProfile.getUser().getEmail(), products.stream().map(ProductLiteResponse::build).collect(Collectors.toList()));
+                    }catch (Exception e){
+                        throw new NotPrivilege(e.getMessage());
+                    }
                     userProfileRepo.save(userProfile);
                     return DeliveryDto.build(delivery);
                 } else {
@@ -95,7 +99,7 @@ public class BuyService {
 
     private boolean buyProducer(UserProfile userProfile, Product product){
 
-        if(userProfile.getUser().getStore().getId() != product.getStore().getId()) {
+        if(!Objects.equals(userProfile.getUser().getStore().getId(), product.getStore().getId())) {
             Store store = product.getStore();
             UserProfile profile = store.getUser().getUserProfile();
             ProductInfo productInfo = product.getProductInfo();

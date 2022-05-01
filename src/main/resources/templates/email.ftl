@@ -18,7 +18,7 @@
     <br>
     <br>
     <br>
-    <p style="padding: 10px">Ты зарегистрировался в магазине The Secret Shop. <br> Что-бы твой аккаунт имел полный функционал нужно подтвредить свой email </p>
+    <p style="padding: 10px">${username}, зарегистрировался в магазине The Secret Shop. <br> Что-бы твой аккаунт имел полный функционал нужно подтвредить свой email </p>
     <br>
     <a style="padding: 10px" href="${url}">Активировать</a>
     <br>

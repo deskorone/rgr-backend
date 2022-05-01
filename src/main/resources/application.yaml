@@ -23,3 +23,10 @@ spring:
 
 mail:
   debug: true
+
+
+photo:
+  url: hello
+
+app:
+  url: ngrokurl

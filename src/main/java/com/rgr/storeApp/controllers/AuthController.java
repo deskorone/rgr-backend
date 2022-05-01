@@ -23,6 +23,7 @@ import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin("*")
 public class AuthController {
 
     private final UserService userService;

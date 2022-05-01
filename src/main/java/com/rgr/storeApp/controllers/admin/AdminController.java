@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
+@CrossOrigin("*")
 public class AdminController {
 
     private final AdminService adminService;
@@ -26,24 +27,21 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getStore(email));
     }
 
-    @GetMapping("/check")
+
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> get(){
-        adminService.getStore("e1");
-        return ResponseEntity.ok("Heloooo");
-    }
-
-
     @PostMapping("/ban")
     public ResponseEntity<?> addBan(@RequestParam Long id) {
         adminService.addBan(id);
         return ResponseEntity.ok().build();
     }
 
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/ban")
     public ResponseEntity<?> removeBan(@RequestParam Long id) {
         adminService.removeBan(id);
         return ResponseEntity.ok().build();
     }
+
 
 }

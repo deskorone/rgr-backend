@@ -24,7 +24,6 @@ public interface ProductsRepo extends JpaRepository<Product, Long> {
 
     @Query(value = "SELECT * FROM product p " +
             "inner join  product_categories as pc on pc.product_id = p.id " +
-            "inner join reviews as r on r.product_id = p.id  " +
             "inner join categories as c on c.id = pc.category_id where c.name=:category",nativeQuery = true)
     Page<Product> getByCategory(@Param("category") String category, Pageable pageable);
 
@@ -33,18 +32,19 @@ public interface ProductsRepo extends JpaRepository<Product, Long> {
 
     Optional<Product> findById(@Param("id") Long id);
 
-    @Query(value = "select * from product p " +
+
+
+    @Query(value = "select  distinct on(p.id) * from product p " +
             "inner join product_info as pc on p.product_info_id = pc.id " +
-            "where pc.name like %:product% ", nativeQuery = true)
+            "where pc.name like %:product% ", nativeQuery = true,
+    countQuery = "select count (*) from (select distinct on (p.id) * from product p inner join product_info as pc on p.product_info_id = pc.id inner join photo as ph on ph.product_id = p.id where pc.name like %:product%) as pod")
     Page<Product> findWhereName(@Param("product") String product, Pageable pageable);
 
-
-    @Query(value = "SELECT * FROM product p inner join product_info as pi on p.product_info_id = pi.id  inner join reviews as r on r.product_id = p.id where pi.description like %:desc%", nativeQuery = true)
+    @Query(value = "SELECT * FROM product p inner join product_info as pi on p.product_info_id = pi.id where pi.description like %:desc%", nativeQuery = true)
     Page<Product> getByDescription(@Param("desc") String description, Pageable pageable);
 
-    @Query(value = "select p.*, pi.* from product p inner join product_categories as pc on pc.product_id = p.id inner join product_info as pi on pi.id = p.product_info_id inner join reviews as r on r.product_id = p.id inner join categories as c on pc.category_id = c.id where c.name = 'cat45' order by p.id desc limit 10;", nativeQuery = true)
+    @Query(value = "select p.*, pi.* from product p inner join product_categories as pc on pc.product_id = p.id inner join product_info as pi on pi.id = p.product_info_id inner join categories as c on pc.category_id = c.id where c.name = 'cat45' order by p.id desc limit 10;", nativeQuery = true)
     List<Product> getProductsByCategory(@Param("name") String name);
-
 
 
 }
