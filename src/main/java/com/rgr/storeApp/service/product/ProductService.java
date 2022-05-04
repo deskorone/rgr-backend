@@ -213,12 +213,16 @@ public class ProductService {
         }
     }
 
-
+    @Transactional
     public String deleteReview(Long id) {
         User user = findService.getUser(findService.getEmailFromAuth());
         Review review = reviewRepo.findById(id).orElseThrow(()-> new NotFound("Review not found"));
         if (review.getUser().getId().equals(user.getId()) || user.getRoles().stream().anyMatch(e -> e.getRole().equals(ERole.ROLE_ADMIN))) {
+            Product product = review.getProduct();
+            ProductInfo productInfo = product.getProductInfo();
             reviewRepo.deleteById(id);
+            productInfo.setRating(reviewRepo.getRating(product));
+            productsRepo.save(product);
             return "Good";
         }
         throw new NotPrivilege("No permission");

@@ -34,9 +34,7 @@ public class SecurityUser implements UserDetails {
     @JsonIgnore
     private String password;
 
-    public SecurityUser() {
-
-    }
+    public SecurityUser() {}
     private Boolean enabled;
 
 
