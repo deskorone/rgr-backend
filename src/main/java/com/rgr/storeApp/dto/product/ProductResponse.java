@@ -1,6 +1,7 @@
 package com.rgr.storeApp.dto.product;
 
 
+import com.rgr.storeApp.config.ConfigStrings;
 import com.rgr.storeApp.dto.userProfile.UserProfileInfo;
 import com.rgr.storeApp.models.product.Product;
 import com.rgr.storeApp.models.product.Review;
@@ -8,6 +9,7 @@ import com.rgr.storeApp.models.product.Store;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,7 +19,8 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class ProductResponse {
 
-    private  static String url = "http://localhost:8080/api/products/get/photo/%s";
+    private static String ngrokUrl = ConfigStrings.ngrokUrl;
+    private  static String url = ngrokUrl + "/api/products/get/photo/%s";
 
     private Long id;
 

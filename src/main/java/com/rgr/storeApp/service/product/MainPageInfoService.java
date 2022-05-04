@@ -35,7 +35,6 @@ public class MainPageInfoService {
         return categoryDtos;
     }
 
-
 }
 
 

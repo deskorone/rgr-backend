@@ -26,7 +26,6 @@ import java.util.concurrent.Executor;
 @Configuration
 public class ConfigBeans {
 
-
     @Value("${spring.mail.port}")
     private int port;
 

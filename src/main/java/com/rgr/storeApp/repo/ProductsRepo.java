@@ -43,7 +43,7 @@ public interface ProductsRepo extends JpaRepository<Product, Long> {
     @Query(value = "SELECT * FROM product p inner join product_info as pi on p.product_info_id = pi.id where pi.description like %:desc%", nativeQuery = true)
     Page<Product> getByDescription(@Param("desc") String description, Pageable pageable);
 
-    @Query(value = "select p.*, pi.* from product p inner join product_categories as pc on pc.product_id = p.id inner join product_info as pi on pi.id = p.product_info_id inner join categories as c on pc.category_id = c.id where c.name = 'cat45' order by p.id desc limit 10;", nativeQuery = true)
+    @Query(value = "select p.*, pi.* from product p inner join product_categories as pc on pc.product_id = p.id inner join product_info as pi on pi.id = p.product_info_id inner join categories as c on pc.category_id = c.id where c.name = :name order by p.id desc limit 10;", nativeQuery = true)
     List<Product> getProductsByCategory(@Param("name") String name);
 
 

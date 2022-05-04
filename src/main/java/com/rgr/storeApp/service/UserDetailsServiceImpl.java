@@ -27,10 +27,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-
         User user = usersRepo.findByEmail(email).orElseThrow(()-> new NotFound(String
                 .format("User with %s: email not found", email)));
-
         return SecurityUser.createSecurityUser(user);
     }
 }

@@ -1,20 +1,23 @@
 package com.rgr.storeApp.dto.product;
 
 
+import com.rgr.storeApp.config.ConfigStrings;
 import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.models.product.Product;
 import com.rgr.storeApp.models.product.ProductInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Data
 @AllArgsConstructor
 public class ProductLiteResponse {
 
-    @Value("${app.url}")
-    private static String ngrokUrl;
-    private  static String url = "http://localhost:8080/api/products/get/photo/%s";
+
+    private static String ngrokUrl = ConfigStrings.ngrokUrl;
+    private  static String url = ngrokUrl + "/api/products/get/photo/%s";
     private Long id;
     private String photo;
     private String name;
@@ -57,4 +60,8 @@ public class ProductLiteResponse {
 
 
     }
+
+
+
+
 }
