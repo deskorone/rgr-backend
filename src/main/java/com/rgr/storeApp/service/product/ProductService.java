@@ -108,8 +108,9 @@ public class ProductService {
         if (productPhoto.isPresent()) {
             try {
                 File file = new File((String.format("src/main/resources/static/images/%s", path)));
-                InputStream stream = new FileInputStream(file);
-                return stream.readAllBytes();
+                try(InputStream stream = new FileInputStream(file)) {
+                    return stream.readAllBytes();
+                }
             } catch (IOException e) {
                 throw new NotFound("Photo not found or path not found");
             }
