@@ -3,6 +3,7 @@ package com.rgr.storeApp.controllers.product;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rgr.storeApp.dto.BalanceRequest;
 import com.rgr.storeApp.dto.product.AwaibleDto;
 import com.rgr.storeApp.dto.product.FindRequest;
 import com.rgr.storeApp.dto.product.ProductRequest;
@@ -141,6 +142,13 @@ public class ProductController {
     @DeleteMapping("/review/delete")
     public ResponseEntity<?> deleteRev(@RequestParam Long id){
         return ResponseEntity.ok(productService.deleteReview(id));
+    }
+
+
+    @PreAuthorize("hasRole('ADMIN') or hasRole('SALESMAN')" )
+    @PutMapping("/change/price")
+    public ResponseEntity<?> chabgePrice(@RequestParam Long id, @RequestBody BalanceRequest balanceRequest){
+        return ResponseEntity.ok(productService.changeProductPrice(id, balanceRequest));
     }
 
 

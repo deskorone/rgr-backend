@@ -1,5 +1,6 @@
 package com.rgr.storeApp.service.product;
 
+import com.rgr.storeApp.dto.BalanceRequest;
 import com.rgr.storeApp.dto.product.PaginationProductResponse;
 import com.rgr.storeApp.dto.product.ProductRequest;
 import com.rgr.storeApp.dto.product.ProductResponse;
@@ -226,6 +227,17 @@ public class ProductService {
             return "Good";
         }
         throw new NotPrivilege("No permission");
+    }
+
+
+    public ProductResponse changeProductPrice(Long id, BalanceRequest balanceRequest){
+        Product product = productsRepo.findById(id).orElseThrow(()-> new NotFound("Product not found"));
+        if(product.getStore().getUser().getId().equals(findService.getUser(findService.getEmailFromAuth()).getId())) {
+            product.getProductInfo().setPrice(balanceRequest.getMoney());
+        }else {
+            throw new NotPrivilege("You have't permission");
+        }
+        return ProductResponse.build(productsRepo.save(product));
     }
 
 
