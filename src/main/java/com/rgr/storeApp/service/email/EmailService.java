@@ -1,5 +1,6 @@
 package com.rgr.storeApp.service.email;
 
+import com.rgr.storeApp.config.ConfigStrings;
 import com.rgr.storeApp.dto.product.ProductLiteResponse;
 import com.rgr.storeApp.exceptions.api.NotFound;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,8 @@ public class EmailService implements EmailSender{
 
     private final JavaMailSender javaMailSender;
     private final EmailBuilderService emailBuilderService;
-    private String urlTmp = "http://localhost:8080/api/accept/%s";
+    private static String ngrokUrl = ConfigStrings.ngrokUrl;
+    private String urlTmp = ngrokUrl + "/api/accept/%s";
 
 
     @Autowired
