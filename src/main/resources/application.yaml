@@ -34,7 +34,11 @@ photo:
   url: hello
 
 app:
-  url: https://8134-128-69-16-212.eu.ngrok.io
+  url: http://localhost:8080
 
 server:
   port: 8080
+
+axios:
+  defaults:
+    withCredentials: true

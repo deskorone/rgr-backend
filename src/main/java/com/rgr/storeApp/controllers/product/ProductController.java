@@ -26,7 +26,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials =  "true")
 public class ProductController {
 
     private final CategoryService categoryService;

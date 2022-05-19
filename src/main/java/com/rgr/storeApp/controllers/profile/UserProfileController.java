@@ -26,9 +26,9 @@ import javax.validation.Valid;
 import javax.validation.executable.ValidateOnExecution;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials =  "true")
 @RequestMapping("/api/profile")
 @ValidateOnExecution
-@CrossOrigin("*")
 public class UserProfileController {
 
     private final UserProfileService userProfileService;

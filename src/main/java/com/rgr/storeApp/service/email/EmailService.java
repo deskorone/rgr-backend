@@ -13,10 +13,11 @@ import javax.mail.internet.MimeMessage;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service
-public class EmailService implements EmailSender{
+public class EmailService implements EmailSender {
 
     private final JavaMailSender javaMailSender;
     private final EmailBuilderService emailBuilderService;
@@ -29,7 +30,6 @@ public class EmailService implements EmailSender{
         this.javaMailSender = javaMailSender;
         this.emailBuilderService = emailBuilderService;
     }
-
 
 
     @Override
@@ -47,7 +47,7 @@ public class EmailService implements EmailSender{
             helper.setTo("maksim.shmakoff.03@yandex.ru");
             mimeMessage.setFrom("the.secretshop@yandex.ru");
             javaMailSender.send(helper.getMimeMessage());
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new NotFound("ERROR EMAIL");
         }
     }
@@ -61,13 +61,18 @@ public class EmailService implements EmailSender{
             Map model = new HashMap();
             System.out.println(products);
             model.put("products", products);
-            model.put("sum", 1000);
+            Integer sum = products.stream()
+                    .map(e -> e.getPrice())
+                    .collect(Collectors.toList())
+                    .stream()
+                    .reduce(0, Integer::sum);
+            model.put("sum", sum);
             helper.setText(emailBuilderService.getEmail(model, "check"), true);
             helper.setSubject("Чек");
             helper.setTo("maksim.shmakoff.03@yandex.ru");
             mimeMessage.setFrom("the.secretshop@yandex.ru");
             javaMailSender.send(helper.getMimeMessage());
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new NotFound("ERROR EMAIL");
         }
     }

@@ -22,8 +22,8 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials =  "true")
 @RequestMapping("/api/auth")
-@CrossOrigin("*")
 public class AuthController {
 
     private final UserService userService;
@@ -32,6 +32,8 @@ public class AuthController {
         this.userService = userService;
     }
 
+
+    @CrossOrigin
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse){
         return ResponseEntity.ok(userService.loginUser(loginRequest, httpServletResponse));
