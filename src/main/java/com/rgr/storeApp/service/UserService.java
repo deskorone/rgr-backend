@@ -6,6 +6,7 @@ import com.rgr.storeApp.dto.LoginResponse;
 import com.rgr.storeApp.dto.RegistrationRequest;
 import com.rgr.storeApp.dto.userProfile.UserResp;
 import com.rgr.storeApp.exceptions.api.NotFound;
+import com.rgr.storeApp.exceptions.api.NotPrivilege;
 import com.rgr.storeApp.models.ERole;
 import com.rgr.storeApp.models.RefreshToken;
 import com.rgr.storeApp.models.Role;
@@ -122,7 +123,7 @@ public class UserService {
         User user = new User(registrationRequest.getEmail(),
                 registrationRequest.getUsername(),
                 passwordEncoder.encode(registrationRequest.getPassword()),
-                true,
+                false,
                 false);
         user.setUsername(registrationRequest.getUsername());
         Set<String> rolesReq = registrationRequest.getRoles();
@@ -185,6 +186,7 @@ public class UserService {
             emailService.sendVerification(token, u.getEmail(), u.getUsername());
         }catch (Exception e){
             usersRepo.delete(u);
+            throw new NotPrivilege("Email not found");
         }
         return UserResp.build(u);
     }

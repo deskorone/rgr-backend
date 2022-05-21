@@ -26,5 +26,11 @@ public class TokenController {
         return "emailAccept";
     }
 
+    @RequestMapping(value = "/api/accept/resend", method = RequestMethod.GET)
+    public String resend(@RequestParam("email") String email, Model model){
+        model.addAttribute("send", confirmationTokenService.sendNewConfirmation(email));
+        return "emailSend";
+    }
+
 
 }

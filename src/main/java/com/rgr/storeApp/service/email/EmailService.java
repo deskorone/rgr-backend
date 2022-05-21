@@ -48,7 +48,7 @@ public class EmailService implements EmailSender {
             mimeMessage.setFrom("the.secretshop@yandex.ru");
             javaMailSender.send(helper.getMimeMessage());
         } catch (Exception e) {
-            throw new NotFound("ERROR EMAIL");
+            System.out.println("Email exception");;
         }
     }
 
@@ -73,7 +73,8 @@ public class EmailService implements EmailSender {
             mimeMessage.setFrom("the.secretshop@yandex.ru");
             javaMailSender.send(helper.getMimeMessage());
         } catch (Exception e) {
-            throw new NotFound("ERROR EMAIL");
+            //throw new NotFound("ERROR EMAIL");
+            System.out.println("Email exception");
         }
     }
 }
