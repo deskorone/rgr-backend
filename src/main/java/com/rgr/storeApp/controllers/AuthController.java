@@ -33,7 +33,6 @@ public class AuthController {
     }
 
 
-    @CrossOrigin
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse){
         return ResponseEntity.ok(userService.loginUser(loginRequest, httpServletResponse));

@@ -69,7 +69,6 @@ public class ProductController {
         return ResponseEntity.ok().build();
     }
 
-
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
     @PostMapping("/review/add/{id}")
     public ResponseEntity<?> addReview(@PathVariable("id") Long id, @RequestBody ReviewRequest reviewRequest){
