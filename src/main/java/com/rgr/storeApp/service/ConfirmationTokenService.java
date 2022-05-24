@@ -30,15 +30,11 @@ public class ConfirmationTokenService {
     public String createToken(User user){
         ConfirmationToken token = new ConfirmationToken(UUID.randomUUID().toString(),
                 LocalDateTime.now(),
-                LocalDateTime.now().plusMinutes(15L),
+                LocalDateTime.now().plusMinutes(20L),
                 user);
 
         confirmationTokenRepo.save(token);
         return token.getToken();
-    }
-
-    public void confirmation(String token){
-        emailService.sendVerification(token, null, null);
     }
 
     public boolean acceptToken(String token){
@@ -62,15 +58,11 @@ public class ConfirmationTokenService {
 
     public boolean sendNewConfirmation(String email){
         User user;
-        try {
-            user = findService.getUser(email);
-            if (user.isEnabled()){
-                return false;
-            }
-            emailService.sendVerification(createToken(user), email, user.getUsername());
-        }catch (Exception e){
+        user = findService.getUser(email);
+        if (user.isEnabled()){
             return false;
         }
+        emailService.sendVerification(createToken(user), email, user.getUsername());
         return true;
     }
 

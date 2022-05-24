@@ -3,6 +3,7 @@ package com.rgr.storeApp.service.email;
 import com.rgr.storeApp.config.ConfigStrings;
 import com.rgr.storeApp.dto.product.ProductLiteResponse;
 import com.rgr.storeApp.exceptions.api.NotFound;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 
 @Service
+@Slf4j
 public class EmailService implements EmailSender {
 
     private final JavaMailSender javaMailSender;
@@ -48,7 +50,7 @@ public class EmailService implements EmailSender {
             mimeMessage.setFrom("the.secretshop@yandex.ru");
             javaMailSender.send(helper.getMimeMessage());
         } catch (Exception e) {
-            System.out.println("Email exception");;
+            log.warn("Email no send");
         }
     }
 
@@ -73,8 +75,7 @@ public class EmailService implements EmailSender {
             mimeMessage.setFrom("the.secretshop@yandex.ru");
             javaMailSender.send(helper.getMimeMessage());
         } catch (Exception e) {
-            //throw new NotFound("ERROR EMAIL");
-            System.out.println("Email exception");
+
         }
     }
 }

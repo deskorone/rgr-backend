@@ -92,6 +92,7 @@ public class ProductService {
         try {
             String name = Base64.getEncoder().encodeToString(multipartFile.getBytes()).substring(40, 80) + UUID.randomUUID().toString().substring(3, 6) + ".png";
             File photo = new File(String.format("src/main/resources/static/images/%s", name));
+            photo.createNewFile();
             try (OutputStream outputStream = new FileOutputStream(photo)) {
                 outputStream.write(multipartFile.getBytes());
             }
