@@ -48,7 +48,7 @@ public class FavoritesService {
                 .getFavorites();
         Product product = productsRepo.findById(id).orElseThrow(()-> new NotFound("Product not found"));
         favorites.remove(product);
-        return favoritesRepo.save(favorites).getProducts().stream().map(ProductLiteResponse::build).collect(Collectors.toList());;
+        return favoritesRepo.save(favorites).getProducts().stream().map(ProductLiteResponse::build).collect(Collectors.toList());
     }
 
 

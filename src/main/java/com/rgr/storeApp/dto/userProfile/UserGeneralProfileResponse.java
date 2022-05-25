@@ -11,11 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserGeneralProfileResponse {
 
+
+    private Long id;
     private Integer balance;
     private String username;
     private Integer inBasket;
 
     public static UserGeneralProfileResponse build(User user){
-        return new UserGeneralProfileResponse(user.getUserProfile().getBalance(), user.getUsername(), user.getUserProfile().getBasket().getProducts().size());
+        return new UserGeneralProfileResponse(user.getId(), user.getUserProfile().getBalance(), user.getUsername(), user.getUserProfile().getBasket().getProducts().size());
     }
 }
