@@ -89,7 +89,7 @@ public class ProductController {
                 .body(productService.getPhoto(path));
     }
 
-    @GetMapping(value = "/find/name")
+    @PostMapping(value = "/find/name")
     public ResponseEntity<?> find(@RequestParam("count") int count,
                                   @RequestParam("size") int size,
                                   @RequestBody FindRequest findRequest){
@@ -98,14 +98,14 @@ public class ProductController {
 
 
 
-    @GetMapping(value = "/find/category")
+    @PostMapping(value = "/find/category")
     public ResponseEntity<?> findByCategory(@RequestParam("count") int count,
                                   @RequestParam("size") int size,
                                   @RequestBody FindRequest findRequest){
         return ResponseEntity.ok(productService.findByCategory(findRequest.getText(), count, size));
     }
 
-    @GetMapping(value = "/find/description")
+    @PostMapping(value = "/find/description")
     public ResponseEntity<?> findByDescription(@RequestParam("count") int count,
                                             @RequestParam("size") int size,
                                             @RequestBody FindRequest findRequest){
