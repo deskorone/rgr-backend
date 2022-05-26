@@ -49,6 +49,11 @@ public class UserProfileService {
         return UserGeneralProfileResponse.build(user);
     }
 
+
+    public UserProfileInfo getProfileInfo(){
+        return UserProfileInfo.build(findService.getUser(findService.getEmailFromAuth()));
+    }
+
     public BasketDto getBasket(){
         User user = findService.getUser(findService.getEmailFromAuth());
         return BasketDto.build(user.getUserProfile().getBasket());

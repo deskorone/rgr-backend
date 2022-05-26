@@ -57,6 +57,12 @@ public class UserProfileController {
         return ResponseEntity.ok(userProfileService.getGeneral());
     }
 
+    @GetMapping("/getall")
+    @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
+    public ResponseEntity<?> getfullInfo(){
+        return ResponseEntity.ok(userProfileService.getProfileInfo());
+    }
+
     @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
     @GetMapping("/awaitings")
     public ResponseEntity<?> getAwaitings(){

@@ -49,12 +49,12 @@ public class ProductController {
     @PostMapping(value = "/add",  produces = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> addProduct(@RequestParam(name = "mainimage") MultipartFile file, @RequestParam("req") String json,
                                  @RequestParam(value = "image", required = false) MultipartFile [] files) {
-        System.out.print("LOG");
         ObjectMapper mapper = new ObjectMapper();
         ProductRequest productRequest;
         try {
             productRequest = mapper.readValue(json, ProductRequest.class);
         } catch (JsonProcessingException e) {
+            System.out.println("Parse Err");
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok()

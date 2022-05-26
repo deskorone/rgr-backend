@@ -90,8 +90,8 @@ public class ProductService {
     public ProductPhoto savePhoto(MultipartFile multipartFile, Product product) {
         ProductPhoto productPhoto = new ProductPhoto();
         try {
-            String name = Base64.getEncoder().encodeToString(multipartFile.getBytes()).substring(40, 80) + UUID.randomUUID().toString().substring(3, 6) + ".png";
-            File photo = new File(String.format("src/main/resources/static/images/%s", name));
+            //String name = Base64.getEncoder().encodeToString(multipartFile.getBytes()).substring(40, 80) + UUID.randomUUID().toString().substring(3, 6) + ".png";
+            File photo = new File(String.format("src/main/resources/static/images/%s", UUID.randomUUID().toString()  + ".png"));
             photo.createNewFile();
             try (OutputStream outputStream = new FileOutputStream(photo)) {
                 outputStream.write(multipartFile.getBytes());
