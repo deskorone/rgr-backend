@@ -5,6 +5,7 @@ import com.rgr.storeApp.dto.userProfile.*;
 import com.rgr.storeApp.exceptions.api.NotFound;
 import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.models.delivery.AwaitingList;
+import com.rgr.storeApp.models.product.Favorites;
 import com.rgr.storeApp.models.product.Store;
 import com.rgr.storeApp.models.profile.Sales;
 import com.rgr.storeApp.models.profile.StoreUpdateRequest;
@@ -107,5 +108,13 @@ public class UserProfileService {
         store.setTown(storeUpdateRequest.getTown());
         return storeRepo.save(store);
     }
+
+
+    public BasketDto getFavorites(){
+        Favorites favorites = findService.getUser(findService.getEmailFromAuth()).getUserProfile().getFavorites();
+
+        return BasketDto.buildFav(favorites);
+    }
+
 
 }

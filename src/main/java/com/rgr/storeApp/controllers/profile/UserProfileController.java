@@ -150,4 +150,12 @@ public class UserProfileController {
         return ResponseEntity.ok(userProfileService.updateStore(storeUpdateRequest));
     }
 
+    @PreAuthorize("hasRole('USER') or hasRole('SALESMAN')")
+    @GetMapping("/favorites")
+    public ResponseEntity<?> getFavorites(){
+        return ResponseEntity.ok(userProfileService.getFavorites());
+    }
+
+
+
 }
