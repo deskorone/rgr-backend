@@ -124,8 +124,7 @@ public class ProductService {
 
     public List<ProductResponse> getAllByStore() {
         Store store = findService.getUser(findService.getEmailFromAuth()).getStore();
-        return productsRepo
-                .findAllByStore(store)
+        return store.getProducts()
                 .stream()
                 .map(ProductResponse::build)
                 .collect(Collectors.toList());
