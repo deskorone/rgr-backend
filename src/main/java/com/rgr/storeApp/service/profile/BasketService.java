@@ -3,6 +3,10 @@ package com.rgr.storeApp.service.profile;
 
 import com.rgr.storeApp.dto.userProfile.BasketDto;
 import com.rgr.storeApp.exceptions.api.NotFound;
+import com.rgr.storeApp.exceptions.api.NotPrivilege;
+import com.rgr.storeApp.models.ERole;
+import com.rgr.storeApp.models.Role;
+import com.rgr.storeApp.models.User;
 import com.rgr.storeApp.models.basket.Basket;
 import com.rgr.storeApp.models.product.Product;
 import com.rgr.storeApp.models.profile.UserProfile;
@@ -32,8 +36,23 @@ public class BasketService {
 
 
     public BasketDto addProductInBasket(Long id){
-        UserProfile userProfile = findService.getUser(findService.getEmailFromAuth()).getUserProfile();
+        User user = findService.getUser(findService.getEmailFromAuth());
+        boolean isSalesman = false;
+        UserProfile userProfile = user.getUserProfile();
         Product product = productsRepo.findById(id).orElseThrow(()->new NotFound("Product MOT found"));
+        for (Role i : user.getRoles()){
+            if(i.getRole().equals(ERole.ROLE_SALESMAN)){
+                isSalesman = true;
+            }
+        }
+        if (isSalesman){
+            boolean error = user.getStore().getProducts()
+                    .stream()
+                    .anyMatch(e-> e.getId() == id);
+            if (error){
+                throw new NotPrivilege("Error it's you product");
+            }
+        }
         Basket basket = userProfile.getBasket();
         basket.getProducts().add(product);
         basketRepo.save(basket);

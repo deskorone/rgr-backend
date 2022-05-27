@@ -80,6 +80,7 @@ public class BuyService {
                             .map(e -> e.getProductInfo().getPrice()).collect(Collectors.toList())
                             .stream()
                             .reduce(0, Integer::sum));
+
                     log.info(String.format("Succesfull buy user: %s", userProfile.getUser().getUsername()));
                     userProfile.getAwaitingList().getDeliveries().add(delivery);
                     try {
@@ -98,8 +99,6 @@ public class BuyService {
     }
 
     private boolean buyProducer(UserProfile userProfile, Product product){
-
-        if(!Objects.equals(userProfile.getUser().getStore().getId(), product.getStore().getId())) {
             Store store = product.getStore();
             UserProfile profile = store.getUser().getUserProfile();
             ProductInfo productInfo = product.getProductInfo();
@@ -115,7 +114,6 @@ public class BuyService {
                 productsRepo.save(product);
                 return true;
             }
-        }
         return false;
     }
 

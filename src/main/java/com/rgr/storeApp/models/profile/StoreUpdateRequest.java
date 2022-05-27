@@ -18,7 +18,6 @@ public class StoreUpdateRequest {
 
 
     @NotNull
-    @Size(max = 2)
     private String country;
 
     @NotEmpty

@@ -46,7 +46,7 @@ public class EmailService implements EmailSender {
             model.put("url", url);
             helper.setText(emailBuilderService.getEmail(model, "email"), true);
             helper.setSubject("Подтверждение электронной почты ");
-            helper.setTo("maksim.shmakoff.03@yandex.ru");
+            helper.setTo(to);
             mimeMessage.setFrom("the.secretshop@yandex.ru");
             javaMailSender.send(helper.getMimeMessage());
         } catch (Exception e) {
@@ -71,7 +71,7 @@ public class EmailService implements EmailSender {
             model.put("sum", sum);
             helper.setText(emailBuilderService.getEmail(model, "check"), true);
             helper.setSubject("Чек");
-            helper.setTo("maksim.shmakoff.03@yandex.ru");
+            helper.setTo(to);
             mimeMessage.setFrom("the.secretshop@yandex.ru");
             javaMailSender.send(helper.getMimeMessage());
         } catch (Exception e) {
